@@ -60,12 +60,46 @@ th{color:var(--muted);font-weight:500}
 details summary{cursor:pointer;color:var(--accent);font-size:13px;margin-top:4px}
 .links a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--accent);text-decoration:none;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-top:8px}
+.langrow{display:flex;gap:8px}.langrow .btn{margin-top:6px;padding:11px 6px;font-size:15px}
+@media (max-width:420px){ header h1 small{display:none} }
+.alt{display:flex;width:100%;text-align:left;gap:10px;align-items:stretch;background:var(--bg);border:2px solid transparent;border-radius:12px;padding:10px;margin-top:8px;color:var(--text);font-size:14px}
+.alt.sel{border-color:var(--accent);background:var(--card)}
+.alt .bar{flex:0 0 6px;border-radius:4px}
+.alt .body{flex:1;min-width:0}
+.alt .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.alt .name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alt .time{font-size:20px;font-weight:700;white-space:nowrap}
+.alt .sub{color:var(--muted);font-size:12px;margin-top:2px}
+.alt .tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--line);color:var(--text)}
+.tag.good{background:#dcfce7;color:#14532d}.tag.toll{background:#fef3c7;color:#78350f}
+@media (prefers-color-scheme: dark){ .tag.good{background:#14532d;color:#dcfce7}.tag.toll{background:#422006;color:#fde68a} }
+.rlabel{background:#fff;border:2px solid;border-radius:50%;width:26px;height:26px;line-height:22px;text-align:center;font-weight:800;font-size:14px;color:#0f172a}
+/* планшет и широкий экран: карта слева на всю высоту, панели справа */
+@media (min-width: 880px){
+  main{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:0 16px;align-items:start}
+  main > *{grid-column:2}
+  #map{grid-column:1;grid-row:1 / span 40;position:sticky;top:76px;height:calc(100vh - 96px);margin-bottom:0}
+  .card{margin-bottom:12px}
+}
+@media (min-width: 1300px){ main{grid-template-columns:minmax(0,1fr) 520px} }
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2500;display:none;padding:0 16px}
+body.metric .imp-only{display:none} body:not(.metric) .met-only{display:none}
 #settings{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:none;overflow:auto;padding:calc(env(safe-area-inset-top) + 16px) 12px 40px}
 #settings .card{max-width:560px;margin:0 auto}
 .hidden{display:none}
 .warnbox{background:#fef3c7;color:#78350f;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
 @media (prefers-color-scheme: dark){ .warnbox{background:#422006;color:#fde68a} }
 .leaflet-popup-content{font-size:13px}
+.acwrap{position:relative;flex:1}
+.ac{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:1500;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);overflow:hidden;display:none;max-height:60vh;overflow-y:auto}
+.ac.open{display:block}
+.ac button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:11px 12px;color:var(--text);font-size:15px}
+.ac button:last-child{border-bottom:0}
+.ac button small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+.ac button.me{color:var(--accent);font-weight:600}
+.ac .hint{padding:10px 12px;font-size:13px;color:var(--muted)}
+.geobtn{flex:0 0 auto !important;color:var(--accent) !important;border-color:var(--line) !important;padding:11px 10px !important;white-space:nowrap}
 .eta{background:var(--bg);border-radius:12px;padding:10px 12px;margin:8px 0}
 .eta .big{display:block}
 .eta ul{margin:6px 0 0;padding-left:18px;font-size:13px}
@@ -75,42 +109,50 @@ tr.ev td{background:var(--bg);font-size:12px}
 </head>
 <body>
 <header>
-  <h1>TruckWX <small>шторм · мосты · перекрытия</small></h1>
-  <button class="iconbtn" id="btnSettings" aria-label="Настройки">&#9881;</button>
+  <h1>TruckWX <small data-i18n="sub"></small></h1>
+  <button class="iconbtn" id="btnLang" aria-label="Language">RU</button>
+  <button class="iconbtn" id="btnUnits" aria-label="Units">mi</button>
+  <button class="iconbtn" id="btnSettings" data-i18n-title="set.h">&#9881;</button>
 </header>
 
 <main>
   <div class="card">
-    <label for="from">Откуда</label>
+    <label for="from" data-i18n="from"></label>
     <div class="row">
-      <input id="from" list="presets" placeholder="Moncton, NB" autocomplete="off">
-      <button class="iconbtn" style="flex:0 0 auto;color:var(--accent);border-color:var(--line)" id="btnGeo" title="Моё местоположение">&#10148;</button>
+      <div class="acwrap"><input id="from" data-i18n-ph="ph.addr" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next"><div class="ac" id="acFrom"></div></div>
+      <button class="iconbtn geobtn" id="btnGeo" data-i18n="geo.btn"></button>
     </div>
-    <label for="to">Куда</label>
-    <input id="to" list="presets" placeholder="Hunts Point, Bronx, NY" autocomplete="off">
-    <datalist id="presets"></datalist>
-    <button class="btn" id="btnGo">Проверить маршрут</button>
+    <label for="to" data-i18n="to"></label>
+    <div class="acwrap"><input id="to" data-i18n-ph="ph.addr" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><div class="ac" id="acTo"></div></div>
+    <button class="btn" id="btnGo" data-i18n="go"></button>
     <div id="status"></div>
     <div id="routeWarn" class="warnbox hidden"></div>
   </div>
 
   <div id="map"></div>
 
+  <div class="card hidden" id="cardAlts">
+    <h2 data-i18n="alts.h"></h2>
+    <div id="altsFor" class="small"></div>
+    <div id="alts"></div>
+    <div id="altsRec" class="small" style="margin-top:6px"></div>
+  </div>
+
   <div class="card hidden" id="cardDeps">
-    <h2>Когда выезжать? Риск на ближайшие 72 ч</h2>
+    <h2 data-i18n="deps.h"></h2>
     <div class="strip" id="strip"></div>
     <div class="legend">
-      <span><span class="dot lv0"></span>спокойно</span>
-      <span><span class="dot lv1"></span>осторожно</span>
-      <span><span class="dot lv2"></span>опасно</span>
-      <span><span class="dot lv3"></span>шторм / лёд</span>
-      <span>% — вероятность сильного снега (ансамбль GFS)</span>
+      <span><span class="dot lv0"></span><span data-i18n="lv0"></span></span>
+      <span><span class="dot lv1"></span><span data-i18n="lv1"></span></span>
+      <span><span class="dot lv2"></span><span data-i18n="lv2"></span></span>
+      <span><span class="dot lv3"></span><span data-i18n="lv3"></span></span>
+      <span data-i18n="legend.pct"></span>
     </div>
     <div id="bestTip" class="small" style="margin-top:6px"></div>
   </div>
 
   <div class="card hidden" id="cardTrip">
-    <h2>Выезд: <span id="tripDep"></span></h2>
+    <h2><span data-i18n="trip.dep"></span> <span id="tripDep"></span></h2>
     <div class="summary">
       <span id="tripBadge" class="badge"></span>
       <span id="tripText"></span>
@@ -119,88 +161,239 @@ tr.ev td{background:var(--bg);font-size:12px}
     <div class="small" id="tripMeta"></div>
     <div style="overflow-x:auto;margin-top:8px">
       <table>
-        <thead><tr><th>Время</th><th>Где</th><th>t°</th><th>Снег</th><th>Ветер</th><th>Вер.</th></tr></thead>
+        <thead><tr><th data-i18n="th.time"></th><th data-i18n="th.where"></th><th id="thT">t°</th><th id="thS"></th><th id="thW"></th><th data-i18n="th.prob"></th></tr></thead>
         <tbody id="tripRows"></tbody>
       </table>
     </div>
   </div>
 
   <div class="card hidden" id="cardAlerts">
-    <h2>Официальные предупреждения на маршруте</h2>
+    <h2 data-i18n="alerts.h"></h2>
     <div id="alerts" class="small">—</div>
   </div>
 
   <div class="card hidden" id="cardBridges">
-    <h2>Низкие мосты и ограничения по высоте</h2>
+    <h2 data-i18n="bridges.h"></h2>
     <div id="bridges" class="small">—</div>
   </div>
 
   <div class="card hidden" id="cardRoads">
-    <h2>Ремонты и перекрытия (511)</h2>
-    <div class="small">Актуальные работы, аварии и закрытия — на официальных картах 511 штатов/провинций по маршруту:</div>
+    <h2 data-i18n="roads.h"></h2>
+    <div class="small" data-i18n="roads.txt"></div>
     <div class="links" id="roadLinks"></div>
-    <div class="small" style="margin-top:6px">Граница:</div>
+    <div class="small" style="margin-top:6px" data-i18n="border"></div>
     <div class="links">
-      <a href="https://bwt.cbp.gov/" target="_blank" rel="noopener">Очереди CBP (в США)</a>
-      <a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank" rel="noopener">Очереди CBSA (в Канаду)</a>
+      <a href="https://bwt.cbp.gov/" target="_blank" rel="noopener" data-i18n="cbp"></a>
+      <a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank" rel="noopener" data-i18n="cbsa"></a>
     </div>
     <div class="links" id="navLinks"></div>
   </div>
 
-  <p class="small">Данные: Open-Meteo (прогноз и ансамбль GFS), NWS/NOAA (США), Environment Canada, OpenStreetMap/Overpass, openrouteservice. Приложение — помощник, а не замена официальным источникам и знакам на дороге. Обновлено: <span id="updated">—</span></p>
+  <p class="small"><span data-i18n="footer"></span> <span data-i18n="updated"></span> <span id="updated">—</span></p>
 </main>
 
+<div id="unitsPick" class="modal">
+  <div class="card" style="max-width:420px;margin:10vh auto 0">
+    <h2>Язык · Мова · Language</h2>
+    <div class="langrow">
+      <button class="btn sec" data-l="ru">Русский</button>
+      <button class="btn sec" data-l="uk">Українська</button>
+      <button class="btn sec" data-l="en">English</button>
+    </div>
+    <h2 style="margin-top:16px" data-i18n="pick.q"></h2>
+    <div class="small" data-i18n="pick.txt"></div>
+    <button class="btn" data-u="imperial" data-i18n="u.imp"></button>
+    <button class="btn sec" data-u="metric" data-i18n="u.met"></button>
+  </div>
+</div>
 <div id="settings">
   <div class="card">
-    <h2>Настройки</h2>
-    <label>Ключ openrouteservice (бесплатный — маршрут для траков с учётом высоты/веса)</label>
-    <input id="sKey" placeholder="вставьте ключ" autocomplete="off">
-    <div class="small">Без ключа строится обычный автомобильный маршрут (OSRM), и мосты проверяются только по списку ниже. Ключ: openrouteservice.org → Sign up → Dashboard → Tokens.</div>
-    <div class="row">
-      <div><label>Высота, фт</label><input id="sHft" type="number" inputmode="numeric" value="13"></div>
-      <div><label>дюймы</label><input id="sHin" type="number" inputmode="numeric" value="6"></div>
+    <h2 data-i18n="set.h"></h2>
+    <label data-i18n="set.lang"></label>
+    <select id="sLang"><option value="ru">Русский</option><option value="uk">Українська</option><option value="en">English</option></select>
+    <label data-i18n="set.units"></label>
+    <select id="sUnits"><option value="imperial" data-i18n="u.imp"></option><option value="metric" data-i18n="u.met"></option></select>
+    <label data-i18n="set.key"></label>
+    <input id="sKey" data-i18n-ph="set.keyph" autocomplete="off">
+    <div class="small" data-i18n="set.keyhelp"></div>
+    <div class="imp-only">
+      <div class="row">
+        <div><label data-i18n="set.hft"></label><input id="sHft" type="number" inputmode="numeric"></div>
+        <div><label data-i18n="set.hin"></label><input id="sHin" type="number" inputmode="numeric"></div>
+      </div>
+      <div class="row">
+        <div><label data-i18n="set.wlb"></label><input id="sWlb" type="number" inputmode="numeric"></div>
+        <div><label data-i18n="set.lft"></label><input id="sLft" type="number" inputmode="numeric"></div>
+      </div>
     </div>
-    <div class="row">
-      <div><label>Вес, т</label><input id="sW" type="number" inputmode="decimal" value="36"></div>
-      <div><label>Длина, м</label><input id="sL" type="number" inputmode="decimal" value="22"></div>
+    <div class="met-only">
+      <div class="row">
+        <div><label data-i18n="set.hm"></label><input id="sHm" type="number" step="0.01" inputmode="decimal"></div>
+        <div><label data-i18n="set.wt"></label><input id="sW" type="number" inputmode="decimal"></div>
+      </div>
+      <label data-i18n="set.lm"></label><input id="sL" type="number" inputmode="decimal">
     </div>
-    <label>Поправка скорости трака (1.0 = как навигатор, 1.15 = на 15% медленнее)</label>
+    <label data-i18n="set.tolls"></label>
+    <select id="sTolls"><option value="allow" data-i18n="set.tollsAllow"></option><option value="avoid" data-i18n="set.tollsAvoid"></option></select>
+    <label data-i18n="set.speed"></label>
     <input id="sSpeed" type="number" step="0.05" inputmode="decimal" value="1.1">
-    <label>Пустой прицеп / лёгкий груз (строже по ветру)</label>
-    <select id="sEmpty"><option value="0">Нет — гружёный</option><option value="1">Да — пустой/лёгкий</option></select>
-    <h2 style="margin-top:18px">Расчёт времени прибытия</h2>
+    <label data-i18n="set.empty"></label>
+    <select id="sEmpty"><option value="0" data-i18n="set.loaded"></option><option value="1" data-i18n="set.emptyY"></option></select>
+    <h2 style="margin-top:18px" data-i18n="set.eta"></h2>
     <div class="row">
-      <div><label>Макс. скорость трака, mph</label><input id="sVmax" type="number" inputmode="numeric" value="65"></div>
-      <div><label>При шторме</label><select id="sStorm"><option value="wait">Пережидать</option><option value="slow">Ехать 25 mph</option></select></div>
+      <div><label><span data-i18n="set.vmax"></span> <span class="uSpd">mph</span></label><input id="sVmax" type="number" inputmode="numeric" value="65"></div>
+      <div><label data-i18n="set.storm"></label><select id="sStorm"><option value="wait" data-i18n="set.wait"></option><option value="slow" id="optSlow"></option></select></div>
     </div>
     <div class="row">
-      <div><label>Расчистка после шторма, ч</label><input id="sClear" type="number" step="0.5" inputmode="decimal" value="1.5"></div>
-      <div><label>Потом ограничение, mph</label><input id="sRmph" type="number" inputmode="numeric" value="45"></div>
+      <div><label data-i18n="set.clear"></label><input id="sClear" type="number" step="0.5" inputmode="decimal" value="1.5"></div>
+      <div><label><span data-i18n="set.rmph"></span> <span class="uSpd">mph</span></label><input id="sRmph" type="number" inputmode="numeric" value="45"></div>
     </div>
     <div class="row">
-      <div><label>Ограничение действует, ч</label><input id="sRh" type="number" step="0.5" inputmode="decimal" value="6"></div>
-      <div><label>Запас на ремонты, мин</label><input id="sWork" type="number" inputmode="numeric" value="20"></div>
+      <div><label data-i18n="set.rh"></label><input id="sRh" type="number" step="0.5" inputmode="decimal" value="6"></div>
+      <div><label data-i18n="set.work"></label><input id="sWork" type="number" inputmode="numeric" value="20"></div>
     </div>
     <div class="row">
-      <div><label>Пробки в часы пик</label><select id="sTraffic"><option value="1">Учитывать</option><option value="0">Нет</option></select></div>
-      <div><label>Отдых водителя (HOS)</label><select id="sHos"><option value="1">Учитывать (8 ч → 30 мин, 11 ч → 10 ч)</option><option value="0">Нет / 2 водителя</option></select></div>
+      <div><label data-i18n="set.traffic"></label><select id="sTraffic"><option value="1" data-i18n="set.consider"></option><option value="0" data-i18n="set.no"></option></select></div>
+      <div><label data-i18n="set.hos"></label><select id="sHos"><option value="1" data-i18n="set.hosY"></option><option value="0" data-i18n="set.hosN"></option></select></div>
     </div>
-    <button class="btn" id="btnSave">Сохранить</button>
-    <button class="btn sec" id="btnClose">Закрыть</button>
+    <button class="btn" id="btnSave" data-i18n="save"></button>
+    <button class="btn sec" id="btnClose" data-i18n="close"></button>
   </div>
 </div>
 
 <script>
 "use strict";
+/* ============ языки ============ */
+const I18N = {
+ru:{"alts.h":"Варианты маршрута","alts.for":"Время в пути с учётом погоды, пробок и отдыха — при выезде {dep}. Нажмите, чтобы выбрать.","route.fast":"Быстрее всего","route.safe":"Спокойнее по погоде","route.toll":"Платные участки","route.wait":"⏸ шторм {d}","route.delay":"задержки +{d}","route.noname":"маршрут","eta.short":"прибытие","rec.one":"Других разумных вариантов не найдено.","rec.detour":"Объезд {r} быстрее основного {m} на {d} с учётом погоды и пробок.","rec.main":"Основной маршрут {r} — лучший при этом выезде.","st.alts":"Ищу объездные маршруты…","st.nalts":" · вариантов: {n}","set.tolls":"Платные дороги","set.tollsAllow":"Разрешить","set.tollsAvoid":"Избегать","title":"TruckWX — погода на маршруте","sub":"шторм · мосты · перекрытия","from":"Откуда","to":"Куда","ph.addr":"Начните вводить город или адрес","geo.btn":"📍 Я здесь","go":"Проверить маршрут",
+"deps.h":"Когда выезжать? Риск на ближайшие 72 ч","lv0":"спокойно","lv1":"осторожно","lv2":"опасно","lv3":"шторм / лёд","legend.pct":"% — вероятность сильного снега (ансамбль GFS)",
+"trip.dep":"Выезд:","th.time":"Время","th.where":"Где","th.snow":"Снег","th.gust":"Порывы","th.prob":"Вер.","alerts.h":"Официальные предупреждения на маршруте","bridges.h":"Низкие мосты и ограничения по высоте",
+"roads.h":"Ремонты и перекрытия (511)","roads.txt":"Актуальные работы, аварии и закрытия — на официальных картах 511 штатов/провинций по маршруту:","border":"Граница:","cbp":"Очереди CBP (в США)","cbsa":"Очереди CBSA (в Канаду)",
+"footer":"Данные: Open-Meteo (прогноз и ансамбль GFS), NWS/NOAA (США), Environment Canada, OpenStreetMap/Overpass, openrouteservice. Приложение — помощник, а не замена официальным источникам и знакам на дороге.","updated":"Обновлено:",
+"pick.lang":"Язык","pick.q":"Где вы в основном ездите?","pick.txt":"Выберите единицы измерения. Поменять можно в любой момент кнопкой mi/km вверху.","u.imp":"США — мили, mph, °F, футы, фунты","u.met":"Канада — км, км/ч, °C, метры, тонны",
+"set.h":"Настройки","set.lang":"Язык","set.units":"Единицы измерения","set.key":"Ключ openrouteservice (бесплатный — маршрут для траков с учётом высоты/веса)","set.keyph":"вставьте ключ",
+"set.keyhelp":"Без ключа строится обычный автомобильный маршрут (OSRM), и мосты проверяются только по списку ниже. Ключ: openrouteservice.org → Sign up → Dashboard → Tokens.",
+"set.hft":"Высота, футы","set.hin":"дюймы","set.wlb":"Вес, lb","set.lft":"Длина, футы","set.hm":"Высота, м","set.wt":"Вес, т","set.lm":"Длина, м","set.speed":"Поправка скорости трака (1.0 = как навигатор, 1.15 = на 15% медленнее)",
+"set.empty":"Пустой прицеп / лёгкий груз (строже по ветру)","set.loaded":"Нет — гружёный","set.emptyY":"Да — пустой/лёгкий","set.eta":"Расчёт времени прибытия","set.vmax":"Макс. скорость трака,","set.storm":"При шторме","set.wait":"Пережидать","set.slow":"Ехать {spd}",
+"set.clear":"Расчистка после шторма, ч","set.rmph":"Потом ограничение,","set.rh":"Ограничение действует, ч","set.work":"Запас на ремонты, мин","set.traffic":"Пробки в часы пик","set.consider":"Учитывать","set.no":"Нет","set.hos":"Отдых водителя (HOS)",
+"set.hosY":"Учитывать (8 ч → 30 мин, 11 ч → 10 ч)","set.hosN":"Нет / 2 водителя","save":"Сохранить","close":"Закрыть",
+"km":"км","kmh":"км/ч","m":"м","cm":"см","ft1":"1 фут","min":"мин","h":"ч","mile.n":"миля {n}","km.n":"км {n}","in3h":"за 3 ч","perh":"/ч",
+"dow":["вс","пн","вт","ср","чт","пт","сб"],"map.fail":"Карта не загрузилась (нет сети?)","err.addr":"Не найден адрес:",
+"w.nofc":"нет прогноза","w.ice":"ледяной дождь","w.hsnow":"сильный снег","w.snowfall":"снегопад","w.snow":"снег","w.stormwind":"штормовой ветер","w.sgust":"сильные порывы","w.gust":"порывы ветра","w.vis400":"видимость <{v}","w.lowvis":"плохая видимость",
+"w.blackice":"гололёд","w.blizzard":"метель","w.hail":"гроза с градом","w.thunder":"гроза","w.hiprob":"высокая вероятность снегопада","w.prob":"возможен снегопад","w.clear":"расчистка дороги","w.restr":"ограничение {spd} после шторма",
+"ovp":"Overpass недоступен","br.bridge":"мост","br.tunnel":"тоннель","br.limit":"ограничение",
+"st.addr":"Ищу адреса…","err.from":"Укажите, откуда едете (или нажмите «Я здесь»)","err.to":"Укажите, куда едете","st.route":"Строю маршрут…",
+"w.orsfail":"Маршрут для трака (openrouteservice) не получен: {e}. Показан обычный маршрут — проверьте мосты ниже.","w.nokey":"Маршрут построен как для легковой машины. Добавьте бесплатный ключ openrouteservice в настройках, чтобы учитывались высота, вес и запреты для траков.",
+"st.fc":"Загружаю прогноз по {n} точкам маршрута…","st.done":"{d} · ~{h} ч в пути","st.truck":" · маршрут для трака","st.noens":" · ансамбль недоступен","st.err":"Ошибка:","start":"Старт","finish":"Финиш",
+"best":"Самый спокойный выезд (48 ч): <b>{dep}</b> — {lv}, прибытие ~{eta}.","fast":"Раньше всего приедете при выезде <b>{dep}</b> — прибытие ~<b>{eta}</b>.","under":"Под временем выезда — расчётное прибытие.",
+"w.now":"⚠ При выезде сейчас на маршруте ожидается: {x}.","ev.storm":"⏸ Переждать шторм ({p}): {why}. Конец ~{end}{open} + {clr} на расчистку → выезд ~{until}","ev.open":" (или позже — за пределом прогноза)",
+"ev.restr":"⚠ {why} — с {t}, {p}","ev.traffic":"🚦 Пробки: {n} (~{t}, скорость ×{f})","ev.rest":"🛏 Отдых 10 ч: {p} ({a} → {b})","ev.break":"☕ Перерыв 30 мин: {p} ({a})",
+"nodata":"Нет данных","calm":"Без значимых погодных рисков","bd.storm":"Ожидание шторма и расчистка","bd.wx":"Снег, ветер, видимость (сниженная скорость)","bd.restr":"Ограничение скорости после шторма","bd.traffic":"Пробки (типичные часы пик)","bd.work":"Ремонты (запас)","bd.hos":"Отдых водителя (HOS)",
+"eta.h":"Расчётное прибытие","eta.line":"В пути {tot}: без задержек {norm}","eta.delay":", задержки +{d}","meta":"Макс. вероятность сильного снега ({thr}): {p} · шаг точек ~{s}","na":"н/д",
+"gmaps":"Открыть в Google Maps","amaps":"Apple Карты","loading":"Загрузка…","more":"Подробнее","noalerts":"Активных предупреждений на маршруте нет.","nws.na":"NWS (США) недоступен.","eccc.na":"Environment Canada недоступен — проверьте weather.gc.ca.",
+"w.alert":"⚠ На маршруте действует официальное штормовое предупреждение — см. раздел «Предупреждения».","br.loading":"Проверяю ограничения высоты вдоль маршрута (OpenStreetMap), это может занять до минуты…","br.fail":"Не удалось проверить мосты: {e}. Попробуйте позже.",
+"br.map":"карта","br.h":"Высота","br.truck":"Ваш трак","br.yours":"Высота вашего трака:","br.avoid":"Маршрут для трака уже обходит известные низкие мосты; ниже — то, что лежит рядом с линией.",
+"br.none":"Низких мостов (ниже или около вашей высоты) вдоль маршрута в OpenStreetMap не найдено.","br.low":"Ниже вашего трака: {n}","br.near":"Впритык (запас &lt;{m}): {n}.","br.maybe":"Часть объектов может быть рядом, а не на самом маршруте (дорога сверху/сбоку) — проверьте на карте.",
+"br.obj":"Объект","br.note":"Данные OpenStreetMap неполные. Всегда следите за знаками Low Clearance.",
+"geo.na":"Геолокация недоступна на этом устройстве","geo.busy":"Определяю местоположение…","geo.me":"📍 Моё местоположение","geo.ok":"Местоположение получено",
+"geo.denied":"Нет доступа к геолокации. Разрешите: Настройки iPhone → Конфиденциальность → Службы геолокации → Safari (или Chrome) → «При использовании».","geo.fail":"Не удалось определить местоположение:","geo.hint":"Нажмите «📍 Я здесь», чтобы взять текущее местоположение",
+"ac.searching":"Поиск…","ac.none":"Ничего не найдено — попробуйте иначе","ac.offline":"Нет связи с поиском адресов"},
+
+uk:{"alts.h":"Варіанти маршруту","alts.for":"Час у дорозі з урахуванням погоди, заторів і відпочинку — при виїзді {dep}. Натисніть, щоб обрати.","route.fast":"Найшвидший","route.safe":"Спокійніший за погодою","route.toll":"Платні ділянки","route.wait":"⏸ шторм {d}","route.delay":"затримки +{d}","route.noname":"маршрут","eta.short":"прибуття","rec.one":"Інших розумних варіантів не знайдено.","rec.detour":"Об'їзд {r} швидший за основний {m} на {d} з урахуванням погоди та заторів.","rec.main":"Основний маршрут {r} — найкращий при цьому виїзді.","st.alts":"Шукаю об'їзні маршрути…","st.nalts":" · варіантів: {n}","set.tolls":"Платні дороги","set.tollsAllow":"Дозволити","set.tollsAvoid":"Уникати","title":"TruckWX — погода на маршруті","sub":"шторм · мости · перекриття","from":"Звідки","to":"Куди","ph.addr":"Почніть вводити місто або адресу","geo.btn":"📍 Я тут","go":"Перевірити маршрут",
+"deps.h":"Коли виїжджати? Ризик на найближчі 72 год","lv0":"спокійно","lv1":"обережно","lv2":"небезпечно","lv3":"шторм / ожеледь","legend.pct":"% — ймовірність сильного снігу (ансамбль GFS)",
+"trip.dep":"Виїзд:","th.time":"Час","th.where":"Де","th.snow":"Сніг","th.gust":"Пориви","th.prob":"Ймов.","alerts.h":"Офіційні попередження на маршруті","bridges.h":"Низькі мости та обмеження висоти",
+"roads.h":"Ремонти та перекриття (511)","roads.txt":"Актуальні роботи, аварії та перекриття — на офіційних картах 511 штатів/провінцій за маршрутом:","border":"Кордон:","cbp":"Черги CBP (до США)","cbsa":"Черги CBSA (до Канади)",
+"footer":"Дані: Open-Meteo (прогноз і ансамбль GFS), NWS/NOAA (США), Environment Canada, OpenStreetMap/Overpass, openrouteservice. Застосунок — помічник, а не заміна офіційним джерелам і знакам на дорозі.","updated":"Оновлено:",
+"pick.lang":"Мова","pick.q":"Де ви переважно їздите?","pick.txt":"Оберіть одиниці виміру. Змінити можна будь-коли кнопкою mi/km угорі.","u.imp":"США — милі, mph, °F, фути, фунти","u.met":"Канада — км, км/год, °C, метри, тонни",
+"set.h":"Налаштування","set.lang":"Мова","set.units":"Одиниці виміру","set.key":"Ключ openrouteservice (безкоштовний — маршрут для траків з урахуванням висоти/ваги)","set.keyph":"вставте ключ",
+"set.keyhelp":"Без ключа будується звичайний автомобільний маршрут (OSRM), а мости перевіряються лише за списком нижче. Ключ: openrouteservice.org → Sign up → Dashboard → Tokens.",
+"set.hft":"Висота, фути","set.hin":"дюйми","set.wlb":"Вага, lb","set.lft":"Довжина, фути","set.hm":"Висота, м","set.wt":"Вага, т","set.lm":"Довжина, м","set.speed":"Поправка швидкості трака (1.0 = як навігатор, 1.15 = на 15% повільніше)",
+"set.empty":"Порожній причіп / легкий вантаж (суворіше щодо вітру)","set.loaded":"Ні — завантажений","set.emptyY":"Так — порожній/легкий","set.eta":"Розрахунок часу прибуття","set.vmax":"Макс. швидкість трака,","set.storm":"Під час шторму","set.wait":"Перечікувати","set.slow":"Їхати {spd}",
+"set.clear":"Розчищення після шторму, год","set.rmph":"Потім обмеження,","set.rh":"Обмеження діє, год","set.work":"Запас на ремонти, хв","set.traffic":"Затори в години пік","set.consider":"Враховувати","set.no":"Ні","set.hos":"Відпочинок водія (HOS)",
+"set.hosY":"Враховувати (8 год → 30 хв, 11 год → 10 год)","set.hosN":"Ні / 2 водії","save":"Зберегти","close":"Закрити",
+"km":"км","kmh":"км/год","m":"м","cm":"см","ft1":"1 фут","min":"хв","h":"год","mile.n":"миля {n}","km.n":"км {n}","in3h":"за 3 год","perh":"/год",
+"dow":["нд","пн","вт","ср","чт","пт","сб"],"map.fail":"Карта не завантажилась (немає мережі?)","err.addr":"Адресу не знайдено:",
+"w.nofc":"немає прогнозу","w.ice":"крижаний дощ","w.hsnow":"сильний сніг","w.snowfall":"снігопад","w.snow":"сніг","w.stormwind":"штормовий вітер","w.sgust":"сильні пориви","w.gust":"пориви вітру","w.vis400":"видимість <{v}","w.lowvis":"погана видимість",
+"w.blackice":"ожеледиця","w.blizzard":"хуртовина","w.hail":"гроза з градом","w.thunder":"гроза","w.hiprob":"висока ймовірність снігопаду","w.prob":"можливий снігопад","w.clear":"розчищення дороги","w.restr":"обмеження {spd} після шторму",
+"ovp":"Overpass недоступний","br.bridge":"міст","br.tunnel":"тунель","br.limit":"обмеження",
+"st.addr":"Шукаю адреси…","err.from":"Вкажіть, звідки їдете (або натисніть «Я тут»)","err.to":"Вкажіть, куди їдете","st.route":"Будую маршрут…",
+"w.orsfail":"Маршрут для трака (openrouteservice) не отримано: {e}. Показано звичайний маршрут — перевірте мости нижче.","w.nokey":"Маршрут побудовано як для легкового авто. Додайте безкоштовний ключ openrouteservice у налаштуваннях, щоб враховувались висота, вага та заборони для траків.",
+"st.fc":"Завантажую прогноз для {n} точок маршруту…","st.done":"{d} · ~{h} год у дорозі","st.truck":" · маршрут для трака","st.noens":" · ансамбль недоступний","st.err":"Помилка:","start":"Старт","finish":"Фініш",
+"best":"Найспокійніший виїзд (48 год): <b>{dep}</b> — {lv}, прибуття ~{eta}.","fast":"Найраніше прибудете, якщо виїхати <b>{dep}</b> — прибуття ~<b>{eta}</b>.","under":"Під часом виїзду — розрахунковий час прибуття.",
+"w.now":"⚠ Якщо виїхати зараз, на маршруті очікується: {x}.","ev.storm":"⏸ Перечекати шторм ({p}): {why}. Кінець ~{end}{open} + {clr} на розчищення → виїзд ~{until}","ev.open":" (або пізніше — за межами прогнозу)",
+"ev.restr":"⚠ {why} — з {t}, {p}","ev.traffic":"🚦 Затори: {n} (~{t}, швидкість ×{f})","ev.rest":"🛏 Відпочинок 10 год: {p} ({a} → {b})","ev.break":"☕ Перерва 30 хв: {p} ({a})",
+"nodata":"Немає даних","calm":"Без суттєвих погодних ризиків","bd.storm":"Очікування шторму та розчищення","bd.wx":"Сніг, вітер, видимість (знижена швидкість)","bd.restr":"Обмеження швидкості після шторму","bd.traffic":"Затори (типові години пік)","bd.work":"Ремонти (запас)","bd.hos":"Відпочинок водія (HOS)",
+"eta.h":"Розрахункове прибуття","eta.line":"У дорозі {tot}: без затримок {norm}","eta.delay":", затримки +{d}","meta":"Макс. ймовірність сильного снігу ({thr}): {p} · крок точок ~{s}","na":"н/д",
+"gmaps":"Відкрити в Google Maps","amaps":"Apple Карти","loading":"Завантаження…","more":"Детальніше","noalerts":"Активних попереджень на маршруті немає.","nws.na":"NWS (США) недоступний.","eccc.na":"Environment Canada недоступний — перевірте weather.gc.ca.",
+"w.alert":"⚠ На маршруті діє офіційне штормове попередження — див. розділ «Попередження».","br.loading":"Перевіряю обмеження висоти вздовж маршруту (OpenStreetMap), це може зайняти до хвилини…","br.fail":"Не вдалося перевірити мости: {e}. Спробуйте пізніше.",
+"br.map":"мапа","br.h":"Висота","br.truck":"Ваш трак","br.yours":"Висота вашого трака:","br.avoid":"Маршрут для трака вже оминає відомі низькі мости; нижче — те, що поруч із лінією.",
+"br.none":"Низьких мостів (нижче або близько до вашої висоти) вздовж маршруту в OpenStreetMap не знайдено.","br.low":"Нижче вашого трака: {n}","br.near":"Впритул (запас &lt;{m}): {n}.","br.maybe":"Частина об'єктів може бути поруч, а не на самому маршруті (дорога зверху/збоку) — перевірте на мапі.",
+"br.obj":"Об'єкт","br.note":"Дані OpenStreetMap неповні. Завжди стежте за знаками Low Clearance.",
+"geo.na":"Геолокація недоступна на цьому пристрої","geo.busy":"Визначаю місцезнаходження…","geo.me":"📍 Моє місцезнаходження","geo.ok":"Місцезнаходження отримано",
+"geo.denied":"Немає доступу до геолокації. Дозвольте: Параметри iPhone → Приватність і безпека → Служби локації → Safari (або Chrome) → «Коли застосунок використовується».","geo.fail":"Не вдалося визначити місцезнаходження:","geo.hint":"Натисніть «📍 Я тут», щоб взяти поточне місцезнаходження",
+"ac.searching":"Пошук…","ac.none":"Нічого не знайдено — спробуйте інакше","ac.offline":"Немає зв'язку з пошуком адрес"},
+
+en:{"alts.h":"Route options","alts.for":"Travel time including weather, traffic and rest — leaving {dep}. Tap to choose.","route.fast":"Fastest","route.safe":"Calmer weather","route.toll":"Tolls","route.wait":"⏸ storm {d}","route.delay":"delays +{d}","route.noname":"route","eta.short":"arrive","rec.one":"No other reasonable routes found.","rec.detour":"Detour {r} beats main route {m} by {d} given weather and traffic.","rec.main":"Main route {r} is the best for this departure.","st.alts":"Looking for alternative routes…","st.nalts":" · options: {n}","set.tolls":"Toll roads","set.tollsAllow":"Allow","set.tollsAvoid":"Avoid","title":"TruckWX — route weather","sub":"storms · bridges · closures","from":"From","to":"To","ph.addr":"Start typing a city or address","geo.btn":"📍 I'm here","go":"Check route",
+"deps.h":"When to leave? Risk for the next 72 h","lv0":"calm","lv1":"caution","lv2":"dangerous","lv3":"storm / ice","legend.pct":"% — chance of heavy snow (GFS ensemble)",
+"trip.dep":"Departure:","th.time":"Time","th.where":"Where","th.snow":"Snow","th.gust":"Gusts","th.prob":"Prob.","alerts.h":"Official alerts along the route","bridges.h":"Low bridges and height limits",
+"roads.h":"Road work and closures (511)","roads.txt":"Current road work, crashes and closures — on the official 511 maps for the states/provinces on your route:","border":"Border:","cbp":"CBP wait times (into US)","cbsa":"CBSA wait times (into Canada)",
+"footer":"Data: Open-Meteo (forecast and GFS ensemble), NWS/NOAA (US), Environment Canada, OpenStreetMap/Overpass, openrouteservice. This app is a helper, not a replacement for official sources and road signs.","updated":"Updated:",
+"pick.lang":"Language","pick.q":"Where do you mostly drive?","pick.txt":"Choose units. You can switch anytime with the mi/km button at the top.","u.imp":"USA — miles, mph, °F, feet, pounds","u.met":"Canada — km, km/h, °C, meters, tonnes",
+"set.h":"Settings","set.lang":"Language","set.units":"Units","set.key":"openrouteservice key (free — truck routing that respects height/weight)","set.keyph":"paste key",
+"set.keyhelp":"Without a key a regular car route (OSRM) is used and bridges are only checked via the list below. Get a key: openrouteservice.org → Sign up → Dashboard → Tokens.",
+"set.hft":"Height, ft","set.hin":"inches","set.wlb":"Weight, lb","set.lft":"Length, ft","set.hm":"Height, m","set.wt":"Weight, t","set.lm":"Length, m","set.speed":"Truck speed factor (1.0 = like GPS, 1.15 = 15% slower)",
+"set.empty":"Empty trailer / light load (stricter wind limits)","set.loaded":"No — loaded","set.emptyY":"Yes — empty/light","set.eta":"Arrival time estimate","set.vmax":"Truck max speed,","set.storm":"In a storm","set.wait":"Wait it out","set.slow":"Drive {spd}",
+"set.clear":"Road clearing after storm, h","set.rmph":"Then speed limit,","set.rh":"Limit lasts, h","set.work":"Road work buffer, min","set.traffic":"Rush-hour traffic","set.consider":"Include","set.no":"No","set.hos":"Driver rest (HOS)",
+"set.hosY":"Include (8 h → 30 min, 11 h → 10 h)","set.hosN":"No / team drivers","save":"Save","close":"Close",
+"km":"km","kmh":"km/h","m":"m","cm":"cm","ft1":"1 ft","min":"min","h":"h","mile.n":"mile {n}","km.n":"km {n}","in3h":"in 3 h","perh":"/h",
+"dow":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"map.fail":"Map failed to load (no network?)","err.addr":"Address not found:",
+"w.nofc":"no forecast","w.ice":"freezing rain","w.hsnow":"heavy snow","w.snowfall":"snowfall","w.snow":"snow","w.stormwind":"storm-force wind","w.sgust":"strong gusts","w.gust":"wind gusts","w.vis400":"visibility <{v}","w.lowvis":"poor visibility",
+"w.blackice":"black ice","w.blizzard":"blowing snow","w.hail":"thunderstorm with hail","w.thunder":"thunderstorm","w.hiprob":"high chance of heavy snow","w.prob":"possible heavy snow","w.clear":"road clearing","w.restr":"{spd} limit after storm",
+"ovp":"Overpass unavailable","br.bridge":"bridge","br.tunnel":"tunnel","br.limit":"height limit",
+"st.addr":"Finding addresses…","err.from":"Enter where you start from (or tap \"I'm here\")","err.to":"Enter your destination","st.route":"Building route…",
+"w.orsfail":"Truck route (openrouteservice) failed: {e}. Showing a regular route — check bridges below.","w.nokey":"Route is built as for a car. Add a free openrouteservice key in Settings to account for height, weight and truck restrictions.",
+"st.fc":"Loading forecast for {n} route points…","st.done":"{d} · ~{h} h driving","st.truck":" · truck route","st.noens":" · ensemble unavailable","st.err":"Error:","start":"Start","finish":"Finish",
+"best":"Calmest departure (48 h): <b>{dep}</b> — {lv}, arrival ~{eta}.","fast":"Earliest arrival if you leave <b>{dep}</b> — arrival ~<b>{eta}</b>.","under":"Estimated arrival is shown under each departure time.",
+"w.now":"⚠ If you leave now, expect along the route: {x}.","ev.storm":"⏸ Wait out the storm at {p}: {why}. Ends ~{end}{open} + {clr} for clearing → go ~{until}","ev.open":" (or later — beyond forecast range)",
+"ev.restr":"⚠ {why} — from {t} at {p}","ev.traffic":"🚦 Traffic: {n} (~{t}, speed ×{f})","ev.rest":"🛏 10 h rest at {p} ({a} → {b})","ev.break":"☕ 30 min break at {p} ({a})",
+"nodata":"No data","calm":"No significant weather risks","bd.storm":"Waiting out storm + clearing","bd.wx":"Snow, wind, visibility (reduced speed)","bd.restr":"Post-storm speed limit","bd.traffic":"Traffic (typical rush hours)","bd.work":"Road work (buffer)","bd.hos":"Driver rest (HOS)",
+"eta.h":"Estimated arrival","eta.line":"Travel {tot}: without delays {norm}","eta.delay":", delays +{d}","meta":"Max chance of heavy snow ({thr}): {p} · point spacing ~{s}","na":"n/a",
+"gmaps":"Open in Google Maps","amaps":"Apple Maps","loading":"Loading…","more":"Details","noalerts":"No active alerts along the route.","nws.na":"NWS (US) unavailable.","eccc.na":"Environment Canada unavailable — check weather.gc.ca.",
+"w.alert":"⚠ An official storm warning is in effect on your route — see Alerts.","br.loading":"Checking height limits along the route (OpenStreetMap), this may take up to a minute…","br.fail":"Couldn't check bridges: {e}. Try again later.",
+"br.map":"map","br.h":"Height","br.truck":"Your truck","br.yours":"Your truck height:","br.avoid":"The truck route already avoids known low bridges; below is what lies near the line.",
+"br.none":"No low bridges (below or near your height) found along the route in OpenStreetMap.","br.low":"Lower than your truck: {n}","br.near":"Tight (clearance &lt;{m}): {n}.","br.maybe":"Some may be next to, not on, your route (road above/alongside) — check the map.",
+"br.obj":"Object","br.note":"OpenStreetMap data is incomplete. Always watch for Low Clearance signs.",
+"geo.na":"Location isn't available on this device","geo.busy":"Getting your location…","geo.me":"📍 My location","geo.ok":"Location found",
+"geo.denied":"No location access. Allow it: iPhone Settings → Privacy & Security → Location Services → Safari (or Chrome) → \"While Using the App\".","geo.fail":"Couldn't get location:","geo.hint":"Tap \"📍 I'm here\" to use your current location",
+"ac.searching":"Searching…","ac.none":"Nothing found — try another spelling","ac.offline":"Address search unavailable"}
+};
+const LANGS = [["ru","RU","Русский"],["uk","UA","Українська"],["en","EN","English"]];
+function detectLang(){ const l = (navigator.language||"en").toLowerCase(); return l.startsWith("uk") ? "uk" : l.startsWith("ru") ? "ru" : "en"; }
+function t(k, vars){
+  const L = I18N[(typeof S!=="undefined" && S.lang) || detectLang()] || I18N.en;
+  let s = (k in L) ? L[k] : (k in I18N.en ? I18N.en[k] : k);
+  if(vars && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (m, n) => (n in vars) ? vars[n] : m);
+  return s;
+}
+const whyTxt = arr => arr.map(k => k==="w.vis400" ? t(k, {v: IMP() ? "¼ mi" : "400 "+t("m")}) : k==="w.restr" ? t(k, {spd: U.spd(Number(S.rmph)||45)}) : t(k)).join(", ");
+function applyStatic(){
+  document.documentElement.lang = S.lang || detectLang();
+  document.title = t("title");
+  document.querySelectorAll("[data-i18n]").forEach(e => e.textContent = t(e.dataset.i18n));
+  document.querySelectorAll("[data-i18n-ph]").forEach(e => e.placeholder = t(e.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-title]").forEach(e => { e.title = t(e.dataset.i18nTitle); e.setAttribute("aria-label", e.title); });
+  const lb = document.getElementById("btnLang"); if(lb) lb.textContent = (LANGS.find(x=>x[0]===(S.lang||detectLang()))||LANGS[2])[1];
+}
+
 /* ============ настройки и утилиты ============ */
 const PRESETS = [
   ["Moncton, NB", 46.0878, -64.7782], ["Saint John, NB", 45.2733, -66.0633], ["Fredericton, NB", 45.9636, -66.6431],
   ["Halifax, NS", 44.6488, -63.5752], ["Truro, NS", 45.3650, -63.2800], ["Charlottetown, PE", 46.2382, -63.1311],
   ["Caraquet, NB", 47.7900, -64.9500], ["Shediac, NB", 46.2190, -64.5410],
-  ["Houlton, ME (граница)", 46.1262, -67.8403], ["Calais, ME (граница)", 45.1884, -67.2786],
+  ["Houlton, ME (border)", 46.1262, -67.8403], ["Calais, ME (border)", 45.1884, -67.2786],
   ["Bangor, ME", 44.8016, -68.7712], ["Portland, ME", 43.6591, -70.2568], ["Boston, MA", 42.3601, -71.0589],
   ["Hunts Point, Bronx, NY", 40.8094, -73.8803], ["New York, NY", 40.7128, -74.0060], ["Newark, NJ", 40.7357, -74.1724],
-  ["Elizabeth, NJ (порт)", 40.6640, -74.1740], ["Edison, NJ", 40.5187, -74.4121], ["Philadelphia, PA", 39.9526, -75.1652]
+  ["Elizabeth, NJ (port)", 40.6640, -74.1740], ["Edison, NJ", 40.5187, -74.4121], ["Philadelphia, PA", 39.9526, -75.1652]
 ];
 const JUR = [ // грубые границы для ссылок 511
   {c:"NB", n:"New Brunswick 511", u:"https://511.gnb.ca/", b:[44.55,48.1,-69.1,-63.75]},
@@ -221,9 +414,23 @@ const LS = {
   get(k, d){ try{ const v = localStorage.getItem("twx_"+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem("twx_"+k, JSON.stringify(v)); }catch(e){} }
 };
-let S = Object.assign({key:"", hft:13, hin:6, w:36, l:22, speed:1.1, empty:0,
+let S = Object.assign({lang:null, tolls:"allow", key:"", hft:13, hin:6, w:36.29, l:22, speed:1.1, empty:0,
   vmax:65, storm:"wait", clearH:1.5, rmph:45, rh:6, work:20, traffic:1, hos:1}, LS.get("settings", {}));
 const heightM = () => (Number(S.hft)||13)*0.3048 + (Number(S.hin)||0)*0.0254;
+const IMP = () => S.units !== "metric";
+const KM2MI = 0.621371;
+const U = {
+  dist: km => IMP() ? Math.round(km*KM2MI)+" mi" : Math.round(km)+" "+t("km"),
+  mark: km => IMP() ? t("mile.n",{n:Math.round(km*KM2MI)}) : t("km.n",{n:Math.round(km)}),
+  temp: c => c==null ? "—" : IMP() ? Math.round(c*9/5+32)+"°F" : Math.round(c)+"°C",
+  snow: cm => cm==null ? "—" : cm<=0 ? "0" : IMP() ? (cm/2.54).toFixed(1)+"″" : cm.toFixed(1)+" "+t("cm"),
+  wind: kmh => kmh==null ? "—" : IMP() ? String(Math.round(kmh*KM2MI)) : String(Math.round(kmh)),
+  spd: mph => IMP() ? Math.round(mph)+" mph" : Math.round(mph*1.609344/5)*5+" "+t("kmh"),
+  height: m => IMP() ? fmtFtIn(m) : m.toFixed(2)+" "+t("m"),
+  height2: m => IMP() ? m.toFixed(2)+" "+t("m") : fmtFtIn(m),
+  snowThr: () => (IMP() ? "≥0.8″ " : "≥2 "+t("cm")+" ")+t("in3h"),
+  margin: () => IMP() ? t("ft1") : "30 "+t("cm")
+};
 const fmtFtIn = m => { const tin = m/0.0254; let ft = Math.floor(tin/12), inch = Math.round(tin - ft*12); if(inch===12){ft++;inch=0;} return ft+"′"+inch+"″"; };
 const status = t => { $("status").textContent = t; };
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -248,21 +455,28 @@ function hav(a, b){ // [lat,lon] -> km
   const x=Math.sin(dLa/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2;
   return 2*R*Math.asin(Math.sqrt(x));
 }
-const DOW = ["вс","пн","вт","ср","чт","пт","сб"];
-const fmtT = ms => { const d = new Date(ms); return DOW[d.getDay()]+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+const DOWn = i => t("dow")[i];
+const fmtT = ms => { const d = new Date(ms); return DOWn(d.getDay())+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
 const fmtHM = ms => { const d = new Date(ms); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
-const LV_NAME = ["Спокойно","Осторожно","Опасно","Шторм / лёд"];
+const lvName = l => { const x = t("lv"+l); return x.charAt(0).toUpperCase()+x.slice(1); };
 
 /* ============ карта ============ */
 let map, routeLayer, segLayer, bridgeLayer, endLayer;
 function initMap(){
-  if(typeof L === "undefined"){ $("map").innerHTML = "<div class='card small'>Карта не загрузилась (нет сети?)</div>"; return; }
+  if(typeof L === "undefined"){ $("map").innerHTML = "<div class='card small'>"+t("map.fail")+"</div>"; return; }
   map = L.map("map", {zoomControl:true}).setView([44.2, -68.5], 5);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:18, attribution:"© OpenStreetMap"}).addTo(map);
   segLayer = L.layerGroup().addTo(map); bridgeLayer = L.layerGroup().addTo(map); endLayer = L.layerGroup().addTo(map);
 }
 
 /* ============ геокодирование ============ */
+async function geocodeInput(el){
+  if(el.dataset.lat) return {name: el.value, lat:+el.dataset.lat, lon:+el.dataset.lon};
+  const q = el.value.trim() || el.placeholder;
+  const r = await geocode(q);
+  el.dataset.lat = r.lat; el.dataset.lon = r.lon;
+  return r;
+}
 async function geocode(q){
   q = q.trim();
   const m = q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/);
@@ -276,7 +490,7 @@ async function geocode(q){
   }catch(e){}
   const j2 = await getJSON("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca,us&q="+encodeURIComponent(q));
   if(j2 && j2[0]) return {name:j2[0].display_name.split(",").slice(0,3).join(","), lat:+j2[0].lat, lon:+j2[0].lon};
-  throw new Error("Не найден адрес: "+q);
+  throw new Error(t("err.addr")+" "+q);
 }
 async function revName(lat, lon){
   const j = await getJSON(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}&lang=en`, {}, 10000);
@@ -286,25 +500,80 @@ async function revName(lat, lon){
 }
 
 /* ============ маршрут ============ */
-async function routeORS(a, b){
-  const h = heightM();
-  const body = {coordinates:[[a.lon,a.lat],[b.lon,b.lat]], instructions:false,
-    options:{vehicle_type:"hgv", profile_params:{restrictions:{height:+h.toFixed(2), width:2.6, length:Number(S.l)||22, weight:Number(S.w)||36}}}};
+function roadSummary(pairs){ // [[name, meters]] -> "I-95 · ME-9"
+  const m = new Map();
+  pairs.forEach(([n, d]) => { if(!n || n==="-") return; n = String(n).split(/[;,]/)[0].trim().replace(/^I (\d)/,"I-$1").replace(/^(US|ME|NB|NS|NH|MA|NY|NJ|CT|RI|VT|QC|PA) (\d)/,"$1-$2");
+    if(n) m.set(n, (m.get(n)||0) + d); });
+  return [...m.entries()].sort((x,y)=>y[1]-x[1]).slice(0,2).map(x=>x[0]).join(" · ");
+}
+async function routeORS(a, b, via){
+  const h = heightM(), pts = [a].concat(via||[], [b]);
+  const opt = {vehicle_type:"hgv", profile_params:{restrictions:{height:+h.toFixed(2), width:2.6, length:Number(S.l)||22, weight:Number(S.w)||36}}};
+  if(S.tolls==="avoid") opt.avoid_features = ["tollways"];
+  const body = {coordinates: pts.map(p=>[p.lon,p.lat]), radiuses: pts.map(()=>-1), instructions:true, extra_info:["tollways"], options:opt};
   const j = await getJSON("https://api.openrouteservice.org/v2/directions/driving-hgv/geojson",
     {method:"POST", headers:{"Authorization":S.key, "Content-Type":"application/json"}, body:JSON.stringify(body)}, 40000);
-  const f = j.features[0];
-  return {coords:f.geometry.coordinates.map(c=>[c[1],c[0]]), dist:f.properties.summary.distance, dur:f.properties.summary.duration, truck:true};
+  const f = j.features[0], pr = f.properties;
+  const steps = (pr.segments||[]).flatMap(sg => sg.steps||[]);
+  const tollV = pr.extras && pr.extras.tollways ? pr.extras.tollways.values : [];
+  return {coords:f.geometry.coordinates.map(c=>[c[1],c[0]]), dist:pr.summary.distance, dur:pr.summary.duration, truck:true,
+    roads: roadSummary(steps.map(st=>[st.name, st.distance])), toll: tollV.some(v => v[2]>0)};
 }
-async function routeOSRM(a, b){
-  const j = await getJSON(`https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=full&geometries=geojson`, {}, 30000);
-  const r = j.routes[0];
-  return {coords:r.geometry.coordinates.map(c=>[c[1],c[0]]), dist:r.distance, dur:r.duration, truck:false};
+function osrmParse(r){
+  const steps = (r.legs||[]).flatMap(l => l.steps||[]);
+  const toll = steps.some(st => (st.intersections||[]).some(x => (x.classes||[]).includes("toll")));
+  const roads = steps.length ? roadSummary(steps.map(st=>[st.ref || st.name, st.distance])) : (r.legs||[]).map(l=>l.summary).filter(Boolean).join(" · ");
+  return {coords:r.geometry.coordinates.map(c=>[c[1],c[0]]), dist:r.distance, dur:r.duration, truck:false, roads, toll};
 }
-function samplePoints(route){
+async function routeOSRM(a, b, via, alts){
+  const pts = [a].concat(via||[], [b]).map(p=>p.lon+","+p.lat).join(";");
+  const ex = S.tolls==="avoid" ? "&exclude=toll" : "";
+  let j;
+  try{ j = await getJSON(`https://router.project-osrm.org/route/v1/driving/${pts}?overview=full&geometries=geojson&steps=true${alts?"&alternatives=3":""}${ex}`, {}, 30000); }
+  catch(e){ if(!ex) throw e; j = await getJSON(`https://router.project-osrm.org/route/v1/driving/${pts}?overview=full&geometries=geojson&steps=true${alts?"&alternatives=3":""}`, {}, 30000); }
+  return (j.routes||[]).map(osrmParse);
+}
+function viaPoints(a, b){ // точки в стороне от прямой — чтобы найти объезды
+  const dk = hav([a.lat,a.lon],[b.lat,b.lon]); if(dk < 60) return [];
+  const mLat = (a.lat+b.lat)/2, mLon = (a.lon+b.lon)/2, k = Math.cos(mLat*Math.PI/180);
+  const dx = (b.lon-a.lon)*k, dy = (b.lat-a.lat), len = Math.hypot(dx, dy);
+  const off = Math.min(0.22*len, 2.2);
+  return [1,-1].map(sgn => ({lat: mLat + sgn*(dx/len)*off, lon: mLon - sgn*(dy/len)*off/k}));
+}
+function overlap(r1, r2){ // доля точек r1, лежащих рядом с r2
+  const s2 = r2.coords.filter((_,i)=>i%5===0), s1 = r1.coords.filter((_,i,arr)=>i%Math.max(1,Math.floor(arr.length/60))===0);
+  let near = 0;
+  for(const p of s1){ for(const q of s2){ if(Math.abs(p[0]-q[0])<0.05 && Math.abs(p[1]-q[1])<0.07 && hav(p,q)<3){ near++; break; } } }
+  return near/s1.length;
+}
+async function getRoutes(a, b){
+  const cands = [];
+  if(S.key){
+    try{ cands.push(await routeORS(a, b)); }
+    catch(e){ warn(t("w.orsfail",{e:e.message})); }
+  } else warn(t("w.nokey"));
+  status(t("st.alts"));
+  const vias = viaPoints(a, b);
+  const jobs = [];
+  if(!cands.length || !S.key) jobs.push(routeOSRM(a, b, null, true).catch(()=>[]));
+  vias.forEach(v => jobs.push(S.key ? routeORS(a, b, [v]).then(r=>[r]).catch(()=>routeOSRM(a, b, [v]).catch(()=>[])) : routeOSRM(a, b, [v]).catch(()=>[])));
+  (await Promise.all(jobs)).forEach(list => list.forEach(r => cands.push(r)));
+  if(!cands.length) throw new Error("route");
+  // основной — самый быстрый; остальные — только если заметно другие и не слишком длинные
+  const minDur = Math.min(...cands.map(r=>r.dur));
+  const out = [];
+  cands.sort((x,y)=>x.dur-y.dur).forEach(r => {
+    if(out.length>=3 || r.dur > minDur*1.6) return;
+    if(out.some(o => overlap(r,o) > 0.8)) return;
+    out.push(r);
+  });
+  return out;
+}
+function samplePoints(route, target){
   const c = route.coords, cum=[0];
   for(let i=1;i<c.length;i++) cum.push(cum[i-1]+hav(c[i-1],c[i]));
   const total = cum[cum.length-1];
-  const step = Math.max(25, total/40);
+  const step = Math.max(25, total/(target||40));
   const pts=[]; let next=0;
   for(let i=0;i<c.length;i++){
     if(cum[i]>=next || i===c.length-1){ pts.push({lat:+c[i][0].toFixed(3), lon:+c[i][1].toFixed(3), km:cum[i], idx:i}); next = cum[i]+step; }
@@ -357,20 +626,20 @@ function probAt(ens, tSec){
   return (i<0 || i>=ens.prob.length) ? null : ens.prob[i];
 }
 function assess(v, prob){
-  if(!v) return {lvl:-1, why:["нет прогноза"]};
+  if(!v) return {lvl:-1, why:["w.nofc"]};
   let lvl=0; const why=[];
   const up=(l,w)=>{ if(l>lvl) lvl=l; if(w && !why.includes(w)) why.push(w); };
   const empty = Number(S.empty)===1;
-  if([56,57,66,67].includes(v.code)) up(3,"ледяной дождь");
-  if(v.snow>=3) up(3,"сильный снег"); else if(v.snow>=1.5) up(2,"снегопад"); else if(v.snow>=0.3) up(1,"снег");
-  if([75,86].includes(v.code)) up(2,"сильный снег");
+  if([56,57,66,67].includes(v.code)) up(3,"w.ice");
+  if(v.snow>=3) up(3,"w.hsnow"); else if(v.snow>=1.5) up(2,"w.snowfall"); else if(v.snow>=0.3) up(1,"w.snow");
+  if([75,86].includes(v.code)) up(2,"w.hsnow");
   const g = v.gust||0, g3 = empty?75:90, g2 = empty?60:70, g1 = empty?45:55;
-  if(g>=g3) up(3,"штормовой ветер"); else if(g>=g2) up(2,"сильные порывы"); else if(g>=g1) up(1,"порывы ветра");
-  if(v.vis!=null){ if(v.vis<400) up(2,"видимость <400 м"); else if(v.vis<1500) up(1,"плохая видимость"); }
-  if(v.temp!=null && v.temp>-3 && v.temp<1.5 && (v.pr||0)>=0.2) up(1,"гололёд");
-  if(v.snow>=0.3 && g>=g1) up(Math.max(2,lvl),"метель");
-  if([96,99].includes(v.code)) up(2,"гроза с градом"); else if(v.code>=95) up(1,"гроза");
-  if(prob!=null){ if(prob>=0.6) up(2,"высокая вероятность снегопада"); else if(prob>=0.3) up(1,"возможен снегопад"); }
+  if(g>=g3) up(3,"w.stormwind"); else if(g>=g2) up(2,"w.sgust"); else if(g>=g1) up(1,"w.gust");
+  if(v.vis!=null){ if(v.vis<400) up(2,"w.vis400"); else if(v.vis<1500) up(1,"w.lowvis"); }
+  if(v.temp!=null && v.temp>-3 && v.temp<1.5 && (v.pr||0)>=0.2) up(1,"w.blackice");
+  if(v.snow>=0.3 && g>=g1) up(Math.max(2,lvl),"w.blizzard");
+  if([96,99].includes(v.code)) up(2,"w.hail"); else if(v.code>=95) up(1,"w.thunder");
+  if(prob!=null){ if(prob>=0.6) up(2,"w.hiprob"); else if(prob>=0.3) up(1,"w.prob"); }
   return {lvl, why};
 }
 
@@ -443,7 +712,7 @@ async function fetchBridges(route){
     try{ j = await getJSON(ep, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:"data="+encodeURIComponent(q)}, 160000); break; }
     catch(e){ err=e; }
   }
-  if(!j) throw err || new Error("Overpass недоступен");
+  if(!j) throw err || new Error(t("ovp"));
   const H = heightM(), out=[];
   for(const e of j.elements||[]){
     const t = e.tags||{}, raw = t["maxheight:physical"] || t.maxheight;
@@ -452,7 +721,7 @@ async function fetchBridges(route){
     if(lat==null) continue;
     const gap = hm - H;
     if(gap > 0.3) continue;
-    out.push({lat, lon, hm, raw, gap, name: t.name || t.ref || (t.bridge ? "мост" : t.tunnel ? "тоннель" : t.barrier || "ограничение"), id:e.type+"/"+e.id});
+    out.push({lat, lon, hm, raw, gap, name: t.name || t.ref || null, kind: t.bridge ? "br.bridge" : t.tunnel ? "br.tunnel" : "br.limit", id:e.type+"/"+e.id});
   }
   // ближайшие дубли (одна и та же точка разными объектами)
   const ded=[]; for(const b of out.sort((a,b)=>a.gap-b.gap)){ if(!ded.some(d=>hav([d.lat,d.lon],[b.lat,b.lon])<0.15)) ded.push(b); }
@@ -464,46 +733,52 @@ async function fetchBridges(route){
 /* ============ основной сценарий ============ */
 let STATE = null;
 async function run(){
-  const fq = $("from").value || $("from").placeholder, tq = $("to").value || $("to").placeholder;
-  $("btnGo").disabled = true; $("routeWarn").classList.add("hidden"); $("routeWarn").innerHTML="";
+    $("btnGo").disabled = true; $("routeWarn").classList.add("hidden"); $("routeWarn").innerHTML="";
   try{
-    status("Ищу адреса…");
-    const [a, b] = await Promise.all([geocode(fq), geocode(tq)]);
-    LS.set("last", {from:fq, to:tq});
-    status("Строю маршрут…");
-    let route;
-    if(S.key){
-      try{ route = await routeORS(a, b); }
-      catch(e){ route = await routeOSRM(a, b); warn("Маршрут для трака (openrouteservice) не получен: "+e.message+". Показан обычный маршрут — проверьте мосты ниже."); }
-    } else {
-      route = await routeOSRM(a, b);
-      warn("Маршрут построен как для легковой машины. Добавьте бесплатный ключ openrouteservice в настройках, чтобы учитывались высота, вес и запреты для траков.");
-    }
-    const sp = samplePoints(route);
-    STATE = {a, b, route, sp, startH: Math.ceil(Date.now()/3600000)*3600000};
-    drawRoute();
-    status("Загружаю прогноз по "+sp.pts.length+" точкам маршрута…");
-    const [fc, ens] = await Promise.all([fetchForecast(sp.pts), fetchEnsemble(sp.pts).catch(()=>null)]);
-    STATE.fc = fc; STATE.ens = ens;
-    computeDepartures();
-    renderStrip(); selectDep(0);
+    status(t("st.addr"));
+    if(!$("from").value.trim()) throw new Error(t("err.from"));
+    if(!$("to").value.trim()) throw new Error(t("err.to"));
+    const [a, b] = await Promise.all([geocodeInput($("from")), geocodeInput($("to"))]);
+    saveLast();
+    status(t("st.route"));
+    const routes = await getRoutes(a, b);
+    const n = routes.length, per = Math.max(24, Math.round(40/Math.sqrt(n)));
+    STATE = {a, b, startH: Math.ceil(Date.now()/3600000)*3600000, depK:0,
+      routes: routes.map((route, i) => ({route, sp: samplePoints(route, per), letter:"ABC"[i]}))};
+    useRoute(0); drawRoute();
+    const allPts = STATE.routes.flatMap(r => r.sp.pts);
+    status(t("st.fc",{n:allPts.length}));
+    const [fc, ens] = await Promise.all([fetchForecast(allPts), fetchEnsemble(allPts).catch(()=>null)]);
+    let k = 0;
+    STATE.routes.forEach(r => { const m = r.sp.pts.length; r.fc = fc.slice(k, k+m); r.ens = ens ? ens.slice(k, k+m) : null; k += m; });
+    computeAll();
+    useRoute(0); renderStrip(); selectDep(0);
     $("updated").textContent = new Date().toLocaleString();
-    status(`${Math.round(sp.totalKm)} км · ~${sp.durH.toFixed(1)} ч в пути${route.truck?" · маршрут для трака":""}${ens?"":" · ансамбль недоступен"}`);
+    renderStatus();
     renderRoadLinks(); loadNames();
     loadAlerts(); loadBridges();
   }catch(e){
-    status("Ошибка: "+e.message);
+    status(t("st.err")+" "+e.message);
   }finally{ $("btnGo").disabled = false; }
 }
 function warn(t){ const w=$("routeWarn"); if(w.classList.contains("hidden")) w.innerHTML=""; const d=document.createElement("div"); d.textContent=t; d.style.margin="2px 0"; w.appendChild(d); w.classList.remove("hidden"); }
-function drawRoute(){
+let altLayer = null;
+function drawRoute(keepView){
   if(!map) return;
-  segLayer.clearLayers(); bridgeLayer.clearLayers(); endLayer.clearLayers();
-  const {a,b,route} = STATE;
-  const pl = L.polyline(route.coords, {color:"#0284c7", weight:5, opacity:.5}).addTo(segLayer);
-  L.marker([a.lat,a.lon], {title:"Старт"}).addTo(endLayer).bindPopup("Старт: "+esc(a.name));
-  L.marker([b.lat,b.lon], {title:"Финиш"}).addTo(endLayer).bindPopup("Финиш: "+esc(b.name));
-  map.fitBounds(pl.getBounds(), {padding:[20,20]});
+  if(!altLayer) altLayer = L.layerGroup().addTo(map);
+  altLayer.clearLayers(); segLayer.clearLayers(); endLayer.clearLayers();
+  const {a,b} = STATE; let bounds = null;
+  STATE.routes.forEach((r, i) => {
+    const pl = L.polyline(r.route.coords, i===STATE.ri ? {color:RCOL[i], weight:10, opacity:.35} : {color:RCOL[i], weight:5, opacity:.55, dashArray:"8 8"}).addTo(altLayer);
+    pl.on("click", () => selectRoute(i));
+    const mid = r.route.coords[Math.floor(r.route.coords.length*(0.35+0.15*i))];
+    L.marker(mid, {icon: L.divIcon({className:"", html:`<div class="rlabel" style="border-color:${RCOL[i]}">${r.letter}</div>`, iconSize:[26,26]})}).on("click", () => selectRoute(i)).addTo(altLayer);
+    bounds = bounds ? bounds.extend(pl.getBounds()) : pl.getBounds();
+  });
+  L.marker([a.lat,a.lon], {title:t("start")}).addTo(endLayer).bindPopup(t("start")+": "+esc(a.name));
+  L.marker([b.lat,b.lon], {title:t("finish")}).addTo(endLayer).bindPopup(t("finish")+": "+esc(b.name));
+  if(!keepView && bounds) map.fitBounds(bounds, {padding:[20,20]});
+  if(STATE.deps && STATE.sel!=null) colorRoute(STATE.deps[STATE.sel]);
 }
 /* ============ расчётное время прибытия ============ */
 const MPH = 1.609344;
@@ -528,18 +803,18 @@ function postStorm(loc, tSec){ // {cap км/ч, why} — расчистка и �
   }
   if((acc<5 && !ice) || last<0) return null;
   const since = i1 - last; // часов после окончания осадков
-  if(since>=1 && since<=clr) return {cap:30*MPH, why:"расчистка дороги"};
-  if(since>clr && since<=clr+rh) return {cap:(Number(S.rmph)||45)*MPH, why:`ограничение ${S.rmph||45} mph после шторма`};
+  if(since>=1 && since<=clr) return {cap:30*MPH, why:"w.clear"};
+  if(since>clr && since<=clr+rh) return {cap:(Number(S.rmph)||45)*MPH, why:"w.restr"};
   return null;
 }
 const ET = new Intl.DateTimeFormat("en-US", {timeZone:"America/New_York", hour:"numeric", hour12:false, weekday:"short"});
 const ZONES = [ // пробки: центр, радиус км, коэффициент в час пик
-  {lat:40.75, lon:-73.95, r:45, f:0.45, n:"Нью-Йорк/Нью-Джерси"},
-  {lat:41.10, lon:-73.40, r:35, f:0.6, n:"I-95 Коннектикут"},
-  {lat:42.36, lon:-71.06, r:30, f:0.55, n:"Бостон"},
-  {lat:41.82, lon:-71.41, r:15, f:0.7, n:"Провиденс"},
-  {lat:41.76, lon:-72.67, r:15, f:0.7, n:"Хартфорд"},
-  {lat:43.66, lon:-70.26, r:10, f:0.8, n:"Портленд"}
+  {lat:40.75, lon:-73.95, r:45, f:0.45, n:"New York / New Jersey"},
+  {lat:41.10, lon:-73.40, r:35, f:0.6, n:"I-95 Connecticut"},
+  {lat:42.36, lon:-71.06, r:30, f:0.55, n:"Boston"},
+  {lat:41.82, lon:-71.41, r:15, f:0.7, n:"Providence"},
+  {lat:41.76, lon:-72.67, r:15, f:0.7, n:"Hartford"},
+  {lat:43.66, lon:-70.26, r:10, f:0.8, n:"Portland, ME"}
 ];
 function trafficFactor(p, tSec){
   if(Number(S.traffic)!==1) return {f:1};
@@ -598,65 +873,111 @@ function simulate(dep){
   const eta = t*1000, delayH = (eta-dep)/3600000 - normalH;
   return {dep, eta, normalH, delayH, bd, events, maxL, score, maxP, rows};
 }
+const RCOL = ["#2563eb","#9333ea","#0d9488"];
+function useRoute(i){
+  const r = STATE.routes[i]; STATE.ri = i; STATE.cur = r;
+  STATE.route = r.route; STATE.sp = r.sp; STATE.fc = r.fc; STATE.ens = r.ens; STATE.deps = r.deps;
+  STATE.bridges = r.bridges; STATE.alerts = r.alerts;
+}
+function computeAll(){
+  const cur = STATE.ri||0;
+  STATE.routes.forEach((r, i) => { useRoute(i); computeDepartures(); r.deps = STATE.deps; });
+  useRoute(cur);
+}
+function selectRoute(i){
+  if(!STATE || i===STATE.ri) return;
+  useRoute(i); STATE.warnedNow = 1;
+  renderStrip(); selectDep(STATE.sel||0); drawRoute(true); renderStatus(); renderRoadLinks();
+  if(!STATE.cur.named) loadNames();
+  if(STATE.cur.alerts) renderAlerts(); else loadAlerts();
+  if(STATE.cur.bridges) renderBridges(); else loadBridges();
+}
+function renderAlts(){
+  const R = STATE.routes; if(!R || !R[0].deps) return;
+  const k = STATE.sel||0, ds = R.map(r => r.deps[k]);
+  $("altsFor").textContent = t("alts.for",{dep:fmtT(ds[0].dep)});
+  const fastest = ds.reduce((bi,d,i)=> d.eta < ds[bi].eta ? i : bi, 0);
+  const calmest = ds.reduce((bi,d,i)=> (d.maxL < ds[bi].maxL || (d.maxL===ds[bi].maxL && d.score < ds[bi].score)) ? i : bi, 0);
+  $("alts").innerHTML = R.map((r, i) => {
+    const d = ds[i], tot = (d.eta-d.dep)/3600000;
+    const tags = [];
+    if(R.length>1 && i===fastest) tags.push(`<span class="tag good">${t("route.fast")}</span>`);
+    if(R.length>1 && i===calmest && ds[calmest].maxL < Math.max(...ds.map(x=>x.maxL))) tags.push(`<span class="tag good">${t("route.safe")}</span>`);
+    if(r.route.toll) tags.push(`<span class="tag toll">${t("route.toll")}</span>`);
+    if(d.bd.storm >= 0.25) tags.push(`<span class="tag toll">${t("route.wait",{d:fmtDur(d.bd.storm)})}</span>`);
+    if(d.delayH >= 0.25) tags.push(`<span class="tag">${t("route.delay",{d:fmtDur(d.delayH)})}</span>`);
+    return `<button class="alt ${i===STATE.ri?"sel":""}" data-r="${i}"><span class="bar" style="background:${RCOL[i]}"></span><span class="body">`+
+      `<span class="top"><span class="name">${r.letter} · ${esc(r.route.roads || t("route.noname"))}</span><span class="time">${fmtDur(tot)}</span></span>`+
+      `<span class="sub"><span class="dot ${lvClass(d.maxL)}"></span>${d.maxL<0?t("nodata"):lvName(d.maxL)} · ${U.dist(r.sp.totalKm)} · ${t("eta.short")} ${fmtT(d.eta)}</span>`+
+      `<span class="tags">${tags.join("")}</span></span></button>`;
+  }).join("");
+  $("alts").querySelectorAll("[data-r]").forEach(b => b.onclick = () => selectRoute(+b.dataset.r));
+  let rec = "";
+  if(R.length === 1) rec = t("rec.one");
+  else if(fastest !== 0) rec = t("rec.detour",{r:R[fastest].letter, d:fmtDur((ds[0].eta - ds[fastest].eta)/3600000), m:R[0].letter});
+  else rec = t("rec.main",{r:R[0].letter});
+  $("altsRec").textContent = rec;
+  $("cardAlts").classList.remove("hidden");
+}
 function computeDepartures(){
   const {startH} = STATE, deps=[];
   for(let h=0; h<=72; h+=3) deps.push(simulate(startH + h*3600000));
   STATE.deps = deps;
 }
-const fmtDur = h => { const m = Math.round(h*60); return m<60 ? m+" мин" : Math.floor(m/60)+" ч"+(m%60?" "+(m%60)+" мин":""); };
+const fmtDur = h => { const m = Math.round(h*60); return m<60 ? m+" "+t("min") : Math.floor(m/60)+" "+t("h")+(m%60?" "+(m%60)+" "+t("min"):""); };
 function lvClass(l){ return l<0 ? "lvna" : "lv"+l; }
 function renderStrip(){
   const {deps} = STATE, strip = $("strip"); strip.innerHTML="";
   deps.forEach((d, k) => {
     const el = document.createElement("button");
     el.className = "dep "+lvClass(d.maxL); el.dataset.k = k;
-    el.innerHTML = `${DOW[new Date(d.dep).getDay()]}<b>${fmtHM(d.dep)}</b><span class="p">${d.maxP==null?"—":Math.round(d.maxP*100)+"%"}</span><span class="a">→ ${DOW[new Date(d.eta).getDay()]} ${fmtHM(d.eta)}</span>`;
+    el.innerHTML = `${DOWn(new Date(d.dep).getDay())}<b>${fmtHM(d.dep)}</b><span class="p">${d.maxP==null?"—":Math.round(d.maxP*100)+"%"}</span><span class="a">→ ${DOWn(new Date(d.eta).getDay())} ${fmtHM(d.eta)}</span>`;
     el.onclick = () => selectDep(k);
     strip.appendChild(el);
   });
   const valid = deps.filter(d=>d.maxL>=0);
   const best = valid.slice(0,17).sort((x,y)=> x.maxL-y.maxL || x.score-y.score || x.dep-y.dep)[0]; // лучшее в ближайшие 48 ч
   const soon = deps.slice(0,17), fastest = soon.slice().sort((x,y)=>x.eta-y.eta)[0];
-  $("bestTip").innerHTML = (best ? `Самый спокойный выезд (48 ч): <b>${fmtT(best.dep)}</b> — ${LV_NAME[best.maxL].toLowerCase()}, прибытие ~${fmtT(best.eta)}.` : "") +
-    (fastest ? `<br>Раньше всего приедете при выезде <b>${fmtT(fastest.dep)}</b> — прибытие ~<b>${fmtT(fastest.eta)}</b>.` : "") +
-    `<br>Под временем выезда — расчётное прибытие.`;
+  $("bestTip").innerHTML = (best ? t("best",{dep:fmtT(best.dep), lv:t("lv"+best.maxL), eta:fmtT(best.eta)}) : "") +
+    (fastest ? "<br>"+t("fast",{dep:fmtT(fastest.dep), eta:fmtT(fastest.eta)}) : "") + "<br>"+t("under");
   const worst = deps[0];
-  if(worst && worst.maxL>=2) warn("⚠ При выезде сейчас на маршруте ожидается: "+[...new Set(worst.rows.flatMap(r=>r.a.why))].join(", ")+".");
+  if(worst && worst.maxL>=2) if(!STATE.warnedNow){ STATE.warnedNow=1; warn(t("w.now",{x:whyTxt([...new Set(worst.rows.flatMap(r=>r.a.why))])})); }
   $("cardDeps").classList.remove("hidden");
 }
 function evText(e){
-  const place = i => { const p=STATE.sp.pts[i]; return "км "+Math.round(p.km)+(p.name?" ("+p.name+")":""); };
-  if(e.type==="storm") return `⏸ Переждать шторм у ${place(e.at)}: ${e.why.join(", ")}. Конец ~${fmtT(e.end*1000)}${e.open?" (или позже — за пределом прогноза)":""} + ${fmtDur(Number(S.clearH)||0)} на расчистку → выезд ~${fmtT(e.until*1000)}`;
-  if(e.type==="restr") return `⚠ ${e.why} — с ${fmtT(e.from*1000)} у ${place(e.at)}`;
-  if(e.type==="traffic") return `🚦 Пробки: ${e.n} (~${fmtT(e.from*1000)}, скорость ×${e.f})`;
-  if(e.type==="rest") return `🛏 Отдых 10 ч у ${place(e.at)} (${fmtT(e.from*1000)} → ${fmtT(e.from*1000+36e6)})`;
-  if(e.type==="break") return `☕ Перерыв 30 мин у ${place(e.at)} (${fmtT(e.from*1000)})`;
+  const place = i => { const p=STATE.sp.pts[i]; return U.mark(p.km)+(p.name?" ("+p.name+")":""); };
+  const T = x => fmtT(x*1000);
+  if(e.type==="storm") return t("ev.storm",{p:place(e.at), why:whyTxt(e.why), end:T(e.end), open:e.open?t("ev.open"):"", clr:fmtDur(Number(S.clearH)||0), until:T(e.until)});
+  if(e.type==="restr") return t("ev.restr",{why:whyTxt([e.why]), t:T(e.from), p:place(e.at)});
+  if(e.type==="traffic") return t("ev.traffic",{n:e.n, t:T(e.from), f:e.f});
+  if(e.type==="rest") return t("ev.rest",{p:place(e.at), a:T(e.from), b:T(e.from+36000)});
+  if(e.type==="break") return t("ev.break",{p:place(e.at), a:T(e.from)});
   return "";
 }
 function selectDep(k){
   const d = STATE.deps[k]; STATE.sel = k;
+  renderAlts();
   document.querySelectorAll(".dep").forEach(el => el.classList.toggle("sel", +el.dataset.k===k));
   $("tripDep").textContent = fmtT(d.dep);
-  const b = $("tripBadge"); b.className = "badge "+lvClass(d.maxL); b.textContent = d.maxL<0 ? "Нет данных" : LV_NAME[d.maxL];
+  const b = $("tripBadge"); b.className = "badge "+lvClass(d.maxL); b.textContent = d.maxL<0 ? t("nodata") : lvName(d.maxL);
   const worst = d.rows.filter(r=>r.a.lvl===d.maxL && d.maxL>0);
-  $("tripText").textContent = worst.length ? `${worst[0].a.why.join(", ")} — ${fmtT(worst[0].t)}, км ${Math.round(worst[0].p.km)}${worst[0].p.name?" ("+worst[0].p.name+")":""}` : (d.maxL===0 ? "Без значимых погодных рисков" : "");
+  $("tripText").textContent = worst.length ? `${whyTxt(worst[0].a.why)} — ${fmtT(worst[0].t)}, ${U.mark(worst[0].p.km)}${worst[0].p.name?" ("+worst[0].p.name+")":""}` : (d.maxL===0 ? t("calm") : "");
   const bd = d.bd, items = [
-    ["Ожидание шторма и расчистка", bd.storm], ["Снег, ветер, видимость (сниженная скорость)", bd.wx],
-    ["Ограничение скорости после шторма", bd.restr], ["Пробки (типичные часы пик)", bd.traffic],
-    ["Ремонты (запас)", bd.work], ["Отдых водителя (HOS)", bd.hos]
+    [t("bd.storm"), bd.storm], [t("bd.wx"), bd.wx], [t("bd.restr"), bd.restr], [t("bd.traffic"), bd.traffic],
+    [t("bd.work"), bd.work], [t("bd.hos"), bd.hos]
   ].filter(x => x[1] >= 1/60);
   const total = (d.eta - d.dep)/3600000;
-  $("eta").innerHTML = `<span class="small">Расчётное прибытие</span><span class="big">${fmtT(d.eta)}</span>`+
-    `<span class="small">В пути ${fmtDur(total)}: без задержек ${fmtDur(d.normalH)}${d.delayH>=1/60?", задержки +"+fmtDur(d.delayH):""}</span>`+
+  $("eta").innerHTML = `<span class="small">${t("eta.h")}</span><span class="big">${fmtT(d.eta)}</span>`+
+    `<span class="small">${t("eta.line",{tot:fmtDur(total), norm:fmtDur(d.normalH)})}${d.delayH>=1/60?t("eta.delay",{d:fmtDur(d.delayH)}):""}</span>`+
     (items.length ? "<ul>"+items.map(x=>`<li>${x[0]}: +${fmtDur(x[1])}</li>`).join("")+"</ul>" : "");
-  $("tripMeta").textContent = `Макс. вероятность сильного снега (≥2 см/3 ч): ${d.maxP==null?"н/д":Math.round(d.maxP*100)+"%"} · шаг точек ~${Math.round(STATE.sp.totalKm/STATE.sp.pts.length)} км`;
+  $("tripMeta").textContent = t("meta",{thr:U.snowThr(), p: d.maxP==null?t("na"):Math.round(d.maxP*100)+"%", s:U.dist(STATE.sp.totalKm/STATE.sp.pts.length)});
   const evRow = e => `<tr class="ev"><td colspan="6">${esc(evText(e))}</td></tr>`;
   $("tripRows").innerHTML = d.rows.map((r, i) => {
     const v=r.v||{};
     return d.events.filter(e=>e.at===i && e.pos==="before").map(evRow).join("") +
-      `<tr><td>${fmtT(r.t)}</td><td><span class="dot ${lvClass(r.a.lvl)}"></span>км ${Math.round(r.p.km)}${r.p.name?"<br><span class='small'>"+esc(r.p.name)+"</span>":""}${r.a.why.length&&r.a.lvl>0?"<br><span class='small'>"+esc(r.a.why.join(", "))+"</span>":""}</td>`+
-      `<td>${v.temp==null?"—":Math.round(v.temp)+"°"}</td><td>${v.snow==null?"—":(v.snow>0?v.snow.toFixed(1)+" см":"0")}</td>`+
-      `<td>${v.gust==null?"—":Math.round(v.gust)}</td><td>${r.pr==null?"—":Math.round(r.pr*100)+"%"}</td></tr>` +
+      `<tr><td>${fmtT(r.t)}</td><td><span class="dot ${lvClass(r.a.lvl)}"></span>${U.mark(r.p.km)}${r.p.name?"<br><span class='small'>"+esc(r.p.name)+"</span>":""}${r.a.why.length&&r.a.lvl>0?"<br><span class='small'>"+esc(whyTxt(r.a.why))+"</span>":""}</td>`+
+      `<td>${U.temp(v.temp)}</td><td>${U.snow(v.snow)}</td>`+
+      `<td>${U.wind(v.gust)}</td><td>${r.pr==null?"—":Math.round(r.pr*100)+"%"}</td></tr>` +
       d.events.filter(e=>e.at===i && e.pos==="after").map(evRow).join("");
   }).join("");
   $("cardTrip").classList.remove("hidden");
@@ -672,93 +993,285 @@ function colorRoute(d){
     const i0 = r.p.idx, i1 = i+1<d.rows.length ? d.rows[i+1].p.idx : c.length-1;
     if(i1<=i0) return;
     L.polyline(c.slice(i0, i1+1), {color: r.a.lvl<0 ? "#94a3b8" : cols[r.a.lvl], weight:6, opacity:.9})
-      .bindPopup(`<b>${fmtT(r.t)}</b> · км ${Math.round(r.p.km)}<br>${r.a.lvl<0?"нет данных":LV_NAME[r.a.lvl]}${r.a.why.length?": "+esc(r.a.why.join(", ")):""}`)
+      .bindPopup(`<b>${fmtT(r.t)}</b> · ${U.mark(r.p.km)}<br>${r.a.lvl<0?t("nodata"):lvName(r.a.lvl)}${r.a.why.length?": "+esc(whyTxt(r.a.why)):""}`)
       .addTo(segLayer);
   });
 }
 async function loadNames(){
-  const pts = STATE.sp.pts, idx = pts.map((_,i)=>i).filter(i => i%3===0 || i===pts.length-1);
+  const R = STATE.cur; R.named = true;
+  const pts = R.sp.pts, idx = pts.map((_,i)=>i).filter(i => i%3===0 || i===pts.length-1);
   const res = await pool(idx, 3, async i => { await sleep(150); return revName(pts[i].lat, pts[i].lon); });
   idx.forEach((i,k) => { const r=res[k]; if(r){ pts[i].name = [r.place, r.state].filter(Boolean).join(", "); pts[i].st = r.state; } });
-  if(STATE.sel!=null) selectDep(STATE.sel);
+  if(STATE.cur===R && STATE.sel!=null) selectDep(STATE.sel);
 }
 function renderRoadLinks(){
   const pts = STATE.sp.pts, used = [];
   JUR.forEach(j => { if(pts.some(p => p.lat>=j.b[0] && p.lat<=j.b[1] && p.lon>=j.b[2] && p.lon<=j.b[3])) if(!used.some(u=>u.u===j.u)) used.push(j); });
   $("roadLinks").innerHTML = used.map(j => `<a href="${j.u}" target="_blank" rel="noopener">${esc(j.n)}</a>`).join("");
   const {a,b} = STATE;
-  $("navLinks").innerHTML = `<a href="https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=driving" target="_blank" rel="noopener">Открыть в Google Maps</a>`+
-    `<a href="https://maps.apple.com/?saddr=${a.lat},${a.lon}&daddr=${b.lat},${b.lon}&dirflg=d" target="_blank" rel="noopener">Apple Карты</a>`;
+  $("navLinks").innerHTML = `<a href="https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=driving" target="_blank" rel="noopener">${t("gmaps")}</a>`+
+    `<a href="https://maps.apple.com/?saddr=${a.lat},${a.lon}&daddr=${b.lat},${b.lon}&dirflg=d" target="_blank" rel="noopener">${t("amaps")}</a>`;
   $("cardRoads").classList.remove("hidden");
 }
+const WINTER = /winter|snow|blizzard|ice|freez|wind|storm|squall|avalanche|flood|fog|hiver|neige|verglas|pluie/i;
 async function loadAlerts(){
-  $("cardAlerts").classList.remove("hidden"); $("alerts").textContent = "Загрузка…";
+  const R = STATE.cur;
+  $("cardAlerts").classList.remove("hidden"); $("alerts").textContent = t("loading");
   const pts = STATE.sp.pts, lats = pts.map(p=>p.lat), lons = pts.map(p=>p.lon);
   const bbox = [Math.min(...lons)-0.2, Math.min(...lats)-0.2, Math.max(...lons)+0.2, Math.max(...lats)+0.2];
   const [us, ca] = await Promise.all([fetchNWS(pts).catch(()=>null), fetchECCC(pts, bbox).catch(()=>null)]);
+  R.alerts = {us, ca};
+  if(STATE.cur !== R) return;
+  STATE.alerts = R.alerts; renderAlerts();
   const all = [...(ca||[]), ...(us||[])];
-  const winter = /winter|snow|blizzard|ice|freez|wind|storm|squall|avalanche|flood|fog|hiver|neige|verglas|pluie/i;
-  all.sort((x,y) => (winter.test(y.event)?1:0)-(winter.test(x.event)?1:0));
+  if(all.some(a => /warning/i.test(a.event) && WINTER.test(a.event))) warn(t("w.alert"));
+}
+function renderAlerts(){
+  if(!STATE || !STATE.alerts) return;
+  const {us, ca} = STATE.alerts, all = [...(ca||[]), ...(us||[])];
+  all.sort((x,y) => (WINTER.test(y.event)?1:0)-(WINTER.test(x.event)?1:0));
   let html = all.length ? all.map(a => {
     const sev = /severe|extreme/i.test(a.sev) || /warning/i.test(a.event);
     const when = [a.from, a.to].filter(Boolean).map(x => { const d=new Date(x); return isNaN(d)? x : fmtT(d.getTime()); }).join(" → ");
     return `<div class="alert ${sev?"sev":""}"><b>${esc(a.head)}</b><span class="small">${esc(a.src)} · ${esc(when)}${a.area?" · "+esc(String(a.area).slice(0,140)):""}</span>`+
-      (a.text? `<details><summary>Подробнее</summary><div class="small" style="white-space:pre-wrap">${esc(a.text)}</div></details>`:"")+`</div>`;
-  }).join("") : "Активных предупреждений на маршруте нет.";
-  if(us==null) html += "<div class='small'>NWS (США) недоступен.</div>";
-  if(ca==null) html += "<div class='small'>Environment Canada недоступен — проверьте weather.gc.ca.</div>";
+      (a.text? `<details><summary>${t("more")}</summary><div class="small" style="white-space:pre-wrap">${esc(a.text)}</div></details>`:"")+`</div>`;
+  }).join("") : t("noalerts");
+  if(us==null) html += "<div class='small'>"+t("nws.na")+"</div>";
+  if(ca==null) html += "<div class='small'>"+t("eccc.na")+"</div>";
   $("alerts").innerHTML = html;
-  if(all.some(a => /warning/i.test(a.event) && winter.test(a.event))) warn("⚠ На маршруте действует официальное штормовое предупреждение — см. раздел «Предупреждения».");
 }
 async function loadBridges(){
   $("cardBridges").classList.remove("hidden");
-  $("bridges").textContent = "Проверяю ограничения высоты вдоль маршрута (OpenStreetMap), это может занять до минуты…";
+  $("bridges").textContent = t("br.loading");
   try{
-    const list = await fetchBridges(STATE.route), H = heightM();
-    bridgeLayer.clearLayers();
-    const low = list.filter(b=>b.gap<0.08), near = list.filter(b=>b.gap>=0.08);
-    const row = b => `<tr><td><span class="dot ${b.gap<0.08?"lv3":"lv1"}"></span>${esc(b.name)}</td><td><b>${fmtFtIn(b.hm)}</b><br><span class="small">${b.hm.toFixed(2)} м</span></td><td><a href="https://www.openstreetmap.org/${b.id}" target="_blank" rel="noopener">карта</a></td></tr>`;
-    list.forEach(b => {
-      if(!map) return;
-      L.circleMarker([b.lat,b.lon], {radius:8, color:"#fff", weight:2, fillColor: b.gap<0.08?"#dc2626":"#eab308", fillOpacity:1})
-        .bindPopup(`<b>${esc(b.name)}</b><br>Высота: ${fmtFtIn(b.hm)} (${b.hm.toFixed(2)} м)<br>Ваш трак: ${fmtFtIn(H)}<br><span class="small">OSM: ${esc(b.raw)}</span>`).addTo(bridgeLayer);
-    });
-    let html = `<div>Высота вашего трака: <b>${fmtFtIn(H)}</b> (${H.toFixed(2)} м). ${STATE.route.truck ? "Маршрут для трака уже обходит известные низкие мосты; ниже — то, что лежит рядом с линией." : ""}</div>`;
-    if(!list.length) html += "<p>Низких мостов (ниже или около вашей высоты) вдоль маршрута в OpenStreetMap не найдено.</p>";
-    else html += `<p>${low.length?`<b style="color:var(--l3)">Ниже вашего трака: ${low.length}</b>. `:""}${near.length?`Впритык (запас &lt;30 см): ${near.length}.`:""} Часть объектов может быть рядом, а не на самом маршруте (дорога сверху/сбоку) — проверьте на карте.</p>`+
-      `<table><thead><tr><th>Объект</th><th>Высота</th><th></th></tr></thead><tbody>${list.map(row).join("")}</tbody></table>`;
-    $("bridges").innerHTML = html + "<p class='small'>Данные OpenStreetMap неполные. Всегда следите за знаками Low Clearance.</p>";
+    const R = STATE.cur;
+    R.bridges = await fetchBridges(R.route);
+    if(STATE.cur === R){ STATE.bridges = R.bridges; renderBridges(); }
   }catch(e){
-    $("bridges").textContent = "Не удалось проверить мосты: "+e.message+". Попробуйте позже.";
+    $("bridges").textContent = t("br.fail",{e:e.message});
   }
+}
+function renderBridges(){
+  if(!STATE || !STATE.bridges) return;
+  const list = STATE.bridges, H = heightM(), nm = b => b.name || t(b.kind||"br.limit");
+  if(map) bridgeLayer.clearLayers();
+  const low = list.filter(b=>b.gap<0.08), near = list.filter(b=>b.gap>=0.08);
+  const row = b => `<tr><td><span class="dot ${b.gap<0.08?"lv3":"lv1"}"></span>${esc(nm(b))}</td><td><b>${U.height(b.hm)}</b><br><span class="small">${U.height2(b.hm)}</span></td><td><a href="https://www.openstreetmap.org/${b.id}" target="_blank" rel="noopener">${t("br.map")}</a></td></tr>`;
+  list.forEach(b => {
+    if(!map) return;
+    L.circleMarker([b.lat,b.lon], {radius:8, color:"#fff", weight:2, fillColor: b.gap<0.08?"#dc2626":"#eab308", fillOpacity:1})
+      .bindPopup(`<b>${esc(nm(b))}</b><br>${t("br.h")}: ${U.height(b.hm)} (${U.height2(b.hm)})<br>${t("br.truck")}: ${U.height(H)}<br><span class="small">OSM: ${esc(b.raw)}</span>`).addTo(bridgeLayer);
+  });
+  let html = `<div>${t("br.yours")} <b>${U.height(H)}</b> (${U.height2(H)}). ${STATE.route.truck ? t("br.avoid") : ""}</div>`;
+  if(!list.length) html += "<p>"+t("br.none")+"</p>";
+  else html += `<p>${low.length?`<b style="color:var(--l3)">${t("br.low",{n:low.length})}</b>. `:""}${near.length?t("br.near",{m:U.margin(), n:near.length}):""} ${t("br.maybe")}</p>`+
+    `<table><thead><tr><th>${t("br.obj")}</th><th>${t("br.h")}</th><th></th></tr></thead><tbody>${list.map(row).join("")}</tbody></table>`;
+  $("bridges").innerHTML = html + "<p class='small'>"+t("br.note")+"</p>";
 }
 
 /* ============ интерфейс ============ */
+function fillVehicle(v, units){
+  const hM = (v.hft||0)*0.3048 + (v.hin||0)*0.0254;
+  if(units==="metric"){
+    $("sHm").value = hM.toFixed(2); $("sW").value = +(+v.w).toFixed(1); $("sL").value = +(+v.l).toFixed(1);
+    $("sVmax").value = Math.round(v.vmax*1.609344); $("sRmph").value = Math.round(v.rmph*1.609344);
+  } else {
+    const tin = Math.round(hM/0.0254); $("sHft").value = Math.floor(tin/12); $("sHin").value = tin%12;
+    $("sWlb").value = Math.round(v.w*2204.62/100)*100; $("sLft").value = Math.round(v.l*3.28084);
+    $("sVmax").value = Math.round(v.vmax); $("sRmph").value = Math.round(v.rmph);
+  }
+  document.querySelectorAll(".uSpd").forEach(e => e.textContent = units==="metric" ? t("kmh") : "mph");
+  $("optSlow").textContent = t("set.slow",{spd: units==="metric" ? "40 "+t("kmh") : "25 mph"});
+}
+function readVehicle(units){
+  if(units==="metric"){
+    const hM = +$("sHm").value || 4.11, tin = hM/0.0254;
+    return {hft:Math.floor(tin/12), hin:+(tin%12).toFixed(1), w:+$("sW").value||36, l:+$("sL").value||22,
+            vmax:(+$("sVmax").value||105)/1.609344, rmph:(+$("sRmph").value||70)/1.609344};
+  }
+  return {hft:+$("sHft").value||13, hin:+$("sHin").value||0, w:(+$("sWlb").value||80000)/2204.62, l:(+$("sLft").value||72)/3.28084,
+          vmax:+$("sVmax").value||65, rmph:+$("sRmph").value||45};
+}
+let settingsUnits = "imperial";
 function openSettings(){
-  $("sKey").value=S.key||""; $("sHft").value=S.hft; $("sHin").value=S.hin; $("sW").value=S.w; $("sL").value=S.l; $("sSpeed").value=S.speed; $("sEmpty").value=S.empty;
-  $("sVmax").value=S.vmax; $("sStorm").value=S.storm; $("sClear").value=S.clearH; $("sRmph").value=S.rmph; $("sRh").value=S.rh; $("sWork").value=S.work; $("sTraffic").value=S.traffic; $("sHos").value=S.hos;
+  settingsUnits = S.units==="metric" ? "metric" : "imperial";
+  $("sUnits").value = settingsUnits; $("sLang").value = S.lang || detectLang();
+  document.body.classList.toggle("metric", settingsUnits==="metric");
+  $("sKey").value=S.key||""; $("sTolls").value=S.tolls||"allow"; $("sSpeed").value=S.speed; $("sEmpty").value=S.empty;
+  fillVehicle(S, settingsUnits);
+  $("sStorm").value=S.storm; $("sClear").value=S.clearH; $("sRh").value=S.rh; $("sWork").value=S.work; $("sTraffic").value=S.traffic; $("sHos").value=S.hos;
   $("settings").style.display="block";
 }
+$("sUnits").onchange = () => { // пересчитываем уже введённые значения в новые единицы
+  const v = readVehicle(settingsUnits); settingsUnits = $("sUnits").value;
+  document.body.classList.toggle("metric", settingsUnits==="metric");
+  fillVehicle(v, settingsUnits);
+};
 $("btnSettings").onclick = openSettings;
-$("btnClose").onclick = () => $("settings").style.display="none";
+$("btnClose").onclick = () => { $("settings").style.display="none"; if(S.lang!==$("sLang").dataset.orig){} applyUnits(); };
+$("sLang").onchange = () => { // язык меняем сразу, чтобы было видно
+  const v = readVehicle(settingsUnits); S.lang = $("sLang").value; LS.set("settings", S); applyStatic(); fillVehicle(v, settingsUnits);
+};
 $("btnSave").onclick = () => {
-  S = {key:$("sKey").value.trim(), hft:+$("sHft").value||13, hin:+$("sHin").value||0, w:+$("sW").value||36, l:+$("sL").value||22, speed:+$("sSpeed").value||1, empty:+$("sEmpty").value,
-    vmax:+$("sVmax").value||65, storm:$("sStorm").value, clearH:Math.max(0,+$("sClear").value||0), rmph:+$("sRmph").value||45, rh:Math.max(0,+$("sRh").value||0),
-    work:Math.max(0,+$("sWork").value||0), traffic:+$("sTraffic").value, hos:+$("sHos").value};
+  S = Object.assign({lang:$("sLang").value, units:settingsUnits, tolls:$("sTolls").value, key:$("sKey").value.trim(), speed:+$("sSpeed").value||1, empty:+$("sEmpty").value,
+    storm:$("sStorm").value, clearH:Math.max(0,+$("sClear").value||0), rh:Math.max(0,+$("sRh").value||0),
+    work:Math.max(0,+$("sWork").value||0), traffic:+$("sTraffic").value, hos:+$("sHos").value}, readVehicle(settingsUnits));
   LS.set("settings", S); $("settings").style.display="none";
+  applyUnits();
   if(STATE) run();
 };
+/* ============ единицы: применить ко всему экрану ============ */
+function applyUnits(){
+  const imp = IMP();
+  document.body.classList.toggle("metric", !imp);
+  $("btnUnits").textContent = imp ? "mi" : "km";
+  applyStatic();
+  $("thT").textContent = imp ? "°F" : "°C";
+  $("thS").textContent = t("th.snow")+", "+(imp ? "in" : t("cm"))+t("perh");
+  $("thW").textContent = t("th.gust")+", "+(imp ? "mph" : t("kmh"));
+  if(!$("from").value && !STATE) status(t("geo.hint"));
+  if(STATE && STATE.deps){
+    renderStatus();
+    computeAll(); renderStrip(); selectDep(STATE.sel||0); renderBridges(); renderAlerts(); renderRoadLinks(); drawRoute(true);
+  }
+}
+function renderStatus(){
+  const sp = STATE.sp;
+  status((STATE.routes.length>1 ? STATE.cur.letter+": " : "") + t("st.done",{d:U.dist(sp.totalKm), h:sp.durH.toFixed(1)}) + (STATE.route.truck ? t("st.truck") : "") + (STATE.ens ? "" : t("st.noens")) + (STATE.routes.length>1 ? t("st.nalts",{n:STATE.routes.length}) : ""));
+}
+function setLang(l){ S.lang = l; LS.set("settings", S); applyUnits(); }
+$("btnLang").onclick = () => { const cur = S.lang || detectLang(), i = LANGS.findIndex(x=>x[0]===cur); setLang(LANGS[(i+1)%LANGS.length][0]); };
+document.querySelectorAll("#unitsPick [data-l]").forEach(b => b.onclick = () => {
+  setLang(b.dataset.l);
+  document.querySelectorAll("#unitsPick [data-l]").forEach(x => x.classList.toggle("sec", x!==b));
+});
+function setUnits(u){ S.units = u; LS.set("settings", S); applyUnits(); }
+$("btnUnits").onclick = () => setUnits(IMP() ? "metric" : "imperial");
+document.querySelectorAll("#unitsPick [data-u]").forEach(b => b.onclick = () => { $("unitsPick").style.display="none"; setUnits(b.dataset.u); });
 $("btnGo").onclick = run;
-$("btnGeo").onclick = () => {
-  if(!navigator.geolocation){ status("Геолокация недоступна"); return; }
-  status("Определяю местоположение…");
-  navigator.geolocation.getCurrentPosition(p => { $("from").value = p.coords.latitude.toFixed(4)+", "+p.coords.longitude.toFixed(4); status("Местоположение получено"); },
-    e => status("Не удалось получить местоположение: "+e.message), {enableHighAccuracy:false, timeout:15000});
-};
-$("presets").innerHTML = PRESETS.map(p => `<option value="${esc(p[0])}">`).join("");
+/* ============ местоположение ============ */
+let meMarker = null, lastFix = null;
+function showMe(lat, lon, acc){
+  if(!map) return;
+  if(meMarker) meMarker.remove();
+  meMarker = L.layerGroup([
+    L.circle([lat,lon], {radius:Math.min(acc||50, 2000), color:"#2563eb", weight:1, fillOpacity:.1}),
+    L.circleMarker([lat,lon], {radius:8, color:"#fff", weight:3, fillColor:"#2563eb", fillOpacity:1})
+  ]).addTo(map);
+}
+function locate(opts={}){
+  return new Promise((resolve) => {
+    if(!navigator.geolocation){ status(t("geo.na")); return resolve(null); }
+    if(!opts.silent) status(t("geo.busy"));
+    navigator.geolocation.getCurrentPosition(async p => {
+      const lat = +p.coords.latitude.toFixed(5), lon = +p.coords.longitude.toFixed(5);
+      lastFix = {lat, lon};
+      const el = $("from");
+      el.value = t("geo.me"); el.dataset.lat = lat; el.dataset.lon = lon; el.dataset.geo = "1";
+      showMe(lat, lon, p.coords.accuracy);
+      if(map && !STATE) map.setView([lat, lon], 9);
+      if(!opts.silent) status(t("geo.ok"));
+      try{ const r = await revName(lat, lon); if(r && el.dataset.geo==="1"){ el.value = "📍 " + [r.place, r.state].filter(Boolean).join(", "); } }catch(e){}
+      saveLast(); resolve(lastFix);
+    }, e => {
+      const msg = e.code===1 ? t("geo.denied") : t("geo.fail")+" "+e.message;
+      if(!opts.silent) status(msg); resolve(null);
+    }, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+  });
+}
+$("btnGeo").onclick = () => locate();
+
+/* ============ подсказки при вводе ============ */
+function saveLast(){
+  const f=$("from"), t=$("to");
+  LS.set("last", {from:f.value, to:t.value, fLat:f.dataset.lat||null, fLon:f.dataset.lon||null, fGeo:f.dataset.geo||null, tLat:t.dataset.lat||null, tLon:t.dataset.lon||null});
+}
+function fmtPlace(pr){
+  const main = pr.name || [pr.housenumber, pr.street].filter(Boolean).join(" ") || pr.city || "";
+  const sub = [pr.street && pr.name ? pr.street : null, pr.city && pr.city!==main ? pr.city : null, pr.state, pr.countrycode ? pr.countrycode.toUpperCase() : null].filter(Boolean).join(", ");
+  return {main, sub};
+}
+function setupAC(input, box, isFrom){
+  let timer=null, ctl=null, items=[];
+  const close = () => box.classList.remove("open");
+  const render = (list, note) => {
+    items = list;
+    let html = "";
+    if(isFrom) html += `<button type="button" class="me" data-me="1">${t("geo.me")}</button>`;
+    html += list.map((it,i) => `<button type="button" data-i="${i}">${esc(it.main)}${it.sub?`<small>${esc(it.sub)}</small>`:""}</button>`).join("");
+    if(note) html += `<div class="hint">${esc(note)}</div>`;
+    box.innerHTML = html;
+    box.classList.toggle("open", !!html);
+  };
+  const choose = it => {
+    input.value = it.sub ? it.main + ", " + it.sub.replace(/, (US|CA)$/,"") : it.main;
+    input.dataset.lat = it.lat; input.dataset.lon = it.lon; delete input.dataset.geo;
+    close(); saveLast();
+    if(isFrom) $("to").focus(); else input.blur();
+  };
+  box.addEventListener("pointerdown", e => e.preventDefault()); // не терять фокус при нажатии
+  box.addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    if(b.dataset.me){ close(); input.blur(); locate(); return; }
+    choose(items[+b.dataset.i]);
+  });
+  const search = async q => {
+    const ql = q.toLowerCase();
+    const local = PRESETS.filter(p => p[0].toLowerCase().includes(ql)).slice(0,3).map(p => ({main:p[0], sub:"", lat:p[1], lon:p[2]}));
+    render(local, q.length>=2 ? t("ac.searching") : "");
+    if(q.length < 2) return;
+    if(ctl) ctl.abort(); ctl = new AbortController();
+    const bias = lastFix || {lat:44.5, lon:-68.5};
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=7&lang=en&lat=${bias.lat}&lon=${bias.lon}&bbox=-100,24,-50,62`;
+    try{
+      const r = await fetch(url, {signal:ctl.signal}); const j = await r.json();
+      const seen = new Set(local.map(x=>x.main.toLowerCase()));
+      const remote = (j.features||[]).map(f => Object.assign(fmtPlace(f.properties), {lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}))
+        .filter(x => x.main && !seen.has((x.main+", "+x.sub).toLowerCase()) && (seen.add((x.main+", "+x.sub).toLowerCase()), true));
+      const all = local.concat(remote);
+      render(all, all.length ? "" : t("ac.none"));
+    }catch(e){ if(e.name!=="AbortError") render(local, t("ac.offline")); }
+  };
+  input.addEventListener("input", () => {
+    delete input.dataset.lat; delete input.dataset.lon; delete input.dataset.geo;
+    clearTimeout(timer); const q = input.value.trim();
+    timer = setTimeout(() => search(q), 250);
+  });
+  input.addEventListener("focus", () => {
+    if(input.dataset.geo==="1" || /^📍/.test(input.value)) input.select();
+    search(input.value.trim().replace(/^📍\s*/,"") && !input.dataset.lat ? input.value.trim() : "");
+  });
+  input.addEventListener("blur", () => setTimeout(close, 150));
+  input.addEventListener("keydown", e => {
+    if(e.key==="Enter"){ e.preventDefault(); if(items[0] && !input.dataset.lat) choose(items[0]); else { close(); if(!isFrom) run(); else $("to").focus(); } }
+  });
+}
+setupAC($("from"), $("acFrom"), true);
+setupAC($("to"), $("acTo"), false);
+
 const last = LS.get("last", null);
-if(last){ $("from").value = last.from; $("to").value = last.to; }
+if(last){
+  $("from").value = last.from||""; $("to").value = last.to||"";
+  if(last.fLat){ $("from").dataset.lat = last.fLat; $("from").dataset.lon = last.fLon; if(last.fGeo) $("from").dataset.geo = "1"; }
+  if(last.tLat){ $("to").dataset.lat = last.tLat; $("to").dataset.lon = last.tLon; }
+}
 initMap();
+window.addEventListener("resize", () => { if(map) setTimeout(() => map.invalidateSize(), 200); });
+applyUnits();
+if(!S.units || !S.lang){
+  $("unitsPick").style.display = "block";
+  const cur = S.lang || detectLang();
+  document.querySelectorAll("#unitsPick [data-l]").forEach(x => x.classList.toggle("sec", x.dataset.l!==cur));
+}
+// если доступ к геолокации уже разрешён — сразу берём текущее место (без лишних вопросов)
+(async () => {
+  try{
+    const st = navigator.permissions ? await navigator.permissions.query({name:"geolocation"}) : null;
+    const f = $("from");
+    if(st && st.state==="granted" && (!f.value || f.dataset.geo==="1")) locate({silent:true});
+    else if(!f.value) status(t("geo.hint"));
+  }catch(e){}
+})();
 // автообновление каждые 30 минут, пока приложение открыто
 setInterval(() => { if(STATE && document.visibilityState==="visible") run(); }, 30*60*1000);
 </script>
