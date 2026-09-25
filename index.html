@@ -147,6 +147,7 @@ input[type=datetime-local]{min-height:46px}
 .dbar span{flex:1}
 .dbar button{border:0;border-radius:8px;background:#dc2626;color:#fff;font-size:16px;padding:8px 12px}
 body.driving main{padding-bottom:80px}
+.brico.xsel{background:#16a34a;border-radius:50%;padding:3px;box-shadow:0 0 0 3px #fff}
 .brico{font-size:24px;line-height:24px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
 .ver{opacity:.6;font-size:11px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2500;display:none;padding:0 16px}
@@ -178,7 +179,7 @@ tr.ev td{background:var(--bg);font-size:12px}
 </head>
 <body>
 <header>
-  <h1>TruckWX <small data-i18n="sub"></small> <small class="ver">v3.0</small></h1>
+  <h1>TruckWX <small data-i18n="sub"></small> <small class="ver">v3.6</small></h1>
   <button class="iconbtn" id="btnLang" aria-label="Language">RU</button>
   <button class="iconbtn" id="btnUnits" aria-label="Units">mi</button>
   <button class="iconbtn" id="btnSettings" data-i18n-title="set.h">&#9881;</button>
@@ -202,6 +203,8 @@ tr.ev td{background:var(--bg);font-size:12px}
       <input type="datetime-local" id="appt" step="600" style="flex:1">
       <button class="iconbtn geobtn" id="apptClr" style="min-width:48px">✕</button>
     </div>
+    <label for="xing" data-i18n="xg.label"></label>
+    <select id="xing"></select>
     <button class="btn" id="btnGo" data-i18n="go"></button>
     <div id="status"></div>
     <div id="routeWarn" class="warnbox hidden"></div>
@@ -217,7 +220,7 @@ tr.ev td{background:var(--bg);font-size:12px}
     <div id="stormBody">
       <div class="row" style="align-items:center;margin-top:10px">
         <button class="iconbtn playbtn" id="stormPlay">▶</button>
-        <input type="range" id="stormT" min="0" max="72" step="1" value="0" style="flex:1">
+        <input type="range" id="stormT" min="0" max="48" step="1" value="0" style="flex:1">
       </div>
       <div class="stormtime"><b id="stormTime">—</b> <span id="stormRel" class="small"></span></div>
       <div class="legend" style="margin-top:4px">
@@ -419,7 +422,7 @@ tr.ev td{background:var(--bg);font-size:12px}
 "use strict";
 /* ============ языки ============ */
 const I18N = {
-ru:{"set.hosY":"Перерыв 30 мин каждые 8 ч","set.hosFull":"30 мин / 8 ч + отдых 10 ч после 11 ч","set.hosN":"Не учитывать","dm.optTitle":"Оптимальное время выезда","dm.arrive":"прибытие ~{eta} · в пути {tot}","dm.nowLine":"Если выехать сейчас — прибытие ~{eta}.","st.reroute":"Вы свернули с маршрута — перестраиваю…","dr.rerouted":"Маршрут перестроен","route.hw":"по трассам {p}%","zn.h":"Проблемные участки ({n}) — нажмите, чтобы узнать подробности:","zn.none":"На маршруте нет жёлтых и красных участков — едьте спокойно.","zn.temp":"Темп.","zn.prob":"Вероятность сильного снега","zn.adv1":"Снизьте скорость, увеличьте дистанцию, осторожно на мостах, спусках и съездах.","zn.adv2":"Опасно: подумайте об объезде (см. «Варианты маршрута») или переждите на стоянке.","zn.adv3":"Шторм или лёд: лучше переждать до окончания или ехать другим маршрутом.","ev.list":"Остановки и события в пути ({n})","ev.bridge":"🌉 Мост Конфедерации закрыт для высоких ТС из-за ветра — ожидание {a} → {b}","w.bridgeRestr":"мост Конфедерации: ограничение для траков из-за ветра","w.bridgeLight":"мост Конфедерации: сильный ветер — опасно для пустого прицепа","br.cbRule":"Ограничение для высоких ТС (выше 2,2 м / 7′2″): ветер >70 км/ч и порывы >85 км/ч. Пустым и лёгким опасно и при меньшем ветре.","br.cbNow":"Сейчас: ветер {ws}, порывы {wg} {u}","br.cbRestr":"вероятно ограничение","br.cbLight":"опасно для пустого","br.cbOk":"без ограничений","br.cbWins":"Возможные ограничения","br.cbNoWins":"В ближайшие 3 суток ограничений по прогнозу не ожидается.","br.cbSite":"Статус моста","dr.start":"🚚 Поехали — предупреждать в пути","dr.stop":"⏹ Остановить режим «в пути»","dr.started":"Режим в пути включён. Предупрежу за час до опасных участков.","dr.needRoute":"Сначала проверьте маршрут.","dr.waitGps":"🚚 В пути: жду GPS…","dr.offRoute":"🚚 Вы в стороне от маршрута ({d}). Нажмите «Проверить маршрут».","dr.clear":"🚚 Впереди чисто на ближайшие {h}","dr.next":"🚚 Впереди {lv} через {m}: {p}","dr.alert":"Через {m} — {p}: {why}.","dr.detour":"Объезд","set.alertMin":"Предупреждать заранее, мин","set.voice":"Голосовые предупреждения","w.recover":"поток разбивает снег — скорость возвращается к обычной","set.ramp":"Потом скорость восстанавливается, ч","set.rampHelp":"После шторма: расчистка → ограничение (обычно ~1 ч) → поток машин разбивает снег, и скорость плавно возвращается к обычной для участка (с учётом знаков, времени суток и пробок).","rv.reviews":"⭐ Отзывы, часы работы, где въезд","rv.reviewsShort":"⭐ Отзывы","rv.street":"👁 Street View","ap.label":"Appointment — к какому времени доставить (необязательно)","ap.ok":"к appointment {appt} успеваете, запас {d}","ap.late":"к appointment {appt} опоздание {d}","ap.leaveBy":"Чтобы успеть к {appt} с запасом {buf}, выезжайте не позже {dep}.","ap.optIs":"Оптимально: выезд {dep}, прибытие ~{eta}.","ap.cant":"К {appt} не успеть: самое раннее прибытие ~{eta}. Предупредите получателя.","set.apBuf":"Запас до appointment, мин","rn.h":"Мои рейсы","rn.save":"💾 Сохранить","rn.new":"Сохранить рейс","rn.name":"Название рейса","rn.day":"День appointment","rn.anyDay":"Ближайший день","rn.keeps":"Сохранятся: откуда, куда, время appointment, вес груза и все настройки трака и расчёта.","rn.withAppt":"Appointment в {t}","rn.noAppt":"Без appointment","rn.saved":"Рейс сохранён","rn.use":"Выбрать","rn.appt":"приём {t}","rn.cargo":"груз {w}","rn.empty":"Сохраните постоянный рейс — заполните «Откуда», «Куда», appointment и нажмите «💾 Сохранить». В следующий раз выберите его одним нажатием.","dowFull":["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"],"deps.h":"Когда выезжать?","dm.now":"Сейчас","dm.opt":"Оптимально","dm.custom":"Своё время","dm.pick":"Время выезда (до 3 суток вперёд)","dm.pickShort":"выбрать дату и время","dm.nowBest":"Выезжать сейчас — оптимально.","dm.optEarlier":"Оптимально выехать {dep}: приедете на {d} раньше, чем при выезде сейчас (~{eta}).","dm.optCalmer":"Оптимально выехать {dep}: приедете примерно так же (~{eta}), но в дороге проведёте на {d} меньше — без ожидания и пробок.","pl.h":"Мои точки","pl.add":"★ Добавить","pl.new":"Новая точка","pl.name":"Название","pl.type":"Тип","pl.note":"Заметка (ворота, часы приёма, телефон…)","pl.cancel":"Отмена","pl.empty":"Пока пусто. Чтобы запомнить место: долгое нажатие на карту, или кнопка ★ на карте и касание нужного места, или «★ Добавить» — сохранит, где вы сейчас.","pl.addHint":"Коснитесь карты там, где поставить точку","pl.saved":"Точка сохранена","pl.here":"Моё место","pl.from":"Отсюда","pl.to":"Сюда","pl.delq":"Удалить точку «{n}»?","pl.set":"«{n}» → {f}","pl.t.client":"Клиент / склад","pl.t.park":"Стоянка","pl.t.fuel":"Заправка","pl.t.food":"Еда","pl.t.scale":"Весы","pl.t.home":"Дом / база","pl.t.star":"Другое","fs.exit":"Двойное касание или ✕ — выйти из полноэкранного режима","set.uLen":"Расстояние, высота, скорость","set.uWt":"Вес","set.uTemp":"Температура","u.lenImp":"мили · футы · mph","u.lenMet":"км · метры · км/ч","u.lb":"фунты (lb)","u.kg":"килограммы (кг)","set.truck":"Трак","set.len":"Длина","kg":"кг","set.tare":"Трак + пустой прицеп","set.cargo":"Вес груза (0 — пустой)","set.t":"т","set.total":"Общий вес: {w}","set.light":"лёгкий, строже по ветру","set.avgUS":"Ваша средняя скорость в США","set.avgCA":"Ваша средняя скорость в Канаде","set.avgHelp":"Укажите, с какой скоростью вы обычно едете по трассе. В городах и на медленных дорогах берётся меньшая скорость по карте. Погода, пробки и отдых добавляются отдельно.","storm.h":"Погода на маршруте","storm.show":"Показать","storm.light":"слабый снег","storm.mod":"снег","storm.core":"ядро: сильный снег / метель","storm.ice":"ледяной дождь","storm.rain":"дождь","storm.truckL":"где будет трак","storm.loading":"Загружаю карту осадков…","storm.fail":"Не удалось загрузить карту осадков.","storm.now":"сейчас","storm.none":"В ближайшие 3 суток значимого снега в районе маршрута не ожидается.","storm.moving":"Снегопад смещается на {dir}, ~{spd}.","storm.starts":"Начнётся ~{t}.","storm.until":"Снег в районе маршрута закончится ~{t}.","storm.longer":"Снег в районе продолжится дольше 3 суток.","storm.truck":"🚚 — ваш трак при выезде {dep}","storm.notyet":"ещё не выехал","storm.arrived":"уже на месте","alts.h":"Варианты маршрута","alts.for":"Время в пути с учётом погоды, пробок и отдыха — при выезде {dep}. Нажмите, чтобы выбрать.","route.fast":"Быстрее всего","route.safe":"Спокойнее по погоде","route.toll":"Платные участки","route.wait":"⏸ шторм {d}","route.delay":"задержки +{d}","route.noname":"маршрут","eta.short":"прибытие","rec.one":"Других разумных вариантов не найдено.","rec.detour":"Объезд {r} быстрее основного {m} на {d} с учётом погоды и пробок.","rec.main":"Основной маршрут {r} — лучший при этом выезде.","st.alts":"Ищу объездные маршруты…","st.nalts":" · вариантов: {n}","set.tolls":"Платные дороги","set.tollsAllow":"Разрешить","set.tollsAvoid":"Избегать","title":"TruckWX — погода на маршруте","sub":"шторм · мосты · перекрытия","from":"Откуда","to":"Куда","ph.addr":"Начните вводить город или адрес","geo.btn":"📍 Я здесь","go":"Проверить маршрут",
+ru:{"xg.std":"основной для траков","xg.unuse":"Выбирать переход автоматически","xg.chosen":"Погранпереход: {n}. Перестраиваю маршрут…","xg.g.mar":"Приморье ⇄ Мэн","xg.g.qc":"Квебек ⇄ США (грузовые)","xg.g.on":"Онтарио ⇄ США (грузовые)","xg.label":"🛂 Погранпереход","xg.auto":"Автоматически (лучший по маршруту)","xg.h24":"Круглосуточно, грузовики оформляют (CBP).","xg.check":"Часы работы и оформление грузовиков — уточните перед рейсом.","xg.use":"Ехать через этот переход","xg.cbp":"Очередь в США (CBP)","xg.cbsa":"Очередь в Канаду (CBSA)","storm.atDep":"момент выезда","storm.sinceDep":"+{d} от выезда","storm.truckAt":"{t} трак будет здесь: {p}","set.hosY":"Перерыв 30 мин каждые 8 ч","set.hosFull":"30 мин / 8 ч + отдых 10 ч после 11 ч","set.hosN":"Не учитывать","dm.optTitle":"Оптимальное время выезда","dm.arrive":"прибытие ~{eta} · в пути {tot}","dm.nowLine":"Если выехать сейчас — прибытие ~{eta}.","st.reroute":"Вы свернули с маршрута — перестраиваю…","dr.rerouted":"Маршрут перестроен","route.hw":"по трассам {p}%","zn.h":"Проблемные участки ({n}) — нажмите, чтобы узнать подробности:","zn.none":"На маршруте нет жёлтых и красных участков — едьте спокойно.","zn.temp":"Темп.","zn.prob":"Вероятность сильного снега","zn.adv1":"Снизьте скорость, увеличьте дистанцию, осторожно на мостах, спусках и съездах.","zn.adv2":"Опасно: подумайте об объезде (см. «Варианты маршрута») или переждите на стоянке.","zn.adv3":"Шторм или лёд: лучше переждать до окончания или ехать другим маршрутом.","ev.list":"Остановки и события в пути ({n})","ev.bridge":"🌉 Мост Конфедерации закрыт для высоких ТС из-за ветра — ожидание {a} → {b}","w.bridgeRestr":"мост Конфедерации: ограничение для траков из-за ветра","w.bridgeLight":"мост Конфедерации: сильный ветер — опасно для пустого прицепа","br.cbRule":"Ограничение для высоких ТС (выше 2,2 м / 7′2″): ветер >70 км/ч и порывы >85 км/ч. Пустым и лёгким опасно и при меньшем ветре.","br.cbNow":"Сейчас: ветер {ws}, порывы {wg} {u}","br.cbRestr":"вероятно ограничение","br.cbLight":"опасно для пустого","br.cbOk":"без ограничений","br.cbWins":"Возможные ограничения","br.cbNoWins":"В ближайшие 3 суток ограничений по прогнозу не ожидается.","br.cbSite":"Статус моста","dr.start":"🚚 Поехали — предупреждать в пути","dr.stop":"⏹ Остановить режим «в пути»","dr.started":"Режим в пути включён. Предупрежу за час до опасных участков.","dr.needRoute":"Сначала проверьте маршрут.","dr.waitGps":"🚚 В пути: жду GPS…","dr.offRoute":"🚚 Вы в стороне от маршрута ({d}). Нажмите «Проверить маршрут».","dr.clear":"🚚 Впереди чисто на ближайшие {h}","dr.next":"🚚 Впереди {lv} через {m}: {p}","dr.alert":"Через {m} — {p}: {why}.","dr.detour":"Объезд","set.alertMin":"Предупреждать заранее, мин","set.voice":"Голосовые предупреждения","w.recover":"поток разбивает снег — скорость возвращается к обычной","set.ramp":"Потом скорость восстанавливается, ч","set.rampHelp":"После шторма: расчистка → ограничение (обычно ~1 ч) → поток машин разбивает снег, и скорость плавно возвращается к обычной для участка (с учётом знаков, времени суток и пробок).","rv.reviews":"⭐ Отзывы, часы работы, где въезд","rv.reviewsShort":"⭐ Отзывы","rv.street":"👁 Street View","ap.label":"Appointment — к какому времени доставить (необязательно)","ap.ok":"к appointment {appt} успеваете, запас {d}","ap.late":"к appointment {appt} опоздание {d}","ap.leaveBy":"Чтобы успеть к {appt} с запасом {buf}, выезжайте не позже {dep}.","ap.optIs":"Оптимально: выезд {dep}, прибытие ~{eta}.","ap.cant":"К {appt} не успеть: самое раннее прибытие ~{eta}. Предупредите получателя.","set.apBuf":"Запас до appointment, мин","rn.h":"Мои рейсы","rn.save":"💾 Сохранить","rn.new":"Сохранить рейс","rn.name":"Название рейса","rn.day":"День appointment","rn.anyDay":"Ближайший день","rn.keeps":"Сохранятся: откуда, куда, время appointment, вес груза и все настройки трака и расчёта.","rn.withAppt":"Appointment в {t}","rn.noAppt":"Без appointment","rn.saved":"Рейс сохранён","rn.use":"Выбрать","rn.appt":"приём {t}","rn.cargo":"груз {w}","rn.empty":"Сохраните постоянный рейс — заполните «Откуда», «Куда», appointment и нажмите «💾 Сохранить». В следующий раз выберите его одним нажатием.","dowFull":["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"],"deps.h":"Когда выезжать?","dm.now":"Сейчас","dm.opt":"Оптимально","dm.custom":"Своё время","dm.pick":"Время выезда (до 3 суток вперёд)","dm.pickShort":"выбрать дату и время","dm.nowBest":"Выезжать сейчас — оптимально.","dm.optEarlier":"Оптимально выехать {dep}: приедете на {d} раньше, чем при выезде сейчас (~{eta}).","dm.optCalmer":"Оптимально выехать {dep}: приедете примерно так же (~{eta}), но в дороге проведёте на {d} меньше — без ожидания и пробок.","pl.h":"Мои точки","pl.add":"★ Добавить","pl.new":"Новая точка","pl.name":"Название","pl.type":"Тип","pl.note":"Заметка (ворота, часы приёма, телефон…)","pl.cancel":"Отмена","pl.empty":"Пока пусто. Чтобы запомнить место: долгое нажатие на карту, или кнопка ★ на карте и касание нужного места, или «★ Добавить» — сохранит, где вы сейчас.","pl.addHint":"Коснитесь карты там, где поставить точку","pl.saved":"Точка сохранена","pl.here":"Моё место","pl.from":"Отсюда","pl.to":"Сюда","pl.delq":"Удалить точку «{n}»?","pl.set":"«{n}» → {f}","pl.t.client":"Клиент / склад","pl.t.park":"Стоянка","pl.t.fuel":"Заправка","pl.t.food":"Еда","pl.t.scale":"Весы","pl.t.home":"Дом / база","pl.t.star":"Другое","fs.exit":"Двойное касание или ✕ — выйти из полноэкранного режима","set.uLen":"Расстояние, высота, скорость","set.uWt":"Вес","set.uTemp":"Температура","u.lenImp":"мили · футы · mph","u.lenMet":"км · метры · км/ч","u.lb":"фунты (lb)","u.kg":"килограммы (кг)","set.truck":"Трак","set.len":"Длина","kg":"кг","set.tare":"Трак + пустой прицеп","set.cargo":"Вес груза (0 — пустой)","set.t":"т","set.total":"Общий вес: {w}","set.light":"лёгкий, строже по ветру","set.avgUS":"Ваша средняя скорость в США","set.avgCA":"Ваша средняя скорость в Канаде","set.avgHelp":"Укажите, с какой скоростью вы обычно едете по трассе. В городах и на медленных дорогах берётся меньшая скорость по карте. Погода, пробки и отдых добавляются отдельно.","storm.h":"Погода на маршруте","storm.show":"Показать","storm.light":"слабый снег","storm.mod":"снег","storm.core":"ядро: сильный снег / метель","storm.ice":"ледяной дождь","storm.rain":"дождь","storm.truckL":"где будет трак","storm.loading":"Загружаю карту осадков…","storm.fail":"Не удалось загрузить карту осадков.","storm.now":"сейчас","storm.none":"В ближайшие 3 суток значимого снега в районе маршрута не ожидается.","storm.moving":"Снегопад смещается на {dir}, ~{spd}.","storm.starts":"Начнётся ~{t}.","storm.until":"Снег в районе маршрута закончится ~{t}.","storm.longer":"Снег в районе продолжится дольше 3 суток.","storm.truck":"🚚 — ваш трак при выезде {dep}","storm.notyet":"ещё не выехал","storm.arrived":"уже на месте","alts.h":"Варианты маршрута","alts.for":"Время в пути с учётом погоды, пробок и отдыха — при выезде {dep}. Нажмите, чтобы выбрать.","route.fast":"Быстрее всего","route.safe":"Спокойнее по погоде","route.toll":"Платные участки","route.wait":"⏸ шторм {d}","route.delay":"задержки +{d}","route.noname":"маршрут","eta.short":"прибытие","rec.one":"Других разумных вариантов не найдено.","rec.detour":"Объезд {r} быстрее основного {m} на {d} с учётом погоды и пробок.","rec.main":"Основной маршрут {r} — лучший при этом выезде.","st.alts":"Ищу объездные маршруты…","st.nalts":" · вариантов: {n}","set.tolls":"Платные дороги","set.tollsAllow":"Разрешить","set.tollsAvoid":"Избегать","title":"TruckWX — погода на маршруте","sub":"шторм · мосты · перекрытия","from":"Откуда","to":"Куда","ph.addr":"Начните вводить город или адрес","geo.btn":"📍 Я здесь","go":"Проверить маршрут",
 "lv0":"спокойно","lv1":"осторожно","lv2":"опасно","lv3":"шторм / лёд","legend.pct":"% — вероятность сильного снега (ансамбль GFS)",
 "trip.dep":"Выезд:","th.time":"Время","th.where":"Где","th.snow":"Снег","th.gust":"Порывы","th.prob":"Вер.","alerts.h":"Официальные предупреждения на маршруте","bridges.h":"Низкие мосты и ограничения по высоте",
 "roads.h":"Ремонты и перекрытия (511)","roads.txt":"Актуальные работы, аварии и закрытия — на официальных картах 511 штатов/провинций по маршруту:","border":"Граница:","cbp":"Очереди CBP (в США)","cbsa":"Очереди CBSA (в Канаду)",
@@ -453,7 +456,7 @@ ru:{"set.hosY":"Перерыв 30 мин каждые 8 ч","set.hosFull":"30 м
 "geo.denied":"Нет доступа к геолокации. Разрешите: Настройки iPhone → Конфиденциальность → Службы геолокации → Safari (или Chrome) → «При использовании».","geo.fail":"Не удалось определить местоположение:","geo.hint":"Нажмите «📍 Я здесь», чтобы взять текущее местоположение",
 "ac.searching":"Поиск…","ac.none":"Ничего не найдено — попробуйте иначе","ac.offline":"Нет связи с поиском адресов"},
 
-uk:{"set.hosY":"Перерва 30 хв кожні 8 год","set.hosFull":"30 хв / 8 год + відпочинок 10 год після 11 год","set.hosN":"Не враховувати","dm.optTitle":"Оптимальний час виїзду","dm.arrive":"прибуття ~{eta} · у дорозі {tot}","dm.nowLine":"Якщо виїхати зараз — прибуття ~{eta}.","st.reroute":"Ви з'їхали з маршруту — перебудовую…","dr.rerouted":"Маршрут перебудовано","route.hw":"трасами {p}%","zn.h":"Проблемні ділянки ({n}) — натисніть, щоб дізнатися подробиці:","zn.none":"На маршруті немає жовтих і червоних ділянок — їдьте спокійно.","zn.temp":"Темп.","zn.prob":"Ймовірність сильного снігу","zn.adv1":"Зменште швидкість, збільште дистанцію, обережно на мостах, спусках і з'їздах.","zn.adv2":"Небезпечно: подумайте про об'їзд (див. «Варіанти маршруту») або перечекайте на стоянці.","zn.adv3":"Шторм або ожеледь: краще перечекати до завершення або їхати іншим маршрутом.","ev.list":"Зупинки та події в дорозі ({n})","ev.bridge":"🌉 Міст Конфедерації закритий для високих ТЗ через вітер — очікування {a} → {b}","w.bridgeRestr":"міст Конфедерації: обмеження для траків через вітер","w.bridgeLight":"міст Конфедерації: сильний вітер — небезпечно для порожнього причепа","br.cbRule":"Обмеження для високих ТЗ (вище 2,2 м / 7′2″): вітер >70 км/год і пориви >85 км/год. Порожнім і легким небезпечно й за слабшого вітру.","br.cbNow":"Зараз: вітер {ws}, пориви {wg} {u}","br.cbRestr":"ймовірне обмеження","br.cbLight":"небезпечно для порожнього","br.cbOk":"без обмежень","br.cbWins":"Можливі обмеження","br.cbNoWins":"У найближчі 3 доби обмежень за прогнозом не очікується.","br.cbSite":"Статус мосту","dr.start":"🚚 Поїхали — попереджати в дорозі","dr.stop":"⏹ Зупинити режим «в дорозі»","dr.started":"Режим у дорозі ввімкнено. Попереджу за годину до небезпечних ділянок.","dr.needRoute":"Спочатку перевірте маршрут.","dr.waitGps":"🚚 У дорозі: чекаю GPS…","dr.offRoute":"🚚 Ви осторонь маршруту ({d}). Натисніть «Перевірити маршрут».","dr.clear":"🚚 Попереду чисто на найближчі {h}","dr.next":"🚚 Попереду {lv} через {m}: {p}","dr.alert":"Через {m} — {p}: {why}.","dr.detour":"Об'їзд","set.alertMin":"Попереджати заздалегідь, хв","set.voice":"Голосові попередження","w.recover":"потік розбиває сніг — швидкість повертається до звичайної","set.ramp":"Потім швидкість відновлюється, год","set.rampHelp":"Після шторму: розчищення → обмеження (зазвичай ~1 год) → потік машин розбиває сніг, і швидкість плавно повертається до звичайної для ділянки (зі знаками, часом доби й заторами).","rv.reviews":"⭐ Відгуки, години роботи, де в'їзд","rv.reviewsShort":"⭐ Відгуки","rv.street":"👁 Street View","ap.label":"Appointment — до якого часу доставити (необов'язково)","ap.ok":"до appointment {appt} встигаєте, запас {d}","ap.late":"до appointment {appt} запізнення {d}","ap.leaveBy":"Щоб встигнути до {appt} із запасом {buf}, виїжджайте не пізніше {dep}.","ap.optIs":"Оптимально: виїзд {dep}, прибуття ~{eta}.","ap.cant":"До {appt} не встигнути: найраніше прибуття ~{eta}. Попередьте отримувача.","set.apBuf":"Запас до appointment, хв","rn.h":"Мої рейси","rn.save":"💾 Зберегти","rn.new":"Зберегти рейс","rn.name":"Назва рейсу","rn.day":"День appointment","rn.anyDay":"Найближчий день","rn.keeps":"Збережуться: звідки, куди, час appointment, вага вантажу та всі налаштування трака й розрахунку.","rn.withAppt":"Appointment о {t}","rn.noAppt":"Без appointment","rn.saved":"Рейс збережено","rn.use":"Обрати","rn.appt":"прийом {t}","rn.cargo":"вантаж {w}","rn.empty":"Збережіть постійний рейс — заповніть «Звідки», «Куди», appointment і натисніть «💾 Зберегти». Наступного разу оберіть його одним натисканням.","dowFull":["неділя", "понеділок", "вівторок", "середа", "четвер", "п'ятниця", "субота"],"deps.h":"Коли виїжджати?","dm.now":"Зараз","dm.opt":"Оптимально","dm.custom":"Свій час","dm.pick":"Час виїзду (до 3 діб наперед)","dm.pickShort":"обрати дату й час","dm.nowBest":"Виїжджати зараз — оптимально.","dm.optEarlier":"Оптимально виїхати {dep}: прибудете на {d} раніше, ніж якщо виїхати зараз (~{eta}).","dm.optCalmer":"Оптимально виїхати {dep}: прибудете приблизно так само (~{eta}), але в дорозі проведете на {d} менше — без очікування й заторів.","pl.h":"Мої точки","pl.add":"★ Додати","pl.new":"Нова точка","pl.name":"Назва","pl.type":"Тип","pl.note":"Нотатка (ворота, години прийому, телефон…)","pl.cancel":"Скасувати","pl.empty":"Поки порожньо. Щоб запам'ятати місце: довге натискання на мапу, або кнопка ★ на мапі й дотик до потрібного місця, або «★ Додати» — збереже, де ви зараз.","pl.addHint":"Торкніться мапи там, де поставити точку","pl.saved":"Точку збережено","pl.here":"Моє місце","pl.from":"Звідси","pl.to":"Сюди","pl.delq":"Видалити точку «{n}»?","pl.set":"«{n}» → {f}","pl.t.client":"Клієнт / склад","pl.t.park":"Стоянка","pl.t.fuel":"Заправка","pl.t.food":"Їжа","pl.t.scale":"Ваги","pl.t.home":"Дім / база","pl.t.star":"Інше","fs.exit":"Подвійний дотик або ✕ — вийти з повноекранного режиму","set.uLen":"Відстань, висота, швидкість","set.uWt":"Вага","set.uTemp":"Температура","u.lenImp":"милі · фути · mph","u.lenMet":"км · метри · км/год","u.lb":"фунти (lb)","u.kg":"кілограми (кг)","set.truck":"Трак","set.len":"Довжина","kg":"кг","set.tare":"Трак + порожній причіп","set.cargo":"Вага вантажу (0 — порожній)","set.t":"т","set.total":"Загальна вага: {w}","set.light":"легкий, суворіше щодо вітру","set.avgUS":"Ваша середня швидкість у США","set.avgCA":"Ваша середня швидкість у Канаді","set.avgHelp":"Вкажіть, з якою швидкістю ви зазвичай їдете трасою. У містах і на повільних дорогах береться менша швидкість за мапою. Погода, затори й відпочинок додаються окремо.","storm.h":"Погода на маршруті","storm.show":"Показати","storm.light":"слабкий сніг","storm.mod":"сніг","storm.core":"ядро: сильний сніг / хуртовина","storm.ice":"крижаний дощ","storm.rain":"дощ","storm.truckL":"де буде трак","storm.loading":"Завантажую мапу опадів…","storm.fail":"Не вдалося завантажити мапу опадів.","storm.now":"зараз","storm.none":"У найближчі 3 доби значного снігу в районі маршруту не очікується.","storm.moving":"Снігопад зміщується на {dir}, ~{spd}.","storm.starts":"Почнеться ~{t}.","storm.until":"Сніг у районі маршруту закінчиться ~{t}.","storm.longer":"Сніг у районі триватиме понад 3 доби.","storm.truck":"🚚 — ваш трак при виїзді {dep}","storm.notyet":"ще не виїхав","storm.arrived":"вже на місці","alts.h":"Варіанти маршруту","alts.for":"Час у дорозі з урахуванням погоди, заторів і відпочинку — при виїзді {dep}. Натисніть, щоб обрати.","route.fast":"Найшвидший","route.safe":"Спокійніший за погодою","route.toll":"Платні ділянки","route.wait":"⏸ шторм {d}","route.delay":"затримки +{d}","route.noname":"маршрут","eta.short":"прибуття","rec.one":"Інших розумних варіантів не знайдено.","rec.detour":"Об'їзд {r} швидший за основний {m} на {d} з урахуванням погоди та заторів.","rec.main":"Основний маршрут {r} — найкращий при цьому виїзді.","st.alts":"Шукаю об'їзні маршрути…","st.nalts":" · варіантів: {n}","set.tolls":"Платні дороги","set.tollsAllow":"Дозволити","set.tollsAvoid":"Уникати","title":"TruckWX — погода на маршруті","sub":"шторм · мости · перекриття","from":"Звідки","to":"Куди","ph.addr":"Почніть вводити місто або адресу","geo.btn":"📍 Я тут","go":"Перевірити маршрут",
+uk:{"xg.std":"основний для траків","xg.unuse":"Обирати перехід автоматично","xg.chosen":"Перехід: {n}. Перебудовую маршрут…","xg.g.mar":"Приморські провінції ⇄ Мен","xg.g.qc":"Квебек ⇄ США (вантажні)","xg.g.on":"Онтаріо ⇄ США (вантажні)","xg.label":"🛂 Прикордонний перехід","xg.auto":"Автоматично (найкращий за маршрутом)","xg.h24":"Цілодобово, вантажівки оформлюють (CBP).","xg.check":"Години роботи й оформлення вантажівок — уточніть перед рейсом.","xg.use":"Їхати через цей перехід","xg.cbp":"Черга до США (CBP)","xg.cbsa":"Черга до Канади (CBSA)","storm.atDep":"момент виїзду","storm.sinceDep":"+{d} від виїзду","storm.truckAt":"{t} трак буде тут: {p}","set.hosY":"Перерва 30 хв кожні 8 год","set.hosFull":"30 хв / 8 год + відпочинок 10 год після 11 год","set.hosN":"Не враховувати","dm.optTitle":"Оптимальний час виїзду","dm.arrive":"прибуття ~{eta} · у дорозі {tot}","dm.nowLine":"Якщо виїхати зараз — прибуття ~{eta}.","st.reroute":"Ви з'їхали з маршруту — перебудовую…","dr.rerouted":"Маршрут перебудовано","route.hw":"трасами {p}%","zn.h":"Проблемні ділянки ({n}) — натисніть, щоб дізнатися подробиці:","zn.none":"На маршруті немає жовтих і червоних ділянок — їдьте спокійно.","zn.temp":"Темп.","zn.prob":"Ймовірність сильного снігу","zn.adv1":"Зменште швидкість, збільште дистанцію, обережно на мостах, спусках і з'їздах.","zn.adv2":"Небезпечно: подумайте про об'їзд (див. «Варіанти маршруту») або перечекайте на стоянці.","zn.adv3":"Шторм або ожеледь: краще перечекати до завершення або їхати іншим маршрутом.","ev.list":"Зупинки та події в дорозі ({n})","ev.bridge":"🌉 Міст Конфедерації закритий для високих ТЗ через вітер — очікування {a} → {b}","w.bridgeRestr":"міст Конфедерації: обмеження для траків через вітер","w.bridgeLight":"міст Конфедерації: сильний вітер — небезпечно для порожнього причепа","br.cbRule":"Обмеження для високих ТЗ (вище 2,2 м / 7′2″): вітер >70 км/год і пориви >85 км/год. Порожнім і легким небезпечно й за слабшого вітру.","br.cbNow":"Зараз: вітер {ws}, пориви {wg} {u}","br.cbRestr":"ймовірне обмеження","br.cbLight":"небезпечно для порожнього","br.cbOk":"без обмежень","br.cbWins":"Можливі обмеження","br.cbNoWins":"У найближчі 3 доби обмежень за прогнозом не очікується.","br.cbSite":"Статус мосту","dr.start":"🚚 Поїхали — попереджати в дорозі","dr.stop":"⏹ Зупинити режим «в дорозі»","dr.started":"Режим у дорозі ввімкнено. Попереджу за годину до небезпечних ділянок.","dr.needRoute":"Спочатку перевірте маршрут.","dr.waitGps":"🚚 У дорозі: чекаю GPS…","dr.offRoute":"🚚 Ви осторонь маршруту ({d}). Натисніть «Перевірити маршрут».","dr.clear":"🚚 Попереду чисто на найближчі {h}","dr.next":"🚚 Попереду {lv} через {m}: {p}","dr.alert":"Через {m} — {p}: {why}.","dr.detour":"Об'їзд","set.alertMin":"Попереджати заздалегідь, хв","set.voice":"Голосові попередження","w.recover":"потік розбиває сніг — швидкість повертається до звичайної","set.ramp":"Потім швидкість відновлюється, год","set.rampHelp":"Після шторму: розчищення → обмеження (зазвичай ~1 год) → потік машин розбиває сніг, і швидкість плавно повертається до звичайної для ділянки (зі знаками, часом доби й заторами).","rv.reviews":"⭐ Відгуки, години роботи, де в'їзд","rv.reviewsShort":"⭐ Відгуки","rv.street":"👁 Street View","ap.label":"Appointment — до якого часу доставити (необов'язково)","ap.ok":"до appointment {appt} встигаєте, запас {d}","ap.late":"до appointment {appt} запізнення {d}","ap.leaveBy":"Щоб встигнути до {appt} із запасом {buf}, виїжджайте не пізніше {dep}.","ap.optIs":"Оптимально: виїзд {dep}, прибуття ~{eta}.","ap.cant":"До {appt} не встигнути: найраніше прибуття ~{eta}. Попередьте отримувача.","set.apBuf":"Запас до appointment, хв","rn.h":"Мої рейси","rn.save":"💾 Зберегти","rn.new":"Зберегти рейс","rn.name":"Назва рейсу","rn.day":"День appointment","rn.anyDay":"Найближчий день","rn.keeps":"Збережуться: звідки, куди, час appointment, вага вантажу та всі налаштування трака й розрахунку.","rn.withAppt":"Appointment о {t}","rn.noAppt":"Без appointment","rn.saved":"Рейс збережено","rn.use":"Обрати","rn.appt":"прийом {t}","rn.cargo":"вантаж {w}","rn.empty":"Збережіть постійний рейс — заповніть «Звідки», «Куди», appointment і натисніть «💾 Зберегти». Наступного разу оберіть його одним натисканням.","dowFull":["неділя", "понеділок", "вівторок", "середа", "четвер", "п'ятниця", "субота"],"deps.h":"Коли виїжджати?","dm.now":"Зараз","dm.opt":"Оптимально","dm.custom":"Свій час","dm.pick":"Час виїзду (до 3 діб наперед)","dm.pickShort":"обрати дату й час","dm.nowBest":"Виїжджати зараз — оптимально.","dm.optEarlier":"Оптимально виїхати {dep}: прибудете на {d} раніше, ніж якщо виїхати зараз (~{eta}).","dm.optCalmer":"Оптимально виїхати {dep}: прибудете приблизно так само (~{eta}), але в дорозі проведете на {d} менше — без очікування й заторів.","pl.h":"Мої точки","pl.add":"★ Додати","pl.new":"Нова точка","pl.name":"Назва","pl.type":"Тип","pl.note":"Нотатка (ворота, години прийому, телефон…)","pl.cancel":"Скасувати","pl.empty":"Поки порожньо. Щоб запам'ятати місце: довге натискання на мапу, або кнопка ★ на мапі й дотик до потрібного місця, або «★ Додати» — збереже, де ви зараз.","pl.addHint":"Торкніться мапи там, де поставити точку","pl.saved":"Точку збережено","pl.here":"Моє місце","pl.from":"Звідси","pl.to":"Сюди","pl.delq":"Видалити точку «{n}»?","pl.set":"«{n}» → {f}","pl.t.client":"Клієнт / склад","pl.t.park":"Стоянка","pl.t.fuel":"Заправка","pl.t.food":"Їжа","pl.t.scale":"Ваги","pl.t.home":"Дім / база","pl.t.star":"Інше","fs.exit":"Подвійний дотик або ✕ — вийти з повноекранного режиму","set.uLen":"Відстань, висота, швидкість","set.uWt":"Вага","set.uTemp":"Температура","u.lenImp":"милі · фути · mph","u.lenMet":"км · метри · км/год","u.lb":"фунти (lb)","u.kg":"кілограми (кг)","set.truck":"Трак","set.len":"Довжина","kg":"кг","set.tare":"Трак + порожній причіп","set.cargo":"Вага вантажу (0 — порожній)","set.t":"т","set.total":"Загальна вага: {w}","set.light":"легкий, суворіше щодо вітру","set.avgUS":"Ваша середня швидкість у США","set.avgCA":"Ваша середня швидкість у Канаді","set.avgHelp":"Вкажіть, з якою швидкістю ви зазвичай їдете трасою. У містах і на повільних дорогах береться менша швидкість за мапою. Погода, затори й відпочинок додаються окремо.","storm.h":"Погода на маршруті","storm.show":"Показати","storm.light":"слабкий сніг","storm.mod":"сніг","storm.core":"ядро: сильний сніг / хуртовина","storm.ice":"крижаний дощ","storm.rain":"дощ","storm.truckL":"де буде трак","storm.loading":"Завантажую мапу опадів…","storm.fail":"Не вдалося завантажити мапу опадів.","storm.now":"зараз","storm.none":"У найближчі 3 доби значного снігу в районі маршруту не очікується.","storm.moving":"Снігопад зміщується на {dir}, ~{spd}.","storm.starts":"Почнеться ~{t}.","storm.until":"Сніг у районі маршруту закінчиться ~{t}.","storm.longer":"Сніг у районі триватиме понад 3 доби.","storm.truck":"🚚 — ваш трак при виїзді {dep}","storm.notyet":"ще не виїхав","storm.arrived":"вже на місці","alts.h":"Варіанти маршруту","alts.for":"Час у дорозі з урахуванням погоди, заторів і відпочинку — при виїзді {dep}. Натисніть, щоб обрати.","route.fast":"Найшвидший","route.safe":"Спокійніший за погодою","route.toll":"Платні ділянки","route.wait":"⏸ шторм {d}","route.delay":"затримки +{d}","route.noname":"маршрут","eta.short":"прибуття","rec.one":"Інших розумних варіантів не знайдено.","rec.detour":"Об'їзд {r} швидший за основний {m} на {d} з урахуванням погоди та заторів.","rec.main":"Основний маршрут {r} — найкращий при цьому виїзді.","st.alts":"Шукаю об'їзні маршрути…","st.nalts":" · варіантів: {n}","set.tolls":"Платні дороги","set.tollsAllow":"Дозволити","set.tollsAvoid":"Уникати","title":"TruckWX — погода на маршруті","sub":"шторм · мости · перекриття","from":"Звідки","to":"Куди","ph.addr":"Почніть вводити місто або адресу","geo.btn":"📍 Я тут","go":"Перевірити маршрут",
 "lv0":"спокійно","lv1":"обережно","lv2":"небезпечно","lv3":"шторм / ожеледь","legend.pct":"% — ймовірність сильного снігу (ансамбль GFS)",
 "trip.dep":"Виїзд:","th.time":"Час","th.where":"Де","th.snow":"Сніг","th.gust":"Пориви","th.prob":"Ймов.","alerts.h":"Офіційні попередження на маршруті","bridges.h":"Низькі мости та обмеження висоти",
 "roads.h":"Ремонти та перекриття (511)","roads.txt":"Актуальні роботи, аварії та перекриття — на офіційних картах 511 штатів/провінцій за маршрутом:","border":"Кордон:","cbp":"Черги CBP (до США)","cbsa":"Черги CBSA (до Канади)",
@@ -487,7 +490,7 @@ uk:{"set.hosY":"Перерва 30 хв кожні 8 год","set.hosFull":"30 х
 "geo.denied":"Немає доступу до геолокації. Дозвольте: Параметри iPhone → Приватність і безпека → Служби локації → Safari (або Chrome) → «Коли застосунок використовується».","geo.fail":"Не вдалося визначити місцезнаходження:","geo.hint":"Натисніть «📍 Я тут», щоб взяти поточне місцезнаходження",
 "ac.searching":"Пошук…","ac.none":"Нічого не знайдено — спробуйте інакше","ac.offline":"Немає зв'язку з пошуком адрес"},
 
-en:{"set.hosY":"30 min break every 8 h","set.hosFull":"30 min / 8 h + 10 h rest after 11 h","set.hosN":"Don't include","dm.optTitle":"Best departure time","dm.arrive":"arrive ~{eta} · {tot} on the road","dm.nowLine":"If you leave now — arrive ~{eta}.","st.reroute":"You left the route — rerouting…","dr.rerouted":"Route updated","route.hw":"highways {p}%","zn.h":"Problem stretches ({n}) — tap for details:","zn.none":"No yellow or red stretches on the route — drive safe.","zn.temp":"Temp","zn.prob":"Chance of heavy snow","zn.adv1":"Slow down, increase following distance, careful on bridges, grades and ramps.","zn.adv2":"Dangerous: consider a detour (see Route options) or wait it out at a stop.","zn.adv3":"Storm or ice: better wait until it ends or take another route.","ev.list":"Stops and events ({n})","ev.bridge":"🌉 Confederation Bridge closed to high-sided vehicles (wind) — wait {a} → {b}","w.bridgeRestr":"Confederation Bridge: truck restriction due to wind","w.bridgeLight":"Confederation Bridge: strong wind — risky for an empty trailer","br.cbRule":"High-sided vehicles (over 2.2 m / 7′2″) are restricted when winds exceed 70 km/h with gusts over 85 km/h. Empty/light trucks are at risk even below that.","br.cbNow":"Now: wind {ws}, gusts {wg} {u}","br.cbRestr":"restriction likely","br.cbLight":"risky if empty","br.cbOk":"no restriction","br.cbWins":"Possible restrictions","br.cbNoWins":"No restrictions expected in the next 3 days.","br.cbSite":"Bridge status","dr.start":"🚚 Let's go — warn me on the road","dr.stop":"⏹ Stop driving mode","dr.started":"Driving mode on. I'll warn you about an hour before dangerous stretches.","dr.needRoute":"Check the route first.","dr.waitGps":"🚚 Driving: waiting for GPS…","dr.offRoute":"🚚 You're off the route ({d}). Tap “Check route”.","dr.clear":"🚚 Clear ahead for the next {h}","dr.next":"🚚 {lv} ahead in {m}: {p}","dr.alert":"In {m} — {p}: {why}.","dr.detour":"Detour","set.alertMin":"Warn ahead, min","set.voice":"Voice warnings","w.recover":"traffic breaks up the snow — speed returning to normal","set.ramp":"Then speed recovers over, h","set.rampHelp":"After a storm: plowing → speed limit (usually ~1 h) → traffic breaks up the snow and speed gradually returns to normal for that stretch (signs, time of day, traffic).","rv.reviews":"⭐ Reviews, hours, where to enter","rv.reviewsShort":"⭐ Reviews","rv.street":"👁 Street View","ap.label":"Appointment — deliver by (optional)","ap.ok":"on time for {appt} appointment, {d} to spare","ap.late":"late for {appt} appointment by {d}","ap.leaveBy":"To make {appt} with a {buf} buffer, leave no later than {dep}.","ap.optIs":"Optimal: leave {dep}, arrive ~{eta}.","ap.cant":"Can't make {appt}: earliest arrival ~{eta}. Let the receiver know.","set.apBuf":"Buffer before appointment, min","rn.h":"My runs","rn.save":"💾 Save","rn.new":"Save run","rn.name":"Run name","rn.day":"Appointment day","rn.anyDay":"Next available day","rn.keeps":"Saved: from, to, appointment time, cargo weight and all truck and ETA settings.","rn.withAppt":"Appointment at {t}","rn.noAppt":"No appointment","rn.saved":"Run saved","rn.use":"Use","rn.appt":"appt {t}","rn.cargo":"cargo {w}","rn.empty":"Save a regular run — fill in From, To, appointment and tap “💾 Save”. Next time pick it with one tap.","dowFull":["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],"deps.h":"When to leave?","dm.now":"Now","dm.opt":"Optimal","dm.custom":"My time","dm.pick":"Departure time (up to 3 days ahead)","dm.pickShort":"pick date & time","dm.nowBest":"Leaving now is optimal.","dm.optEarlier":"Best to leave {dep}: you'll arrive {d} earlier than leaving now (~{eta}).","dm.optCalmer":"Best to leave {dep}: about the same arrival (~{eta}), but {d} less time on the road — no waiting or traffic.","pl.h":"My places","pl.add":"★ Add","pl.new":"New place","pl.name":"Name","pl.type":"Type","pl.note":"Note (gate, receiving hours, phone…)","pl.cancel":"Cancel","pl.empty":"Nothing yet. To save a place: long-press the map, or tap ★ on the map and then the spot, or “★ Add” to save where you are now.","pl.addHint":"Tap the map where the place should go","pl.saved":"Place saved","pl.here":"My location","pl.from":"From here","pl.to":"Go here","pl.delq":"Delete “{n}”?","pl.set":"“{n}” → {f}","pl.t.client":"Customer / warehouse","pl.t.park":"Parking","pl.t.fuel":"Fuel","pl.t.food":"Food","pl.t.scale":"Scale","pl.t.home":"Home / yard","pl.t.star":"Other","fs.exit":"Double-tap or ✕ to exit full screen","set.uLen":"Distance, height, speed","set.uWt":"Weight","set.uTemp":"Temperature","u.lenImp":"miles · feet · mph","u.lenMet":"km · meters · km/h","u.lb":"pounds (lb)","u.kg":"kilograms (kg)","set.truck":"Truck","set.len":"Length","kg":"kg","set.tare":"Truck + empty trailer","set.cargo":"Cargo weight (0 = empty)","set.t":"t","set.total":"Gross weight: {w}","set.light":"light, stricter wind limits","set.avgUS":"Your average speed in the US","set.avgCA":"Your average speed in Canada","set.avgHelp":"Enter the speed you usually hold on the highway. In towns and on slower roads the lower map speed is used. Weather, traffic and rest are added separately.","storm.h":"Weather along the route","storm.show":"Show","storm.light":"light snow","storm.mod":"snow","storm.core":"core: heavy snow / blizzard","storm.ice":"freezing rain","storm.rain":"rain","storm.truckL":"where your truck will be","storm.loading":"Loading precipitation map…","storm.fail":"Couldn't load precipitation map.","storm.now":"now","storm.none":"No significant snow expected near the route in the next 3 days.","storm.moving":"Snow is moving {dir}, ~{spd}.","storm.starts":"Starts ~{t}.","storm.until":"Snow near the route ends ~{t}.","storm.longer":"Snow near the route continues beyond 3 days.","storm.truck":"🚚 — your truck leaving {dep}","storm.notyet":"not departed yet","storm.arrived":"already arrived","alts.h":"Route options","alts.for":"Travel time including weather, traffic and rest — leaving {dep}. Tap to choose.","route.fast":"Fastest","route.safe":"Calmer weather","route.toll":"Tolls","route.wait":"⏸ storm {d}","route.delay":"delays +{d}","route.noname":"route","eta.short":"arrive","rec.one":"No other reasonable routes found.","rec.detour":"Detour {r} beats main route {m} by {d} given weather and traffic.","rec.main":"Main route {r} is the best for this departure.","st.alts":"Looking for alternative routes…","st.nalts":" · options: {n}","set.tolls":"Toll roads","set.tollsAllow":"Allow","set.tollsAvoid":"Avoid","title":"TruckWX — route weather","sub":"storms · bridges · closures","from":"From","to":"To","ph.addr":"Start typing a city or address","geo.btn":"📍 I'm here","go":"Check route",
+en:{"xg.std":"standard truck crossing","xg.unuse":"Pick crossing automatically","xg.chosen":"Crossing: {n}. Rerouting…","xg.g.mar":"Maritimes ⇄ Maine","xg.g.qc":"Quebec ⇄ US (commercial)","xg.g.on":"Ontario ⇄ US (commercial)","xg.label":"🛂 Border crossing","xg.auto":"Automatic (best for the route)","xg.h24":"24/7, commercial trucks processed (CBP).","xg.check":"Check hours and commercial processing before the trip.","xg.use":"Use this crossing","xg.cbp":"US wait (CBP)","xg.cbsa":"Canada wait (CBSA)","storm.atDep":"departure","storm.sinceDep":"+{d} after departure","storm.truckAt":"{t} truck will be here: {p}","set.hosY":"30 min break every 8 h","set.hosFull":"30 min / 8 h + 10 h rest after 11 h","set.hosN":"Don't include","dm.optTitle":"Best departure time","dm.arrive":"arrive ~{eta} · {tot} on the road","dm.nowLine":"If you leave now — arrive ~{eta}.","st.reroute":"You left the route — rerouting…","dr.rerouted":"Route updated","route.hw":"highways {p}%","zn.h":"Problem stretches ({n}) — tap for details:","zn.none":"No yellow or red stretches on the route — drive safe.","zn.temp":"Temp","zn.prob":"Chance of heavy snow","zn.adv1":"Slow down, increase following distance, careful on bridges, grades and ramps.","zn.adv2":"Dangerous: consider a detour (see Route options) or wait it out at a stop.","zn.adv3":"Storm or ice: better wait until it ends or take another route.","ev.list":"Stops and events ({n})","ev.bridge":"🌉 Confederation Bridge closed to high-sided vehicles (wind) — wait {a} → {b}","w.bridgeRestr":"Confederation Bridge: truck restriction due to wind","w.bridgeLight":"Confederation Bridge: strong wind — risky for an empty trailer","br.cbRule":"High-sided vehicles (over 2.2 m / 7′2″) are restricted when winds exceed 70 km/h with gusts over 85 km/h. Empty/light trucks are at risk even below that.","br.cbNow":"Now: wind {ws}, gusts {wg} {u}","br.cbRestr":"restriction likely","br.cbLight":"risky if empty","br.cbOk":"no restriction","br.cbWins":"Possible restrictions","br.cbNoWins":"No restrictions expected in the next 3 days.","br.cbSite":"Bridge status","dr.start":"🚚 Let's go — warn me on the road","dr.stop":"⏹ Stop driving mode","dr.started":"Driving mode on. I'll warn you about an hour before dangerous stretches.","dr.needRoute":"Check the route first.","dr.waitGps":"🚚 Driving: waiting for GPS…","dr.offRoute":"🚚 You're off the route ({d}). Tap “Check route”.","dr.clear":"🚚 Clear ahead for the next {h}","dr.next":"🚚 {lv} ahead in {m}: {p}","dr.alert":"In {m} — {p}: {why}.","dr.detour":"Detour","set.alertMin":"Warn ahead, min","set.voice":"Voice warnings","w.recover":"traffic breaks up the snow — speed returning to normal","set.ramp":"Then speed recovers over, h","set.rampHelp":"After a storm: plowing → speed limit (usually ~1 h) → traffic breaks up the snow and speed gradually returns to normal for that stretch (signs, time of day, traffic).","rv.reviews":"⭐ Reviews, hours, where to enter","rv.reviewsShort":"⭐ Reviews","rv.street":"👁 Street View","ap.label":"Appointment — deliver by (optional)","ap.ok":"on time for {appt} appointment, {d} to spare","ap.late":"late for {appt} appointment by {d}","ap.leaveBy":"To make {appt} with a {buf} buffer, leave no later than {dep}.","ap.optIs":"Optimal: leave {dep}, arrive ~{eta}.","ap.cant":"Can't make {appt}: earliest arrival ~{eta}. Let the receiver know.","set.apBuf":"Buffer before appointment, min","rn.h":"My runs","rn.save":"💾 Save","rn.new":"Save run","rn.name":"Run name","rn.day":"Appointment day","rn.anyDay":"Next available day","rn.keeps":"Saved: from, to, appointment time, cargo weight and all truck and ETA settings.","rn.withAppt":"Appointment at {t}","rn.noAppt":"No appointment","rn.saved":"Run saved","rn.use":"Use","rn.appt":"appt {t}","rn.cargo":"cargo {w}","rn.empty":"Save a regular run — fill in From, To, appointment and tap “💾 Save”. Next time pick it with one tap.","dowFull":["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],"deps.h":"When to leave?","dm.now":"Now","dm.opt":"Optimal","dm.custom":"My time","dm.pick":"Departure time (up to 3 days ahead)","dm.pickShort":"pick date & time","dm.nowBest":"Leaving now is optimal.","dm.optEarlier":"Best to leave {dep}: you'll arrive {d} earlier than leaving now (~{eta}).","dm.optCalmer":"Best to leave {dep}: about the same arrival (~{eta}), but {d} less time on the road — no waiting or traffic.","pl.h":"My places","pl.add":"★ Add","pl.new":"New place","pl.name":"Name","pl.type":"Type","pl.note":"Note (gate, receiving hours, phone…)","pl.cancel":"Cancel","pl.empty":"Nothing yet. To save a place: long-press the map, or tap ★ on the map and then the spot, or “★ Add” to save where you are now.","pl.addHint":"Tap the map where the place should go","pl.saved":"Place saved","pl.here":"My location","pl.from":"From here","pl.to":"Go here","pl.delq":"Delete “{n}”?","pl.set":"“{n}” → {f}","pl.t.client":"Customer / warehouse","pl.t.park":"Parking","pl.t.fuel":"Fuel","pl.t.food":"Food","pl.t.scale":"Scale","pl.t.home":"Home / yard","pl.t.star":"Other","fs.exit":"Double-tap or ✕ to exit full screen","set.uLen":"Distance, height, speed","set.uWt":"Weight","set.uTemp":"Temperature","u.lenImp":"miles · feet · mph","u.lenMet":"km · meters · km/h","u.lb":"pounds (lb)","u.kg":"kilograms (kg)","set.truck":"Truck","set.len":"Length","kg":"kg","set.tare":"Truck + empty trailer","set.cargo":"Cargo weight (0 = empty)","set.t":"t","set.total":"Gross weight: {w}","set.light":"light, stricter wind limits","set.avgUS":"Your average speed in the US","set.avgCA":"Your average speed in Canada","set.avgHelp":"Enter the speed you usually hold on the highway. In towns and on slower roads the lower map speed is used. Weather, traffic and rest are added separately.","storm.h":"Weather along the route","storm.show":"Show","storm.light":"light snow","storm.mod":"snow","storm.core":"core: heavy snow / blizzard","storm.ice":"freezing rain","storm.rain":"rain","storm.truckL":"where your truck will be","storm.loading":"Loading precipitation map…","storm.fail":"Couldn't load precipitation map.","storm.now":"now","storm.none":"No significant snow expected near the route in the next 3 days.","storm.moving":"Snow is moving {dir}, ~{spd}.","storm.starts":"Starts ~{t}.","storm.until":"Snow near the route ends ~{t}.","storm.longer":"Snow near the route continues beyond 3 days.","storm.truck":"🚚 — your truck leaving {dep}","storm.notyet":"not departed yet","storm.arrived":"already arrived","alts.h":"Route options","alts.for":"Travel time including weather, traffic and rest — leaving {dep}. Tap to choose.","route.fast":"Fastest","route.safe":"Calmer weather","route.toll":"Tolls","route.wait":"⏸ storm {d}","route.delay":"delays +{d}","route.noname":"route","eta.short":"arrive","rec.one":"No other reasonable routes found.","rec.detour":"Detour {r} beats main route {m} by {d} given weather and traffic.","rec.main":"Main route {r} is the best for this departure.","st.alts":"Looking for alternative routes…","st.nalts":" · options: {n}","set.tolls":"Toll roads","set.tollsAllow":"Allow","set.tollsAvoid":"Avoid","title":"TruckWX — route weather","sub":"storms · bridges · closures","from":"From","to":"To","ph.addr":"Start typing a city or address","geo.btn":"📍 I'm here","go":"Check route",
 "lv0":"calm","lv1":"caution","lv2":"dangerous","lv3":"storm / ice","legend.pct":"% — chance of heavy snow (GFS ensemble)",
 "trip.dep":"Departure:","th.time":"Time","th.where":"Where","th.snow":"Snow","th.gust":"Gusts","th.prob":"Prob.","alerts.h":"Official alerts along the route","bridges.h":"Low bridges and height limits",
 "roads.h":"Road work and closures (511)","roads.txt":"Current road work, crashes and closures — on the official 511 maps for the states/provinces on your route:","border":"Border:","cbp":"CBP wait times (into US)","cbsa":"CBSA wait times (into Canada)",
@@ -648,7 +651,7 @@ function initMap(){
     else lastTap = {t:now, x:pt.x, y:pt.y};
   });
   map.on("popupopen", e => bindPopupButtons(e.popup && e.popup.getElement ? e.popup.getElement() : null));
-  renderPlaces();
+  renderPlaces(); drawXings();
   loadBridgeWind().then(drawBridge); drawBridge();
 }
 /* ============ карта на весь экран ============ */
@@ -685,6 +688,67 @@ function updateToLinks(){
   if(lat){ $("toStreet").href = gStreet(lat, lon); $("toStreet").style.display = ""; } else $("toStreet").style.display = "none";
   box.classList.add("show");
 }
+
+/* ============ погранпереходы (для траков) ============ */
+// координаты — Wikipedia; часы/грузовые — CBP (BorderConnect): h24 = круглосуточно, грузовики оформляют
+const XINGS = [
+  // Приморье ⇄ Мэн
+  {id:"houlton", std:true,  g:"mar", n:"Woodstock NB ⇄ Houlton ME · I-95",               lat:46.135256, lon:-67.781246, code:"0106", h24:true},
+  {id:"calais",   g:"mar", n:"St. Stephen NB ⇄ Calais ME · International Ave", lat:45.161032, lon:-67.3026,   code:"0115", h24:true},
+  // Квебек ⇄ США (грузовые)
+  {id:"jackman",  g:"qc",  n:"Armstrong QC ⇄ Jackman ME · US-201",             lat:45.8035,   lon:-70.3875,   code:"0104", h24:true},
+  {id:"derby", std:true,    g:"qc",  n:"Stanstead QC ⇄ Derby Line VT · A-55 / I-91",     lat:45.00579,  lon:-72.099323, code:"0209", h24:true},
+  {id:"highgate", g:"qc",  n:"St-Armand QC ⇄ Highgate Springs VT · A-133 / I-89", lat:45.015484, lon:-73.084606, code:"0212", h24:true},
+  {id:"champlain", std:true,g:"qc",  n:"Lacolle QC ⇄ Champlain NY · A-15 / I-87",        lat:45.008825, lon:-73.452358, code:"0712", h24:true},
+  // Онтарио ⇄ США (грузовые)
+  {id:"massena",  g:"on",  n:"Cornwall ON ⇄ Massena NY · Seaway Bridge",       lat:45.00,     lon:-74.74,     code:"0704", h24:true},
+  {id:"ogdensburg",g:"on", n:"Prescott ON ⇄ Ogdensburg NY",                    lat:44.7353,   lon:-75.4595,   code:"0701", h24:true},
+  {id:"alexbay", std:true,  g:"on",  n:"Lansdowne ON ⇄ Alexandria Bay NY · 401 / I-81 (Thousand Islands)", lat:44.347318, lon:-75.983396, code:"0708", h24:true},
+  {id:"lewiston", std:true, g:"on",  n:"Queenston ON ⇄ Lewiston NY · 405 / I-190",       lat:43.15306,  lon:-79.04445,  code:"0901"},
+  {id:"peace", std:true,    g:"on",  n:"Fort Erie ON ⇄ Buffalo NY · QEW / I-190 (Peace Bridge)", lat:42.90694, lon:-78.90556, code:"0901"},
+  {id:"bluewater", std:true,g:"on",  n:"Sarnia ON ⇄ Port Huron MI · 402 / I-94/I-69 (Blue Water)", lat:42.99861, lon:-82.42361, code:"3802"},
+  {id:"ambassador", std:true,g:"on", n:"Windsor ON ⇄ Detroit MI · Ambassador Bridge",    lat:42.312,    lon:-83.074,    code:"3801", h24:true},
+  {id:"gordiehowe", std:true,g:"on", n:"Windsor ON ⇄ Detroit MI · 401 / I-75 (Gordie Howe)", lat:42.2875, lon:-83.09778,  code:"3801", h24:true},
+  {id:"soo",      g:"on",  n:"Sault Ste. Marie ON ⇄ Sault Ste. Marie MI · I-75", lat:46.5086, lon:-84.361,     code:"3803", h24:true}
+];
+const xingById = id => XINGS.find(x => x.id === id) || null;
+const xShort = x => x.n.split(" · ")[0].split(" ⇄ ")[1] || x.n;
+function fillXingSelect(){
+  const el = $("xing"), cur = el.value || (LS.get("last", {}) || {}).xing || "";
+  el.innerHTML = `<option value="">${esc(t("xg.auto"))}</option>` + ["mar","qc","on"].map(g =>
+    `<optgroup label="${esc(t("xg.g."+g))}">` + XINGS.filter(x => x.g===g).map(x => `<option value="${x.id}">${x.std?"⭐":"🛂"} ${esc(x.n)}</option>`).join("") + `</optgroup>`).join("");
+  el.value = cur;
+}
+function detectXing(route){ // через какой переход идёт маршрут
+  let best = null, bd = 1e9;
+  for(const x of XINGS){ for(let i=0;i<route.coords.length;i+=3){ const c = route.coords[i];
+    if(Math.abs(c[0]-x.lat) > 0.1 || Math.abs(c[1]-x.lon) > 0.15) continue;
+    const d = hav(c, [x.lat, x.lon]); if(d < bd){ bd = d; best = x; } } }
+  return bd < 3 ? best : null;
+}
+function xingLinks(x){
+  const cbp = x.code ? `https://bwt.cbp.gov/ViewAllPorts.html?com=1&pas=1&ped=1&plist=${x.code}` : "https://bwt.cbp.gov/";
+  return `<div class="ppbtns"><a href="${cbp}" target="_blank" rel="noopener">${t("xg.cbp")}</a><a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank" rel="noopener">${t("xg.cbsa")}</a></div>`;
+}
+function xingPopup(x){
+  const sel = $("xing").value === x.id;
+  return `<b>🛂 ${esc(x.n)}</b>${x.std?` <span class="small">⭐ ${t("xg.std")}</span>`:""}<br><span class="small">${x.h24 ? t("xg.h24") : t("xg.check")}</span>` + xingLinks(x) +
+    `<div class="ppbtns">${sel ? `<button data-xg="">${t("xg.unuse")}</button>` : `<button data-xg="${x.id}">${t("xg.use")}</button>`}</div>`;
+}
+let xingLayer = null;
+function drawXings(){
+  if(!map || typeof L==="undefined") return;
+  if(xingLayer) xingLayer.clearLayers(); else xingLayer = L.layerGroup().addTo(map);
+  const sel = $("xing").value;
+  XINGS.forEach(x => L.marker([x.lat, x.lon], {icon:L.divIcon({className:"", html:`<div class="brico${x.id===sel?" xsel":""}">🛂</div>`, iconSize:[24,24], iconAnchor:[12,12]}), zIndexOffset: x.id===sel ? 900 : 550})
+    .bindPopup(() => xingPopup(x)).addTo(xingLayer));
+}
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-xg]"); if(!b) return;
+  $("xing").value = b.dataset.xg; saveLast(); drawXings(); if(map && map.closePopup) map.closePopup();
+  const x = xingById(b.dataset.xg); status(x ? t("xg.chosen",{n:x.n}) : t("xg.auto"));
+  if(STATE && STATE.b && $("to").value) run();   // сразу перестроить маршрут через выбранный переход
+});
+
 /* ============ мои точки ============ */
 const PL_TYPES = [["client","🏭"],["park","🅿️"],["fuel","⛽"],["food","🍽"],["scale","⚖️"],["home","🏠"],["star","⭐"]];
 const plIcon = ty => (PL_TYPES.find(x=>x[0]===ty)||PL_TYPES[6])[1];
@@ -912,7 +976,7 @@ function overlap(r1, r2){ // доля точек r1, лежащих рядом �
 }
 // Узлы автомагистралей на северо-востоке США и в Атлантической Канаде — через них ищем объезды ПО ТРАССАМ
 const HUBS = [
-  ["Houlton I-95",46.13,-67.84],["Bangor I-95/I-395",44.83,-68.77],["Augusta I-95",44.33,-69.78],["Portland I-95/I-295",43.70,-70.31],
+  ["Houlton I-95",46.13,-67.84,1],["Bangor I-95/I-395",44.83,-68.77],["Augusta I-95",44.33,-69.78],["Portland I-95/I-295",43.70,-70.31],
   ["Portsmouth I-95",43.07,-70.79],["Concord I-93/I-89",43.21,-71.54],["White River Jct I-91/I-89",43.65,-72.32],
   ["Worcester I-290/I-495",42.30,-71.73],["Sturbridge I-84/I-90",42.10,-72.08],["Springfield I-91/I-90",42.11,-72.59],
   ["Hartford I-84/I-91",41.77,-72.68],["Providence I-95",41.82,-71.41],["New Haven I-95/I-91",41.31,-72.92],
@@ -922,12 +986,30 @@ const HUBS = [
 ];
 function hubVias(a, b){
   const D = hav([a.lat,a.lon],[b.lat,b.lon]); if(D < 120) return [];
-  return HUBS.map(h => { const d1 = hav([a.lat,a.lon],[h[1],h[2]]), d2 = hav([h[1],h[2]],[b.lat,b.lon]); return {name:h[0], lat:h[1], lon:h[2], r:(d1+d2)/D, d1, d2}; })
-    .filter(h => h.r <= 1.25 && h.d1 > 60 && h.d2 > 60)
-    .sort((x,y) => x.r - y.r).slice(0, 6);
+  // gate = пограничный переход на интерстейт (Houlton, I-95) — пробуем всегда, если он не слишком в стороне
+  return HUBS.map(h => { const d1 = hav([a.lat,a.lon],[h[1],h[2]]), d2 = hav([h[1],h[2]],[b.lat,b.lon]); return {name:h[0], lat:h[1], lon:h[2], r:(d1+d2)/D, d1, d2, gate:!!h[3]}; })
+    .filter(h => h.d1 > 60 && h.d2 > 60 && (h.r <= 1.25 || (h.gate && h.r <= 1.4)))
+    .sort((x,y) => (y.gate?1:0)-(x.gate?1:0) || x.r - y.r).slice(0, 8);
 }
 async function getRoutes(a, b){
-  const cands = [];
+  const cands = [], X = xingById($("xing").value);
+  const R1 = v => S.key ? routeORS(a, b, v).then(r=>[r]).catch(()=>routeOSRM(a, b, v).catch(()=>[])) : routeOSRM(a, b, v).catch(()=>[]);
+  if(X && inCanada(a.lat,a.lon) !== inCanada(b.lat,b.lon)){
+    // выбран погранпереход: все варианты — через него
+    if(!S.key) warn(t("w.nokey"));
+    status(t("st.alts"));
+    const jobs = [R1([X])];
+    hubVias({lat:X.lat, lon:X.lon}, b).slice(0,5).forEach(h => jobs.push(R1([X, h])));
+    hubVias(a, {lat:X.lat, lon:X.lon}).slice(0,2).forEach(h => jobs.push(R1([h, X])));
+    (await Promise.all(jobs)).forEach(list => list.forEach(r => { r.via = true; r.forced = true; cands.push(r); }));
+    if(!cands.length) throw new Error("route");
+    cands.forEach(r => r.xing = detectXing(r));
+    const ok = cands.filter(r => !hasSpur(r)), pool = (ok.length ? ok : cands);
+    const cost = r => r.dur * (1 + 2.5*(1 - (r.hw == null ? 0.8 : r.hw)));
+    const byCost = pool.slice().sort((x,y) => cost(x) - cost(y)), main = byCost[0], out = [main];
+    byCost.slice(1).forEach(r => { if(out.length<3 && r.dur <= main.dur*1.3 && !out.some(o => overlap(r,o) > 0.8)) out.push(r); });
+    return out;
+  }
   if(S.key){
     try{ cands.push(await routeORS(a, b)); }
     catch(e){ warn(t("w.orsfail",{e:e.message})); }
@@ -936,7 +1018,7 @@ async function getRoutes(a, b){
   const jobs = [];
   if(!cands.length || !S.key) jobs.push(routeOSRM(a, b, null, true).catch(()=>[]));
   let vias = hubVias(a, b); if(vias.length < 2) vias = vias.concat(viaPoints(a, b));
-  vias.forEach(v => jobs.push(S.key ? routeORS(a, b, [v]).then(r=>[r]).catch(()=>routeOSRM(a, b, [v]).catch(()=>[])) : routeOSRM(a, b, [v]).catch(()=>[])));
+  vias.forEach(v => jobs.push(R1([v])));
   (await Promise.all(jobs)).forEach(list => list.forEach(r => cands.push(r)));
   if(!cands.length) throw new Error("route");
   // плохие объезды: точка «в океане», заезд туда-обратно
@@ -946,14 +1028,19 @@ async function getRoutes(a, b){
   const HW = 0.7, hwOK = r => r.hw == null || r.hw >= HW;
   const hwPool = pool0.filter(hwOK);
   const pool = hwPool.length ? hwPool : pool0.slice().sort((x,y)=>(y.hw||0)-(x.hw||0)).slice(0,1);
-  const minDur = Math.min(...pool.map(r=>r.dur));
-  const main = pool.filter(r => !r.via).sort((x,y)=>x.dur-y.dur)[0] || pool.slice().sort((x,y)=>x.dur-y.dur)[0];
+  // «цена» маршрута: время × штраф за километры НЕ по трассам (двухполосные «националки» вроде ME-9, US-1)
+  pool.forEach(r => r.xing = detectXing(r));
+  // авто: стандартные грузовые переходы (Houlton, Lacolle/Champlain, Thousand Islands…) в приоритете, остальные — только если заметно выгоднее
+  const cost = r => r.dur * (1 + 2.5*(1 - (r.hw == null ? 0.8 : r.hw))) * (r.xing && !r.xing.std ? 1.15 : 1);
+  const byCost = pool.slice().sort((x,y) => cost(x) - cost(y));
+  const main = byCost[0];
   const out = [main];
-  pool.filter(r => r !== main).sort((x,y)=>x.dur-y.dur).forEach(r => {
-    if(out.length>=3 || r.dur > minDur*1.35) return;
+  byCost.slice(1).forEach(r => {
+    if(out.length>=3 || r.dur > main.dur*1.3) return;
     if(out.some(o => overlap(r,o) > 0.8)) return;
     out.push(r);
   });
+  out.forEach(r => r.xing = detectXing(r));
   return out;
 }
 function samplePoints(route, target){
@@ -1159,8 +1246,9 @@ async function quickReroute(){
   const f = $("from"); f.value = t("geo.me"); f.dataset.lat = a.lat; f.dataset.lon = a.lon; f.dataset.geo = "1"; saveLast();
   status(t("st.reroute"));
   let route = null;
-  try{ if(S.key) route = await routeORS(a, b); }catch(e){}
-  if(!route){ try{ route = (await routeOSRM(a, b))[0]; }catch(e){} }
+  const X = xingById($("xing").value), via = (X && inCanada(a.lat,a.lon) !== inCanada(b.lat,b.lon)) ? [X] : null; // переход ещё впереди
+  try{ if(S.key) route = await routeORS(a, b, via); }catch(e){}
+  if(!route){ try{ route = (await routeOSRM(a, b, via))[0]; }catch(e){} }
   if(!route) return;
   await buildFromRoutes(a, b, [route]);
   DRIVE.idx = 0; DRIVE.offCount = 0; DRIVE.alerted = new Set();
@@ -1191,12 +1279,16 @@ const MPH = 1.609344;
 function gusts(){ const e = isLight(); return {g2: e?60:70, g3: e?75:90}; }
 // грубая граница США/Канады на востоке (для выбора средней скорости)
 const MAINE = [[-71.08,45.3],[-70.4,45.8],[-70.0,46.4],[-69.2,47.45],[-68.3,47.36],[-67.79,47.07],[-67.78,45.95],[-67.43,45.6],[-67.1,45.1],[-66.9,44.8],[-66.9,43.0],[-71.08,43.0]];
+// Онтарио и Великие озёра: граница по рекам и озёрам (Детройт, Сент-Клэр, Эри, Ниагара, Онтарио, Св. Лаврентия)
+const ONT = [[-83.13,42.05],[-82.6,41.7],[-81.0,42.25],[-80.0,42.5],[-78.905,42.88],[-78.925,42.95],[-79.01,43.0],[-79.075,43.08],[-79.05,43.17],[-79.06,43.26],[-78.0,43.63],[-76.45,43.62],[-76.3,44.2],[-75.8,44.42],
+  [-75.52,44.70],[-75.0,44.98],[-74.73,45.0],[-74.3,45.0],[-74.3,46.0],[-80.0,52.0],[-95.0,52.0],[-95.15,49.0],[-89.6,48.0],[-86.0,47.5],[-84.8,46.8],
+  [-84.45,46.51],[-84.2,46.49],[-84.1,46.25],[-83.6,46.1],[-82.5,45.3],[-82.415,43.0],[-82.42,42.95],[-82.47,42.80],[-82.55,42.62],[-82.87,42.34],[-83.10,42.29]];
 function inCanada(lat, lon){
+  if(lon < -74.3) return pip([lon,lat], ONT);   // Онтарио ⇄ NY / MI / MN
   if(lat < 43) return false;
-  if(lon > -66.9) return true;                 // NB, NS, PEI
+  if(lon > -66.9) return true;                  // NB, NS, PEI
   if(lon >= -71.08) return !pip([lon,lat], MAINE) && lat > 45.0; // Мэн / Квебек
-  if(lon > -79.8) return lat > 45.0;           // NH/VT/NY — Квебек/Онтарио
-  return lat > 43.6;                           // район Великих озёр (грубо)
+  return lat > 45.0;                            // QC ⇄ NH / VT / NY
 }
 function isStorm(v){
   if(!v) return false; const {g2,g3} = gusts();
@@ -1331,6 +1423,7 @@ function renderAlts(){
     const tags = [];
     if(R.length>1 && i===fastest) tags.push(`<span class="tag good">${t("route.fast")}</span>`);
     if(R.length>1 && i===calmest && ds[calmest].maxL < Math.max(...ds.map(x=>x.maxL))) tags.push(`<span class="tag good">${t("route.safe")}</span>`);
+    if(r.route.xing) tags.push(`<span class="tag">🛂 ${esc(xShort(r.route.xing))}</span>`);
     if(r.route.hw != null) tags.push(`<span class="tag">${t("route.hw",{p:Math.round(r.route.hw*100)})}</span>`);
     if(r.route.toll) tags.push(`<span class="tag toll">${t("route.toll")}</span>`);
     if(STATE.appt){ const df = (STATE.appt - d.eta)/3600000; tags.unshift(df>=0 ? `<span class="tag good">✅ +${fmtDur(df)}</span>` : `<span class="tag late">❌ −${fmtDur(-df)}</span>`); }
@@ -1629,21 +1722,42 @@ function motionAt(hh){
   const dir = (DIRS[S.lang||detectLang()]||DIRS.en)[Math.round(brg/45)%8];
   return {dir, kmh: km/hrs};
 }
-function truckPos(tMs){
+function truckPos(tMs){ // где трак в момент tMs: интерполяция по пройденным километрам
   const d = STATE.deps && STATE.deps[STATE.sel||0]; if(!d) return null;
   const R = d.rows; if(tMs < d.dep || tMs > d.eta + 1800000) return null;
+  const c = STATE.route.coords, cum = STATE.sp.cum;
+  const atKm = km => { let lo = 0, hi = cum.length-1; while(lo < hi){ const m = (lo+hi)>>1; if(cum[m] < km) lo = m+1; else hi = m; }
+    if(lo === 0) return {p:c[0], i:0}; const f = (km - cum[lo-1]) / Math.max(1e-9, cum[lo]-cum[lo-1]);
+    return {p:[c[lo-1][0]+(c[lo][0]-c[lo-1][0])*f, c[lo-1][1]+(c[lo][1]-c[lo-1][1])*f], i:lo}; };
+  if(tMs <= R[0].t) return {pos:[R[0].p.lat, R[0].p.lon], km:0, row:0};
   for(let i=0;i<R.length-1;i++){
-    if(tMs <= R[i].t) return [R[i].p.lat, R[i].p.lon];
-    if(tMs < R[i+1].t){ const f = (tMs-R[i].t)/(R[i+1].t-R[i].t);
-      const c = STATE.route.coords, i0 = R[i].p.idx, i1 = R[i+1].p.idx, ci = Math.round(i0 + (i1-i0)*f); return c[ci] || [R[i].p.lat,R[i].p.lon]; }
+    if(tMs < R[i+1].t){
+      // стоянка (шторм, отдых) — между точками время может «стоять»: трак ждёт на месте
+      const f = (tMs-R[i].t)/(R[i+1].t-R[i].t), km = R[i].p.km + (R[i+1].p.km - R[i].p.km)*f;
+      return {pos: atKm(km).p, km, row:i};
+    }
   }
-  return [R[R.length-1].p.lat, R[R.length-1].p.lon];
+  const L = R[R.length-1]; return {pos:[L.p.lat, L.p.lon], km:L.p.km, row:R.length-1};
 }
-function renderStorm(hh){
+const SL_STEP = 15*60000; // шаг ползунка — 15 мин
+function sliderTime(v){
+  const d = STATE && STATE.deps && STATE.deps[STATE.sel||0]; if(!d) return Date.now();
+  return d.dep + (v==null ? +$("stormT").value : v) * SL_STEP;
+}
+function setupSlider(){ // ползунок = от выезда до прибытия
+  const d = STATE.deps[STATE.sel||0]; if(!d) return;
+  const max = Math.max(1, Math.ceil((d.eta - d.dep)/SL_STEP));
+  const el = $("stormT"); el.max = max;
+  if(STATE.slDep !== d.dep){ STATE.slDep = d.dep; el.value = 0; stopStorm(); }
+  if(+el.value > max) el.value = max;
+}
+function renderStorm(v){
   if(!STATE || !STATE.storm) return;
-  const st = STATE.storm, i = st.base + hh, tMs = STATE.startH + hh*3600000;
+  setupSlider(); v = +$("stormT").value;
+  const tMs = sliderTime(v), hh = Math.round((tMs - STATE.startH)/3600000);
+  const st = STATE.storm, i = st.base + hh;
   $("stormTime").textContent = fmtT(tMs);
-  $("stormRel").textContent = hh===0 ? t("storm.now") : "+"+fmtDur(hh);
+  $("stormRel").textContent = v===0 ? t("storm.atDep") : t("storm.sinceDep",{d:fmtDur(v*SL_STEP/3600000)});
   if(map){
     if(!stormRenderer) stormRenderer = L.canvas ? L.canvas({padding:.3}) : undefined;
     if(!stormLayer) stormLayer = L.layerGroup().addTo(map);
@@ -1659,7 +1773,7 @@ function renderStorm(hh){
     }
     const tp = truckPos(tMs);
     if(truckMarker){ truckMarker.remove(); truckMarker=null; }
-    if(tp) truckMarker = L.marker(tp, {interactive:false, zIndexOffset:1000, icon:L.divIcon({className:"", html:`<div class="truckico">🚚</div>`, iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map);
+    if(tp) truckMarker = L.marker(tp.pos, {interactive:false, zIndexOffset:1000, icon:L.divIcon({className:"", html:`<div class="truckico">🚚</div>`, iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map);
   }
   // пояснение
   const info = [];
@@ -1671,17 +1785,18 @@ function renderStorm(hh){
     if(first > hh) info.push(t("storm.starts",{t:fmtT(STATE.startH+first*3600000)}));
     info.push(st.lastSnow >= 72 ? t("storm.longer") : t("storm.until",{t:fmtT(STATE.startH+(st.lastSnow+1)*3600000)}));
   }
-  const d = STATE.deps && STATE.deps[STATE.sel||0];
-  if(d) info.push(t("storm.truck",{dep:fmtT(d.dep)}) + (truckPos(tMs) ? "" : " — "+(tMs < d.dep ? t("storm.notyet") : t("storm.arrived"))));
+  const tp2 = truckPos(tMs);
+  if(tp2){ const pt = STATE.sp.pts[tp2.row], nm = pt && pt.name ? " ("+pt.name+")" : "";
+    info.unshift("🚚 " + t("storm.truckAt",{t:fmtT(tMs), p:U.mark(tp2.km)+nm})); }
   $("stormInfo").innerHTML = info.map(x=>"<div>"+esc(x)+"</div>").join("");
 }
 $("stormT").oninput = () => { stopStorm(); renderStorm(+$("stormT").value); };
 function stopStorm(){ if(stormTimer){ clearInterval(stormTimer); stormTimer=null; $("stormPlay").textContent = "▶"; } }
 $("stormPlay").onclick = () => {
   if(stormTimer){ stopStorm(); return; }
-  if(+$("stormT").value >= 72) $("stormT").value = 0;
+  if(+$("stormT").value >= +$("stormT").max) $("stormT").value = 0;
   $("stormPlay").textContent = "⏸";
-  stormTimer = setInterval(() => { const v = +$("stormT").value + 1; if(v>72){ stopStorm(); return; } $("stormT").value = v; renderStorm(v); }, 450);
+  stormTimer = setInterval(() => { const v = +$("stormT").value + 1; if(v > +$("stormT").max){ stopStorm(); return; } $("stormT").value = v; renderStorm(v); }, 250);
 };
 $("stormOn").onchange = () => { $("stormBody").style.opacity = $("stormOn").checked ? 1 : .5; if(STATE && STATE.storm){ analyzeStorm(); renderStorm(+$("stormT").value); } };
 
@@ -1720,7 +1835,7 @@ $("rnOk").onclick = () => {
   RUNS.push({id:Date.now().toString(36), name:$("rnName").value.trim() || (f.value+" → "+to.value),
     from:{v:f.value, lat:f.dataset.lat||null, lon:f.dataset.lon||null, geo:f.dataset.geo||null},
     to:{v:to.value, lat:to.dataset.lat||null, lon:to.dataset.lon||null},
-    apptTime: ap ? fmtHM(ap) : null, apptDow: ap ? +$("rnDow").value : -1, settings});
+    apptTime: ap ? fmtHM(ap) : null, apptDow: ap ? +$("rnDow").value : -1, xing: $("xing").value || "", settings});
   $("rnDlg").style.display = "none"; saveRuns(); status(t("rn.saved"));
 };
 function useRun(id){
@@ -1730,6 +1845,7 @@ function useRun(id){
   else { f.value = r.from.v; if(r.from.lat){ f.dataset.lat = r.from.lat; f.dataset.lon = r.from.lon; } else { delete f.dataset.lat; delete f.dataset.lon; } delete f.dataset.geo; }
   to.value = r.to.v; if(r.to.lat){ to.dataset.lat = r.to.lat; to.dataset.lon = r.to.lon; } else { delete to.dataset.lat; delete to.dataset.lon; }
   Object.assign(S, r.settings); S.w = (Number(S.tare)||0)+(Number(S.cargo)||0); LS.set("settings", S);
+  $("xing").value = r.xing || "";
   const ap = r.apptTime ? nextOccurrence(r.apptTime, r.apptDow) : null;
   $("appt").value = ap ? toLocalInput(ap) : "";
   saveLast(); window.scrollTo({top:0, behavior:"smooth"});
@@ -1745,7 +1861,8 @@ function renderRuns(){
   if(!RUNS.length){ list.textContent = t("rn.empty"); return; }
   const days = t("dowFull");
   list.innerHTML = RUNS.slice().reverse().map(r => {
-    const sub = [r.apptTime ? t("rn.appt",{t:r.apptTime + (r.apptDow>=0 ? ", "+days[r.apptDow] : "")}) : null,
+    const xg = r.xing && xingById(r.xing);
+    const sub = [xg ? "🛂 "+xShort(xg) : null, r.apptTime ? t("rn.appt",{t:r.apptTime + (r.apptDow>=0 ? ", "+days[r.apptDow] : "")}) : null,
       r.settings && r.settings.cargo != null ? t("rn.cargo",{w: S.uWt==="kg" ? Math.round(r.settings.cargo*1000).toLocaleString("en-US").replace(/,/g," ")+" "+t("kg") : (Math.round(r.settings.cargo*2204.62/100)*100).toLocaleString("en-US")+" lb"}) : null].filter(Boolean).join(" · ");
     return `<div class="pl"><span class="ic">🚛</span><span class="tx">${esc(r.name)}<small>${esc(sub)}</small></span>`+
       `<button data-ra="use" data-id="${r.id}">▶ ${t("rn.use")}</button><button data-ra="del" data-id="${r.id}">🗑</button></div>`;
@@ -2061,7 +2178,7 @@ function renderStatus(){
   const sp = STATE.sp;
   status((STATE.routes.length>1 ? STATE.cur.letter+": " : "") + t("st.done",{d:U.dist(sp.totalKm), h:(STATE.deps && STATE.deps[0] ? STATE.deps[0].normalH : sp.durH).toFixed(1)}) + (STATE.route.truck ? t("st.truck") : "") + (STATE.ens ? "" : t("st.noens")) + (STATE.routes.length>1 ? t("st.nalts",{n:STATE.routes.length}) : ""));
 }
-function setLang(l){ S.lang = l; LS.set("settings", S); applyUnits(); renderPlaces(); renderRuns(); updateToLinks(); }
+function setLang(l){ S.lang = l; LS.set("settings", S); applyUnits(); renderPlaces(); renderRuns(); updateToLinks(); fillXingSelect(); }
 $("btnLang").onclick = () => { const cur = S.lang || detectLang(), i = LANGS.findIndex(x=>x[0]===cur); setLang(LANGS[(i+1)%LANGS.length][0]); };
 document.querySelectorAll("#unitsPick [data-l]").forEach(b => b.onclick = () => {
   setLang(b.dataset.l);
@@ -2107,7 +2224,7 @@ $("btnGeo").onclick = () => locate();
 function saveLast(){
   const f=$("from"), to=$("to");
   syncClr(); updateToLinks();
-  LS.set("last", {from:f.value, to:to.value, fLat:f.dataset.lat||null, fLon:f.dataset.lon||null, fGeo:f.dataset.geo||null, tLat:to.dataset.lat||null, tLon:to.dataset.lon||null, appt:$("appt").value||""});
+  LS.set("last", {from:f.value, to:to.value, fLat:f.dataset.lat||null, fLon:f.dataset.lon||null, fGeo:f.dataset.geo||null, tLat:to.dataset.lat||null, tLon:to.dataset.lon||null, appt:$("appt").value||"", xing:$("xing").value||""});
 }
 function fmtPlace(pr){
   const main = pr.name || [pr.housenumber, pr.street].filter(Boolean).join(" ") || pr.city || "";
@@ -2190,6 +2307,7 @@ if(last){
   if(last.tLat){ $("to").dataset.lat = last.tLat; $("to").dataset.lon = last.tLon; }
   if(last.appt && new Date(last.appt).getTime() > Date.now()) $("appt").value = last.appt;
 }
+fillXingSelect(); $("xing").addEventListener("change", () => { saveLast(); drawXings(); });
 syncClr(); updateToLinks();
 initMap();
 window.addEventListener("resize", () => { if(map) setTimeout(() => map.invalidateSize(), 200); });
