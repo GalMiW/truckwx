@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TruckWX">
+<meta name="theme-color" content="#0f172a">
+<title>TruckWX — погода на маршруте</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%230f172a'/%3E%3Cpath d='M30 110h80V70h25l20 22v18h-5a14 14 0 0 1-28 0H72a14 14 0 0 1-28 0H30z' fill='%2338bdf8'/%3E%3Cg stroke='%23fff' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M60 30v30M45 38l30 14M45 52l30-14'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --bg:#f1f5f9; --card:#ffffff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0;
+  --accent:#0284c7; --accent-text:#fff;
+  --l0:#16a34a; --l1:#eab308; --l2:#f97316; --l3:#dc2626; --lna:#94a3b8;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0b1220; --card:#131c2e; --text:#e2e8f0; --muted:#94a3b8; --line:#23304a; --accent:#38bdf8; --accent-text:#0b1220; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:1000;background:#0f172a;color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;flex:1}
+header small{color:#94a3b8;font-weight:400}
+.iconbtn{background:transparent;border:1px solid #334155;color:#fff;border-radius:10px;padding:6px 10px;font-size:15px}
+main{padding:12px 16px calc(env(safe-area-inset-bottom) + 24px);max-width:900px;margin:0 auto}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.06);border:1px solid var(--line)}
+.card h2{font-size:16px;margin:0 0 10px}
+label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:16px}
+.row{display:flex;gap:8px;align-items:flex-end}
+.row>*{flex:1}
+.btn{display:inline-block;width:100%;padding:13px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-text);font-size:16px;font-weight:600;margin-top:12px}
+.btn.sec{background:transparent;color:var(--accent);border:1px solid var(--accent);font-weight:500}
+.btn:disabled{opacity:.5}
+.small{font-size:12px;color:var(--muted)}
+#status{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}
+#map{height:46vh;min-height:280px;border-radius:14px;margin-bottom:12px;border:1px solid var(--line)}
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.dep{flex:0 0 auto;min-width:78px;border-radius:12px;padding:8px 8px 6px;text-align:center;border:2px solid transparent;scroll-snap-align:start;color:#fff;font-size:12px}
+.dep b{display:block;font-size:15px}
+.dep.sel{border-color:var(--text);box-shadow:0 0 0 2px var(--card) inset}
+.dep .p{opacity:.95}
+.lv0{background:var(--l0)} .lv1{background:var(--l1);color:#1f1300} .lv2{background:var(--l2)} .lv3{background:var(--l3)} .lvna{background:var(--lna)}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;color:#fff}
+.badge.lv1{color:#1f1300}
+.summary{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.big{font-size:22px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:500}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+.alert{border-left:4px solid var(--l2);padding:8px 10px;margin:8px 0;background:var(--bg);border-radius:8px}
+.alert.sev{border-color:var(--l3)}
+.alert b{display:block}
+details summary{cursor:pointer;color:var(--accent);font-size:13px;margin-top:4px}
+.links a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--accent);text-decoration:none;font-size:14px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-top:8px}
+#settings{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:none;overflow:auto;padding:calc(env(safe-area-inset-top) + 16px) 12px 40px}
+#settings .card{max-width:560px;margin:0 auto}
+.hidden{display:none}
+.warnbox{background:#fef3c7;color:#78350f;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
+@media (prefers-color-scheme: dark){ .warnbox{background:#422006;color:#fde68a} }
+.leaflet-popup-content{font-size:13px}
+.eta{background:var(--bg);border-radius:12px;padding:10px 12px;margin:8px 0}
+.eta .big{display:block}
+.eta ul{margin:6px 0 0;padding-left:18px;font-size:13px}
+.dep .a{display:block;font-size:11px;opacity:.95;margin-top:2px}
+tr.ev td{background:var(--bg);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>TruckWX <small>шторм · мосты · перекрытия</small></h1>
+  <button class="iconbtn" id="btnSettings" aria-label="Настройки">&#9881;</button>
+</header>
+
+<main>
+  <div class="card">
+    <label for="from">Откуда</label>
+    <div class="row">
+      <input id="from" list="presets" placeholder="Moncton, NB" autocomplete="off">
+      <button class="iconbtn" style="flex:0 0 auto;color:var(--accent);border-color:var(--line)" id="btnGeo" title="Моё местоположение">&#10148;</button>
+    </div>
+    <label for="to">Куда</label>
+    <input id="to" list="presets" placeholder="Hunts Point, Bronx, NY" autocomplete="off">
+    <datalist id="presets"></datalist>
+    <button class="btn" id="btnGo">Проверить маршрут</button>
+    <div id="status"></div>
+    <div id="routeWarn" class="warnbox hidden"></div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="card hidden" id="cardDeps">
+    <h2>Когда выезжать? Риск на ближайшие 72 ч</h2>
+    <div class="strip" id="strip"></div>
+    <div class="legend">
+      <span><span class="dot lv0"></span>спокойно</span>
+      <span><span class="dot lv1"></span>осторожно</span>
+      <span><span class="dot lv2"></span>опасно</span>
+      <span><span class="dot lv3"></span>шторм / лёд</span>
+      <span>% — вероятность сильного снега (ансамбль GFS)</span>
+    </div>
+    <div id="bestTip" class="small" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card hidden" id="cardTrip">
+    <h2>Выезд: <span id="tripDep"></span></h2>
+    <div class="summary">
+      <span id="tripBadge" class="badge"></span>
+      <span id="tripText"></span>
+    </div>
+    <div class="eta" id="eta"></div>
+    <div class="small" id="tripMeta"></div>
+    <div style="overflow-x:auto;margin-top:8px">
+      <table>
+        <thead><tr><th>Время</th><th>Где</th><th>t°</th><th>Снег</th><th>Ветер</th><th>Вер.</th></tr></thead>
+        <tbody id="tripRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card hidden" id="cardAlerts">
+    <h2>Официальные предупреждения на маршруте</h2>
+    <div id="alerts" class="small">—</div>
+  </div>
+
+  <div class="card hidden" id="cardBridges">
+    <h2>Низкие мосты и ограничения по высоте</h2>
+    <div id="bridges" class="small">—</div>
+  </div>
+
+  <div class="card hidden" id="cardRoads">
+    <h2>Ремонты и перекрытия (511)</h2>
+    <div class="small">Актуальные работы, аварии и закрытия — на официальных картах 511 штатов/провинций по маршруту:</div>
+    <div class="links" id="roadLinks"></div>
+    <div class="small" style="margin-top:6px">Граница:</div>
+    <div class="links">
+      <a href="https://bwt.cbp.gov/" target="_blank" rel="noopener">Очереди CBP (в США)</a>
+      <a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank" rel="noopener">Очереди CBSA (в Канаду)</a>
+    </div>
+    <div class="links" id="navLinks"></div>
+  </div>
+
+  <p class="small">Данные: Open-Meteo (прогноз и ансамбль GFS), NWS/NOAA (США), Environment Canada, OpenStreetMap/Overpass, openrouteservice. Приложение — помощник, а не замена официальным источникам и знакам на дороге. Обновлено: <span id="updated">—</span></p>
+</main>
+
+<div id="settings">
+  <div class="card">
+    <h2>Настройки</h2>
+    <label>Ключ openrouteservice (бесплатный — маршрут для траков с учётом высоты/веса)</label>
+    <input id="sKey" placeholder="вставьте ключ" autocomplete="off">
+    <div class="small">Без ключа строится обычный автомобильный маршрут (OSRM), и мосты проверяются только по списку ниже. Ключ: openrouteservice.org → Sign up → Dashboard → Tokens.</div>
+    <div class="row">
+      <div><label>Высота, фт</label><input id="sHft" type="number" inputmode="numeric" value="13"></div>
+      <div><label>дюймы</label><input id="sHin" type="number" inputmode="numeric" value="6"></div>
+    </div>
+    <div class="row">
+      <div><label>Вес, т</label><input id="sW" type="number" inputmode="decimal" value="36"></div>
+      <div><label>Длина, м</label><input id="sL" type="number" inputmode="decimal" value="22"></div>
+    </div>
+    <label>Поправка скорости трака (1.0 = как навигатор, 1.15 = на 15% медленнее)</label>
+    <input id="sSpeed" type="number" step="0.05" inputmode="decimal" value="1.1">
+    <label>Пустой прицеп / лёгкий груз (строже по ветру)</label>
+    <select id="sEmpty"><option value="0">Нет — гружёный</option><option value="1">Да — пустой/лёгкий</option></select>
+    <h2 style="margin-top:18px">Расчёт времени прибытия</h2>
+    <div class="row">
+      <div><label>Макс. скорость трака, mph</label><input id="sVmax" type="number" inputmode="numeric" value="65"></div>
+      <div><label>При шторме</label><select id="sStorm"><option value="wait">Пережидать</option><option value="slow">Ехать 25 mph</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Расчистка после шторма, ч</label><input id="sClear" type="number" step="0.5" inputmode="decimal" value="1.5"></div>
+      <div><label>Потом ограничение, mph</label><input id="sRmph" type="number" inputmode="numeric" value="45"></div>
+    </div>
+    <div class="row">
+      <div><label>Ограничение действует, ч</label><input id="sRh" type="number" step="0.5" inputmode="decimal" value="6"></div>
+      <div><label>Запас на ремонты, мин</label><input id="sWork" type="number" inputmode="numeric" value="20"></div>
+    </div>
+    <div class="row">
+      <div><label>Пробки в часы пик</label><select id="sTraffic"><option value="1">Учитывать</option><option value="0">Нет</option></select></div>
+      <div><label>Отдых водителя (HOS)</label><select id="sHos"><option value="1">Учитывать (8 ч → 30 мин, 11 ч → 10 ч)</option><option value="0">Нет / 2 водителя</option></select></div>
+    </div>
+    <button class="btn" id="btnSave">Сохранить</button>
+    <button class="btn sec" id="btnClose">Закрыть</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============ настройки и утилиты ============ */
+const PRESETS = [
+  ["Moncton, NB", 46.0878, -64.7782], ["Saint John, NB", 45.2733, -66.0633], ["Fredericton, NB", 45.9636, -66.6431],
+  ["Halifax, NS", 44.6488, -63.5752], ["Truro, NS", 45.3650, -63.2800], ["Charlottetown, PE", 46.2382, -63.1311],
+  ["Caraquet, NB", 47.7900, -64.9500], ["Shediac, NB", 46.2190, -64.5410],
+  ["Houlton, ME (граница)", 46.1262, -67.8403], ["Calais, ME (граница)", 45.1884, -67.2786],
+  ["Bangor, ME", 44.8016, -68.7712], ["Portland, ME", 43.6591, -70.2568], ["Boston, MA", 42.3601, -71.0589],
+  ["Hunts Point, Bronx, NY", 40.8094, -73.8803], ["New York, NY", 40.7128, -74.0060], ["Newark, NJ", 40.7357, -74.1724],
+  ["Elizabeth, NJ (порт)", 40.6640, -74.1740], ["Edison, NJ", 40.5187, -74.4121], ["Philadelphia, PA", 39.9526, -75.1652]
+];
+const JUR = [ // грубые границы для ссылок 511
+  {c:"NB", n:"New Brunswick 511", u:"https://511.gnb.ca/", b:[44.55,48.1,-69.1,-63.75]},
+  {c:"NS", n:"Nova Scotia 511", u:"https://511.novascotia.ca/", b:[43.3,47.1,-66.4,-59.6]},
+  {c:"QC", n:"Québec 511", u:"https://www.quebec511.info/", b:[45.0,62,-79.8,-57]},
+  {c:"ME", n:"Maine (New England 511)", u:"https://newengland511.org/", b:[43.05,47.5,-71.1,-66.9]},
+  {c:"NH", n:"New Hampshire (NE 511)", u:"https://newengland511.org/", b:[42.7,45.3,-72.6,-70.6]},
+  {c:"VT", n:"Vermont (NE 511)", u:"https://newengland511.org/", b:[42.7,45.0,-73.45,-71.45]},
+  {c:"MA", n:"Mass511", u:"https://mass511.com/", b:[41.2,42.9,-73.5,-69.9]},
+  {c:"RI", n:"Rhode Island DOT", u:"https://www.dot.ri.gov/travel/", b:[41.1,42.02,-71.9,-71.1]},
+  {c:"CT", n:"CTroads", u:"https://ctroads.org/", b:[40.95,42.05,-73.73,-71.78]},
+  {c:"NY", n:"511NY", u:"https://511ny.org/", b:[40.49,45.02,-79.77,-71.85]},
+  {c:"NJ", n:"511NJ", u:"https://511nj.org/", b:[38.9,41.36,-75.56,-73.89]},
+  {c:"PA", n:"511PA", u:"https://www.511pa.com/", b:[39.7,42.3,-80.52,-74.69]}
+];
+const $ = id => document.getElementById(id);
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem("twx_"+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("twx_"+k, JSON.stringify(v)); }catch(e){} }
+};
+let S = Object.assign({key:"", hft:13, hin:6, w:36, l:22, speed:1.1, empty:0,
+  vmax:65, storm:"wait", clearH:1.5, rmph:45, rh:6, work:20, traffic:1, hos:1}, LS.get("settings", {}));
+const heightM = () => (Number(S.hft)||13)*0.3048 + (Number(S.hin)||0)*0.0254;
+const fmtFtIn = m => { const tin = m/0.0254; let ft = Math.floor(tin/12), inch = Math.round(tin - ft*12); if(inch===12){ft++;inch=0;} return ft+"′"+inch+"″"; };
+const status = t => { $("status").textContent = t; };
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function getJSON(url, opts={}, timeoutMs=25000){
+  const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), timeoutMs);
+  try{
+    const r = await fetch(url, Object.assign({signal:ctl.signal}, opts));
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+async function pool(items, n, fn){
+  const out = new Array(items.length); let i = 0;
+  await Promise.all(Array.from({length:Math.min(n, items.length)}, async () => {
+    while(i < items.length){ const k = i++; try{ out[k] = await fn(items[k], k); }catch(e){ out[k] = null; } }
+  }));
+  return out;
+}
+function hav(a, b){ // [lat,lon] -> km
+  const R=6371, r=Math.PI/180, dLa=(b[0]-a[0])*r, dLo=(b[1]-a[1])*r;
+  const x=Math.sin(dLa/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+const DOW = ["вс","пн","вт","ср","чт","пт","сб"];
+const fmtT = ms => { const d = new Date(ms); return DOW[d.getDay()]+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+const fmtHM = ms => { const d = new Date(ms); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+const LV_NAME = ["Спокойно","Осторожно","Опасно","Шторм / лёд"];
+
+/* ============ карта ============ */
+let map, routeLayer, segLayer, bridgeLayer, endLayer;
+function initMap(){
+  if(typeof L === "undefined"){ $("map").innerHTML = "<div class='card small'>Карта не загрузилась (нет сети?)</div>"; return; }
+  map = L.map("map", {zoomControl:true}).setView([44.2, -68.5], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:18, attribution:"© OpenStreetMap"}).addTo(map);
+  segLayer = L.layerGroup().addTo(map); bridgeLayer = L.layerGroup().addTo(map); endLayer = L.layerGroup().addTo(map);
+}
+
+/* ============ геокодирование ============ */
+async function geocode(q){
+  q = q.trim();
+  const m = q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/);
+  if(m) return {name:q, lat:+m[1], lon:+m[2]};
+  const p = PRESETS.find(x => x[0].toLowerCase() === q.toLowerCase());
+  if(p) return {name:p[0], lat:p[1], lon:p[2]};
+  try{
+    const j = await getJSON("https://photon.komoot.io/api/?limit=1&lang=en&bbox=-82,37,-52,50&q="+encodeURIComponent(q));
+    const f = j.features && j.features[0];
+    if(f){ const pr=f.properties; return {name:[pr.name, pr.city, pr.state].filter(Boolean).join(", "), lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}; }
+  }catch(e){}
+  const j2 = await getJSON("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca,us&q="+encodeURIComponent(q));
+  if(j2 && j2[0]) return {name:j2[0].display_name.split(",").slice(0,3).join(","), lat:+j2[0].lat, lon:+j2[0].lon};
+  throw new Error("Не найден адрес: "+q);
+}
+async function revName(lat, lon){
+  const j = await getJSON(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}&lang=en`, {}, 10000);
+  const pr = j.features && j.features[0] && j.features[0].properties;
+  if(!pr) return null;
+  return {place: pr.city || pr.town || pr.village || pr.county || pr.name || "", state: pr.state || "", cc: (pr.countrycode||"").toUpperCase()};
+}
+
+/* ============ маршрут ============ */
+async function routeORS(a, b){
+  const h = heightM();
+  const body = {coordinates:[[a.lon,a.lat],[b.lon,b.lat]], instructions:false,
+    options:{vehicle_type:"hgv", profile_params:{restrictions:{height:+h.toFixed(2), width:2.6, length:Number(S.l)||22, weight:Number(S.w)||36}}}};
+  const j = await getJSON("https://api.openrouteservice.org/v2/directions/driving-hgv/geojson",
+    {method:"POST", headers:{"Authorization":S.key, "Content-Type":"application/json"}, body:JSON.stringify(body)}, 40000);
+  const f = j.features[0];
+  return {coords:f.geometry.coordinates.map(c=>[c[1],c[0]]), dist:f.properties.summary.distance, dur:f.properties.summary.duration, truck:true};
+}
+async function routeOSRM(a, b){
+  const j = await getJSON(`https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=full&geometries=geojson`, {}, 30000);
+  const r = j.routes[0];
+  return {coords:r.geometry.coordinates.map(c=>[c[1],c[0]]), dist:r.distance, dur:r.duration, truck:false};
+}
+function samplePoints(route){
+  const c = route.coords, cum=[0];
+  for(let i=1;i<c.length;i++) cum.push(cum[i-1]+hav(c[i-1],c[i]));
+  const total = cum[cum.length-1];
+  const step = Math.max(25, total/40);
+  const pts=[]; let next=0;
+  for(let i=0;i<c.length;i++){
+    if(cum[i]>=next || i===c.length-1){ pts.push({lat:+c[i][0].toFixed(3), lon:+c[i][1].toFixed(3), km:cum[i], idx:i}); next = cum[i]+step; }
+  }
+  const durH = route.dur/3600*(Number(S.speed)||1);
+  pts.forEach(p => p.offH = durH * (p.km/total));
+  return {pts, totalKm:total, durH, cum};
+}
+
+/* ============ погода ============ */
+async function fetchForecast(pts){
+  const lat = pts.map(p=>p.lat).join(","), lon = pts.map(p=>p.lon).join(",");
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
+    `&hourly=temperature_2m,precipitation,snowfall,precipitation_probability,weather_code,wind_gusts_10m,visibility`+
+    `&forecast_days=5&past_days=1&timeformat=unixtime&timezone=GMT&wind_speed_unit=kmh`;
+  let j = await getJSON(url, {}, 40000);
+  return Array.isArray(j) ? j : [j];
+}
+async function fetchEnsemble(pts){
+  const lat = pts.map(p=>p.lat).join(","), lon = pts.map(p=>p.lon).join(",");
+  const url = `https://ensemble-api.open-meteo.com/v1/ensemble?latitude=${lat}&longitude=${lon}`+
+    `&hourly=snowfall&models=gfs025&forecast_days=5&timeformat=unixtime&timezone=GMT`;
+  let j = await getJSON(url, {}, 45000);
+  j = Array.isArray(j) ? j : [j];
+  // вероятность: доля членов ансамбля с >= 2 см снега за 3 часа (t-1..t+1)
+  return j.map(loc => {
+    const h = loc.hourly, keys = Object.keys(h).filter(k => k.startsWith("snowfall"));
+    const n = h.time.length, prob = new Array(n).fill(null);
+    for(let t=0;t<n;t++){
+      let hit=0, cnt=0;
+      for(const k of keys){
+        const a=h[k]; let s=0, ok=false;
+        for(let d=-1; d<=1; d++){ const v=a[t+d]; if(v!=null){ s+=v; ok=true; } }
+        if(ok){ cnt++; if(s>=2) hit++; }
+      }
+      prob[t] = cnt ? hit/cnt : null;
+    }
+    return {time:h.time, prob};
+  });
+}
+function valAt(loc, tSec){
+  const h = loc.hourly, i = Math.round((tSec - h.time[0])/3600);
+  if(i<0 || i>=h.time.length) return null;
+  return {temp:h.temperature_2m[i], pr:h.precipitation[i], snow:h.snowfall[i], pp:h.precipitation_probability[i],
+          code:h.weather_code[i], gust:h.wind_gusts_10m[i], vis:h.visibility ? h.visibility[i] : null};
+}
+function probAt(ens, tSec){
+  if(!ens) return null;
+  const i = Math.round((tSec - ens.time[0])/3600);
+  return (i<0 || i>=ens.prob.length) ? null : ens.prob[i];
+}
+function assess(v, prob){
+  if(!v) return {lvl:-1, why:["нет прогноза"]};
+  let lvl=0; const why=[];
+  const up=(l,w)=>{ if(l>lvl) lvl=l; if(w && !why.includes(w)) why.push(w); };
+  const empty = Number(S.empty)===1;
+  if([56,57,66,67].includes(v.code)) up(3,"ледяной дождь");
+  if(v.snow>=3) up(3,"сильный снег"); else if(v.snow>=1.5) up(2,"снегопад"); else if(v.snow>=0.3) up(1,"снег");
+  if([75,86].includes(v.code)) up(2,"сильный снег");
+  const g = v.gust||0, g3 = empty?75:90, g2 = empty?60:70, g1 = empty?45:55;
+  if(g>=g3) up(3,"штормовой ветер"); else if(g>=g2) up(2,"сильные порывы"); else if(g>=g1) up(1,"порывы ветра");
+  if(v.vis!=null){ if(v.vis<400) up(2,"видимость <400 м"); else if(v.vis<1500) up(1,"плохая видимость"); }
+  if(v.temp!=null && v.temp>-3 && v.temp<1.5 && (v.pr||0)>=0.2) up(1,"гололёд");
+  if(v.snow>=0.3 && g>=g1) up(Math.max(2,lvl),"метель");
+  if([96,99].includes(v.code)) up(2,"гроза с градом"); else if(v.code>=95) up(1,"гроза");
+  if(prob!=null){ if(prob>=0.6) up(2,"высокая вероятность снегопада"); else if(prob>=0.3) up(1,"возможен снегопад"); }
+  return {lvl, why};
+}
+
+/* ============ предупреждения ============ */
+function pip(pt, ring){ // pt [lon,lat], ring [[lon,lat],...]
+  let ins=false;
+  for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+    const xi=ring[i][0], yi=ring[i][1], xj=ring[j][0], yj=ring[j][1];
+    if(((yi>pt[1])!==(yj>pt[1])) && (pt[0] < (xj-xi)*(pt[1]-yi)/(yj-yi)+xi)) ins=!ins;
+  }
+  return ins;
+}
+function inGeom(pt, g){
+  if(!g) return false;
+  if(g.type==="Polygon") return pip(pt, g.coordinates[0]);
+  if(g.type==="MultiPolygon") return g.coordinates.some(p => pip(pt, p[0]));
+  return false;
+}
+async function fetchNWS(pts){
+  const us = pts.filter((p,i) => i%2===0 && p.lat<47.5 && p.lat>24);
+  const res = await pool(us, 4, p => getJSON(`https://api.weather.gov/alerts/active?point=${p.lat},${p.lon}`, {headers:{"Accept":"application/geo+json"}}, 15000));
+  const seen = new Map();
+  res.forEach(j => (j && j.features || []).forEach(f => {
+    const p = f.properties; if(seen.has(p.id)) return;
+    seen.set(p.id, {src:"NWS", event:p.event, head:p.headline || p.event, sev:p.severity, area:p.areaDesc,
+      from:p.onset||p.effective, to:p.ends||p.expires, text:(p.description||"")+(p.instruction? "\n\n"+p.instruction:"")});
+  }));
+  return [...seen.values()];
+}
+async function fetchECCC(pts, bbox){
+  const url = `https://api.weather.gc.ca/collections/weather-alerts/items?f=json&lang=en&limit=500&bbox=${bbox.join(",")}`;
+  const j = await getJSON(url, {}, 25000);
+  const out = new Map();
+  (j.features||[]).forEach(f => {
+    const pr = f.properties || {};
+    if(!pts.some(p => inGeom([p.lon,p.lat], f.geometry))) return;
+    const pick = (...ks) => { for(const k of ks){ if(pr[k]) return pr[k]; } return ""; };
+    const name = pick("alert_name_en","alert_short_name_en","headline","event","alert_type");
+    const type = String(pick("alert_type","type")).toLowerCase();
+    if(type==="ended" || /ended|terminé/i.test(name)) return;
+    const key = name + "|" + pick("validity_datetime","expiration_datetime","expires");
+    if(out.has(key)) return;
+    out.set(key, {src:"Environment Canada", event:name, head:name, sev: /warning/i.test(type+name) ? "Severe" : "Moderate",
+      area: pick("feature_name_en","area","zone_name_en"), from: pick("effective_datetime","publication_datetime","effective"),
+      to: pick("expiration_datetime","validity_datetime","expires"), text: pick("alert_text_en","description","text")});
+  });
+  return [...out.values()];
+}
+
+/* ============ низкие мосты (OSM) ============ */
+function parseHeight(s){
+  if(!s) return null; s = String(s).trim().toLowerCase();
+  if(/^(none|default|below_default|no_sign|no_indications|unsigned|signed)$/.test(s)) return null;
+  let m = s.match(/^(\d+(?:\.\d+)?)\s*(?:'|ft|feet|′)\s*(?:(\d+(?:\.\d+)?)\s*(?:"|in|inch|inches|″)?)?$/);
+  if(m) return +m[1]*0.3048 + (m[2]? +m[2]*0.0254 : 0);
+  m = s.match(/^(\d+(?:\.\d+)?)\s*m?$/);
+  if(m){ const v=+m[1]; return v>=8 ? v*0.3048 : v; } // «13.5» без единиц в США — скорее футы
+  return null;
+}
+async function fetchBridges(route){
+  // прореживаем линию до точки примерно каждые 1.2 км
+  const c = route.coords, line=[]; let last=null;
+  for(const p of c){ if(!last || hav(last,p)>=1.2){ line.push(p); last=p; } }
+  line.push(c[c.length-1]);
+  const coordStr = line.map(p=>p[0].toFixed(5)+","+p[1].toFixed(5)).join(",");
+  const q = `[out:json][timeout:150];(way["maxheight"](around:18,${coordStr});node["maxheight"](around:18,${coordStr});way["maxheight:physical"](around:18,${coordStr}););out center tags;`;
+  const eps = ["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+  let j=null, err=null;
+  for(const ep of eps){
+    try{ j = await getJSON(ep, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:"data="+encodeURIComponent(q)}, 160000); break; }
+    catch(e){ err=e; }
+  }
+  if(!j) throw err || new Error("Overpass недоступен");
+  const H = heightM(), out=[];
+  for(const e of j.elements||[]){
+    const t = e.tags||{}, raw = t["maxheight:physical"] || t.maxheight;
+    const hm = parseHeight(raw); if(hm==null) continue;
+    const lat = e.lat ?? (e.center && e.center.lat), lon = e.lon ?? (e.center && e.center.lon);
+    if(lat==null) continue;
+    const gap = hm - H;
+    if(gap > 0.3) continue;
+    out.push({lat, lon, hm, raw, gap, name: t.name || t.ref || (t.bridge ? "мост" : t.tunnel ? "тоннель" : t.barrier || "ограничение"), id:e.type+"/"+e.id});
+  }
+  // ближайшие дубли (одна и та же точка разными объектами)
+  const ded=[]; for(const b of out.sort((a,b)=>a.gap-b.gap)){ if(!ded.some(d=>hav([d.lat,d.lon],[b.lat,b.lon])<0.15)) ded.push(b); }
+  // сортируем по ходу маршрута
+  ded.forEach(b => { let best=1e9, bi=0; route.coords.forEach((p,i)=>{ if(i%3) return; const d=hav(p,[b.lat,b.lon]); if(d<best){best=d;bi=i;} }); b.order=bi; });
+  return ded.sort((a,b)=>a.order-b.order);
+}
+
+/* ============ основной сценарий ============ */
+let STATE = null;
+async function run(){
+  const fq = $("from").value || $("from").placeholder, tq = $("to").value || $("to").placeholder;
+  $("btnGo").disabled = true; $("routeWarn").classList.add("hidden"); $("routeWarn").innerHTML="";
+  try{
+    status("Ищу адреса…");
+    const [a, b] = await Promise.all([geocode(fq), geocode(tq)]);
+    LS.set("last", {from:fq, to:tq});
+    status("Строю маршрут…");
+    let route;
+    if(S.key){
+      try{ route = await routeORS(a, b); }
+      catch(e){ route = await routeOSRM(a, b); warn("Маршрут для трака (openrouteservice) не получен: "+e.message+". Показан обычный маршрут — проверьте мосты ниже."); }
+    } else {
+      route = await routeOSRM(a, b);
+      warn("Маршрут построен как для легковой машины. Добавьте бесплатный ключ openrouteservice в настройках, чтобы учитывались высота, вес и запреты для траков.");
+    }
+    const sp = samplePoints(route);
+    STATE = {a, b, route, sp, startH: Math.ceil(Date.now()/3600000)*3600000};
+    drawRoute();
+    status("Загружаю прогноз по "+sp.pts.length+" точкам маршрута…");
+    const [fc, ens] = await Promise.all([fetchForecast(sp.pts), fetchEnsemble(sp.pts).catch(()=>null)]);
+    STATE.fc = fc; STATE.ens = ens;
+    computeDepartures();
+    renderStrip(); selectDep(0);
+    $("updated").textContent = new Date().toLocaleString();
+    status(`${Math.round(sp.totalKm)} км · ~${sp.durH.toFixed(1)} ч в пути${route.truck?" · маршрут для трака":""}${ens?"":" · ансамбль недоступен"}`);
+    renderRoadLinks(); loadNames();
+    loadAlerts(); loadBridges();
+  }catch(e){
+    status("Ошибка: "+e.message);
+  }finally{ $("btnGo").disabled = false; }
+}
+function warn(t){ const w=$("routeWarn"); if(w.classList.contains("hidden")) w.innerHTML=""; const d=document.createElement("div"); d.textContent=t; d.style.margin="2px 0"; w.appendChild(d); w.classList.remove("hidden"); }
+function drawRoute(){
+  if(!map) return;
+  segLayer.clearLayers(); bridgeLayer.clearLayers(); endLayer.clearLayers();
+  const {a,b,route} = STATE;
+  const pl = L.polyline(route.coords, {color:"#0284c7", weight:5, opacity:.5}).addTo(segLayer);
+  L.marker([a.lat,a.lon], {title:"Старт"}).addTo(endLayer).bindPopup("Старт: "+esc(a.name));
+  L.marker([b.lat,b.lon], {title:"Финиш"}).addTo(endLayer).bindPopup("Финиш: "+esc(b.name));
+  map.fitBounds(pl.getBounds(), {padding:[20,20]});
+}
+/* ============ расчётное время прибытия ============ */
+const MPH = 1.609344;
+function gusts(){ const e = Number(S.empty)===1; return {g2: e?60:70, g3: e?75:90}; }
+function isStorm(v){
+  if(!v) return false; const {g2,g3} = gusts();
+  return [56,57,66,67].includes(v.code) || v.snow>=3 || (v.snow>=1.5 && (v.gust||0)>=g2) || (v.gust||0)>=g3;
+}
+function hIdx(loc, tSec){ return Math.round((tSec - loc.hourly.time[0])/3600); }
+function stormEnd(loc, tSec){ // время (сек), когда шторм в точке закончится
+  const h = loc.hourly, n = h.time.length; let i = Math.max(0, hIdx(loc, tSec));
+  while(i<n && isStorm(valAt(loc, h.time[i]))) i++;
+  return {end: i<n ? h.time[i] : h.time[n-1]+3600, open: i>=n};
+}
+function postStorm(loc, tSec){ // {cap км/ч, why} — расчистка и ограничение после сильного снега
+  const clr = Number(S.clearH)||0, rh = Number(S.rh)||0; if(clr+rh<=0) return null;
+  const h = loc.hourly, i1 = hIdx(loc, tSec), i0 = Math.max(0, i1 - Math.ceil(clr+rh) - 12);
+  let acc=0, last=-1, ice=false;
+  for(let i=i0; i<=i1 && i<h.time.length; i++){
+    const s=h.snowfall[i]||0, isIce=[56,57,66,67].includes(h.weather_code[i]);
+    acc+=s; if(isIce) ice=true; if(s>=0.3 || isIce) last=i;
+  }
+  if((acc<5 && !ice) || last<0) return null;
+  const since = i1 - last; // часов после окончания осадков
+  if(since>=1 && since<=clr) return {cap:30*MPH, why:"расчистка дороги"};
+  if(since>clr && since<=clr+rh) return {cap:(Number(S.rmph)||45)*MPH, why:`ограничение ${S.rmph||45} mph после шторма`};
+  return null;
+}
+const ET = new Intl.DateTimeFormat("en-US", {timeZone:"America/New_York", hour:"numeric", hour12:false, weekday:"short"});
+const ZONES = [ // пробки: центр, радиус км, коэффициент в час пик
+  {lat:40.75, lon:-73.95, r:45, f:0.45, n:"Нью-Йорк/Нью-Джерси"},
+  {lat:41.10, lon:-73.40, r:35, f:0.6, n:"I-95 Коннектикут"},
+  {lat:42.36, lon:-71.06, r:30, f:0.55, n:"Бостон"},
+  {lat:41.82, lon:-71.41, r:15, f:0.7, n:"Провиденс"},
+  {lat:41.76, lon:-72.67, r:15, f:0.7, n:"Хартфорд"},
+  {lat:43.66, lon:-70.26, r:10, f:0.8, n:"Портленд"}
+];
+function trafficFactor(p, tSec){
+  if(Number(S.traffic)!==1) return {f:1};
+  const z = ZONES.find(z => hav([z.lat,z.lon],[p.lat,p.lon]) <= z.r); if(!z) return {f:1};
+  const parts = ET.formatToParts(new Date(tSec*1000));
+  const hr = +parts.find(x=>x.type==="hour").value % 24, wd = parts.find(x=>x.type==="weekday").value;
+  const weekend = wd==="Sat" || wd==="Sun";
+  if(!weekend && ((hr>=6 && hr<10) || (hr>=15 && hr<19))) return {f:z.f, n:z.n};
+  if(hr>=10 && hr<15 && z.r>=30) return {f:Math.min(1, z.f+0.3), n:z.n};
+  if(weekend && hr>=11 && hr<19 && z.r>=30) return {f:Math.min(1, z.f+0.35), n:z.n};
+  return {f:1};
+}
+function simulate(dep){
+  const {sp, fc, ens} = STATE, pts = sp.pts, n = pts.length;
+  const vmax = (Number(S.vmax)||65)*MPH, workPerKm = (Number(S.work)||0)/60/Math.max(1, sp.totalKm);
+  let t = dep/1000, drv=0, sinceBreak=0, normalH=0, prevRestr=null;
+  const bd = {storm:0, wx:0, restr:0, traffic:0, work:0, hos:0}, events=[], rows=[];
+  let maxL=-1, score=0, maxP=null;
+  for(let i=0; i<n; i++){
+    const p = pts[i];
+    let v = valAt(fc[i], t), pr = ens ? probAt(ens[i], t) : null;
+    if(i<n-1 && S.storm==="wait" && isStorm(v)){
+      const se = stormEnd(fc[i], t), until = se.end + (Number(S.clearH)||0)*3600;
+      const why = assess(v, null).why;
+      events.push({at:i, pos:"before", type:"storm", from:t, end:se.end, until, open:se.open, why});
+      bd.storm += (until - t)/3600; t = until;
+      v = valAt(fc[i], t); pr = ens ? probAt(ens[i], t) : null;
+    }
+    const a = assess(v, pr);
+    rows.push({p, t:t*1000, v, pr, a});
+    if(a.lvl>maxL) maxL=a.lvl; if(a.lvl>0) score += a.lvl*a.lvl;
+    if(pr!=null && (maxP==null || pr>maxP)) maxP=pr;
+    if(i===n-1) break;
+    // скорость на участке i → i+1
+    const segKm = pts[i+1].km - p.km; if(segKm<=0) continue;
+    const baseH = sp.durH*segKm/sp.totalKm, v0 = Math.min(segKm/baseH, vmax);
+    normalH += segKm/v0;
+    const wx = assess(v, null);
+    let cap = v0;
+    if(isStorm(v)) cap = Math.min(cap, 25*MPH); else if(wx.lvl===2) cap = Math.min(cap, 40*MPH); else if(wx.lvl===1) cap = Math.min(cap, 50*MPH);
+    const wxCap = cap;
+    const ps = postStorm(fc[i], t); if(ps) cap = Math.min(cap, ps.cap);
+    const rCap = cap;
+    const tf = trafficFactor(p, t), spd = cap*tf.f;
+    const segH = segKm/spd + workPerKm*segKm;
+    bd.wx += segKm/wxCap - segKm/v0; bd.restr += segKm/rCap - segKm/wxCap; bd.traffic += segKm/spd - segKm/rCap; bd.work += workPerKm*segKm;
+    if(ps && ps.why!==prevRestr) events.push({at:i, pos:"after", type:"restr", why:ps.why, from:t});
+    prevRestr = ps ? ps.why : null;
+    if(tf.f<1 && !events.some(e=>e.type==="traffic" && e.n===tf.n)) events.push({at:i, pos:"after", type:"traffic", n:tf.n, f:tf.f, from:t});
+    if(Number(S.hos)===1){
+      if(drv+segH>11){ events.push({at:i, pos:"after", type:"rest", from:t, h:10}); t+=10*3600; bd.hos+=10; drv=0; sinceBreak=0; }
+      else if(sinceBreak+segH>8){ events.push({at:i, pos:"after", type:"break", from:t, h:0.5}); t+=1800; bd.hos+=0.5; sinceBreak=0; }
+    }
+    drv+=segH; sinceBreak+=segH; t+=segH*3600;
+  }
+  const eta = t*1000, delayH = (eta-dep)/3600000 - normalH;
+  return {dep, eta, normalH, delayH, bd, events, maxL, score, maxP, rows};
+}
+function computeDepartures(){
+  const {startH} = STATE, deps=[];
+  for(let h=0; h<=72; h+=3) deps.push(simulate(startH + h*3600000));
+  STATE.deps = deps;
+}
+const fmtDur = h => { const m = Math.round(h*60); return m<60 ? m+" мин" : Math.floor(m/60)+" ч"+(m%60?" "+(m%60)+" мин":""); };
+function lvClass(l){ return l<0 ? "lvna" : "lv"+l; }
+function renderStrip(){
+  const {deps} = STATE, strip = $("strip"); strip.innerHTML="";
+  deps.forEach((d, k) => {
+    const el = document.createElement("button");
+    el.className = "dep "+lvClass(d.maxL); el.dataset.k = k;
+    el.innerHTML = `${DOW[new Date(d.dep).getDay()]}<b>${fmtHM(d.dep)}</b><span class="p">${d.maxP==null?"—":Math.round(d.maxP*100)+"%"}</span><span class="a">→ ${DOW[new Date(d.eta).getDay()]} ${fmtHM(d.eta)}</span>`;
+    el.onclick = () => selectDep(k);
+    strip.appendChild(el);
+  });
+  const valid = deps.filter(d=>d.maxL>=0);
+  const best = valid.slice(0,17).sort((x,y)=> x.maxL-y.maxL || x.score-y.score || x.dep-y.dep)[0]; // лучшее в ближайшие 48 ч
+  const soon = deps.slice(0,17), fastest = soon.slice().sort((x,y)=>x.eta-y.eta)[0];
+  $("bestTip").innerHTML = (best ? `Самый спокойный выезд (48 ч): <b>${fmtT(best.dep)}</b> — ${LV_NAME[best.maxL].toLowerCase()}, прибытие ~${fmtT(best.eta)}.` : "") +
+    (fastest ? `<br>Раньше всего приедете при выезде <b>${fmtT(fastest.dep)}</b> — прибытие ~<b>${fmtT(fastest.eta)}</b>.` : "") +
+    `<br>Под временем выезда — расчётное прибытие.`;
+  const worst = deps[0];
+  if(worst && worst.maxL>=2) warn("⚠ При выезде сейчас на маршруте ожидается: "+[...new Set(worst.rows.flatMap(r=>r.a.why))].join(", ")+".");
+  $("cardDeps").classList.remove("hidden");
+}
+function evText(e){
+  const place = i => { const p=STATE.sp.pts[i]; return "км "+Math.round(p.km)+(p.name?" ("+p.name+")":""); };
+  if(e.type==="storm") return `⏸ Переждать шторм у ${place(e.at)}: ${e.why.join(", ")}. Конец ~${fmtT(e.end*1000)}${e.open?" (или позже — за пределом прогноза)":""} + ${fmtDur(Number(S.clearH)||0)} на расчистку → выезд ~${fmtT(e.until*1000)}`;
+  if(e.type==="restr") return `⚠ ${e.why} — с ${fmtT(e.from*1000)} у ${place(e.at)}`;
+  if(e.type==="traffic") return `🚦 Пробки: ${e.n} (~${fmtT(e.from*1000)}, скорость ×${e.f})`;
+  if(e.type==="rest") return `🛏 Отдых 10 ч у ${place(e.at)} (${fmtT(e.from*1000)} → ${fmtT(e.from*1000+36e6)})`;
+  if(e.type==="break") return `☕ Перерыв 30 мин у ${place(e.at)} (${fmtT(e.from*1000)})`;
+  return "";
+}
+function selectDep(k){
+  const d = STATE.deps[k]; STATE.sel = k;
+  document.querySelectorAll(".dep").forEach(el => el.classList.toggle("sel", +el.dataset.k===k));
+  $("tripDep").textContent = fmtT(d.dep);
+  const b = $("tripBadge"); b.className = "badge "+lvClass(d.maxL); b.textContent = d.maxL<0 ? "Нет данных" : LV_NAME[d.maxL];
+  const worst = d.rows.filter(r=>r.a.lvl===d.maxL && d.maxL>0);
+  $("tripText").textContent = worst.length ? `${worst[0].a.why.join(", ")} — ${fmtT(worst[0].t)}, км ${Math.round(worst[0].p.km)}${worst[0].p.name?" ("+worst[0].p.name+")":""}` : (d.maxL===0 ? "Без значимых погодных рисков" : "");
+  const bd = d.bd, items = [
+    ["Ожидание шторма и расчистка", bd.storm], ["Снег, ветер, видимость (сниженная скорость)", bd.wx],
+    ["Ограничение скорости после шторма", bd.restr], ["Пробки (типичные часы пик)", bd.traffic],
+    ["Ремонты (запас)", bd.work], ["Отдых водителя (HOS)", bd.hos]
+  ].filter(x => x[1] >= 1/60);
+  const total = (d.eta - d.dep)/3600000;
+  $("eta").innerHTML = `<span class="small">Расчётное прибытие</span><span class="big">${fmtT(d.eta)}</span>`+
+    `<span class="small">В пути ${fmtDur(total)}: без задержек ${fmtDur(d.normalH)}${d.delayH>=1/60?", задержки +"+fmtDur(d.delayH):""}</span>`+
+    (items.length ? "<ul>"+items.map(x=>`<li>${x[0]}: +${fmtDur(x[1])}</li>`).join("")+"</ul>" : "");
+  $("tripMeta").textContent = `Макс. вероятность сильного снега (≥2 см/3 ч): ${d.maxP==null?"н/д":Math.round(d.maxP*100)+"%"} · шаг точек ~${Math.round(STATE.sp.totalKm/STATE.sp.pts.length)} км`;
+  const evRow = e => `<tr class="ev"><td colspan="6">${esc(evText(e))}</td></tr>`;
+  $("tripRows").innerHTML = d.rows.map((r, i) => {
+    const v=r.v||{};
+    return d.events.filter(e=>e.at===i && e.pos==="before").map(evRow).join("") +
+      `<tr><td>${fmtT(r.t)}</td><td><span class="dot ${lvClass(r.a.lvl)}"></span>км ${Math.round(r.p.km)}${r.p.name?"<br><span class='small'>"+esc(r.p.name)+"</span>":""}${r.a.why.length&&r.a.lvl>0?"<br><span class='small'>"+esc(r.a.why.join(", "))+"</span>":""}</td>`+
+      `<td>${v.temp==null?"—":Math.round(v.temp)+"°"}</td><td>${v.snow==null?"—":(v.snow>0?v.snow.toFixed(1)+" см":"0")}</td>`+
+      `<td>${v.gust==null?"—":Math.round(v.gust)}</td><td>${r.pr==null?"—":Math.round(r.pr*100)+"%"}</td></tr>` +
+      d.events.filter(e=>e.at===i && e.pos==="after").map(evRow).join("");
+  }).join("");
+  $("cardTrip").classList.remove("hidden");
+  colorRoute(d);
+  if(map){ d.events.filter(e=>e.type==="storm"||e.type==="rest").forEach(e => { const p=STATE.sp.pts[e.at];
+    L.circleMarker([p.lat,p.lon], {radius:9, color:"#fff", weight:2, fillColor: e.type==="storm"?"#7c3aed":"#0284c7", fillOpacity:1}).bindPopup(esc(evText(e))).addTo(segLayer); }); }
+}
+function colorRoute(d){
+  if(!map) return;
+  segLayer.clearLayers();
+  const c = STATE.route.coords, cols = ["#16a34a","#eab308","#f97316","#dc2626"];
+  d.rows.forEach((r, i) => {
+    const i0 = r.p.idx, i1 = i+1<d.rows.length ? d.rows[i+1].p.idx : c.length-1;
+    if(i1<=i0) return;
+    L.polyline(c.slice(i0, i1+1), {color: r.a.lvl<0 ? "#94a3b8" : cols[r.a.lvl], weight:6, opacity:.9})
+      .bindPopup(`<b>${fmtT(r.t)}</b> · км ${Math.round(r.p.km)}<br>${r.a.lvl<0?"нет данных":LV_NAME[r.a.lvl]}${r.a.why.length?": "+esc(r.a.why.join(", ")):""}`)
+      .addTo(segLayer);
+  });
+}
+async function loadNames(){
+  const pts = STATE.sp.pts, idx = pts.map((_,i)=>i).filter(i => i%3===0 || i===pts.length-1);
+  const res = await pool(idx, 3, async i => { await sleep(150); return revName(pts[i].lat, pts[i].lon); });
+  idx.forEach((i,k) => { const r=res[k]; if(r){ pts[i].name = [r.place, r.state].filter(Boolean).join(", "); pts[i].st = r.state; } });
+  if(STATE.sel!=null) selectDep(STATE.sel);
+}
+function renderRoadLinks(){
+  const pts = STATE.sp.pts, used = [];
+  JUR.forEach(j => { if(pts.some(p => p.lat>=j.b[0] && p.lat<=j.b[1] && p.lon>=j.b[2] && p.lon<=j.b[3])) if(!used.some(u=>u.u===j.u)) used.push(j); });
+  $("roadLinks").innerHTML = used.map(j => `<a href="${j.u}" target="_blank" rel="noopener">${esc(j.n)}</a>`).join("");
+  const {a,b} = STATE;
+  $("navLinks").innerHTML = `<a href="https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=driving" target="_blank" rel="noopener">Открыть в Google Maps</a>`+
+    `<a href="https://maps.apple.com/?saddr=${a.lat},${a.lon}&daddr=${b.lat},${b.lon}&dirflg=d" target="_blank" rel="noopener">Apple Карты</a>`;
+  $("cardRoads").classList.remove("hidden");
+}
+async function loadAlerts(){
+  $("cardAlerts").classList.remove("hidden"); $("alerts").textContent = "Загрузка…";
+  const pts = STATE.sp.pts, lats = pts.map(p=>p.lat), lons = pts.map(p=>p.lon);
+  const bbox = [Math.min(...lons)-0.2, Math.min(...lats)-0.2, Math.max(...lons)+0.2, Math.max(...lats)+0.2];
+  const [us, ca] = await Promise.all([fetchNWS(pts).catch(()=>null), fetchECCC(pts, bbox).catch(()=>null)]);
+  const all = [...(ca||[]), ...(us||[])];
+  const winter = /winter|snow|blizzard|ice|freez|wind|storm|squall|avalanche|flood|fog|hiver|neige|verglas|pluie/i;
+  all.sort((x,y) => (winter.test(y.event)?1:0)-(winter.test(x.event)?1:0));
+  let html = all.length ? all.map(a => {
+    const sev = /severe|extreme/i.test(a.sev) || /warning/i.test(a.event);
+    const when = [a.from, a.to].filter(Boolean).map(x => { const d=new Date(x); return isNaN(d)? x : fmtT(d.getTime()); }).join(" → ");
+    return `<div class="alert ${sev?"sev":""}"><b>${esc(a.head)}</b><span class="small">${esc(a.src)} · ${esc(when)}${a.area?" · "+esc(String(a.area).slice(0,140)):""}</span>`+
+      (a.text? `<details><summary>Подробнее</summary><div class="small" style="white-space:pre-wrap">${esc(a.text)}</div></details>`:"")+`</div>`;
+  }).join("") : "Активных предупреждений на маршруте нет.";
+  if(us==null) html += "<div class='small'>NWS (США) недоступен.</div>";
+  if(ca==null) html += "<div class='small'>Environment Canada недоступен — проверьте weather.gc.ca.</div>";
+  $("alerts").innerHTML = html;
+  if(all.some(a => /warning/i.test(a.event) && winter.test(a.event))) warn("⚠ На маршруте действует официальное штормовое предупреждение — см. раздел «Предупреждения».");
+}
+async function loadBridges(){
+  $("cardBridges").classList.remove("hidden");
+  $("bridges").textContent = "Проверяю ограничения высоты вдоль маршрута (OpenStreetMap), это может занять до минуты…";
+  try{
+    const list = await fetchBridges(STATE.route), H = heightM();
+    bridgeLayer.clearLayers();
+    const low = list.filter(b=>b.gap<0.08), near = list.filter(b=>b.gap>=0.08);
+    const row = b => `<tr><td><span class="dot ${b.gap<0.08?"lv3":"lv1"}"></span>${esc(b.name)}</td><td><b>${fmtFtIn(b.hm)}</b><br><span class="small">${b.hm.toFixed(2)} м</span></td><td><a href="https://www.openstreetmap.org/${b.id}" target="_blank" rel="noopener">карта</a></td></tr>`;
+    list.forEach(b => {
+      if(!map) return;
+      L.circleMarker([b.lat,b.lon], {radius:8, color:"#fff", weight:2, fillColor: b.gap<0.08?"#dc2626":"#eab308", fillOpacity:1})
+        .bindPopup(`<b>${esc(b.name)}</b><br>Высота: ${fmtFtIn(b.hm)} (${b.hm.toFixed(2)} м)<br>Ваш трак: ${fmtFtIn(H)}<br><span class="small">OSM: ${esc(b.raw)}</span>`).addTo(bridgeLayer);
+    });
+    let html = `<div>Высота вашего трака: <b>${fmtFtIn(H)}</b> (${H.toFixed(2)} м). ${STATE.route.truck ? "Маршрут для трака уже обходит известные низкие мосты; ниже — то, что лежит рядом с линией." : ""}</div>`;
+    if(!list.length) html += "<p>Низких мостов (ниже или около вашей высоты) вдоль маршрута в OpenStreetMap не найдено.</p>";
+    else html += `<p>${low.length?`<b style="color:var(--l3)">Ниже вашего трака: ${low.length}</b>. `:""}${near.length?`Впритык (запас &lt;30 см): ${near.length}.`:""} Часть объектов может быть рядом, а не на самом маршруте (дорога сверху/сбоку) — проверьте на карте.</p>`+
+      `<table><thead><tr><th>Объект</th><th>Высота</th><th></th></tr></thead><tbody>${list.map(row).join("")}</tbody></table>`;
+    $("bridges").innerHTML = html + "<p class='small'>Данные OpenStreetMap неполные. Всегда следите за знаками Low Clearance.</p>";
+  }catch(e){
+    $("bridges").textContent = "Не удалось проверить мосты: "+e.message+". Попробуйте позже.";
+  }
+}
+
+/* ============ интерфейс ============ */
+function openSettings(){
+  $("sKey").value=S.key||""; $("sHft").value=S.hft; $("sHin").value=S.hin; $("sW").value=S.w; $("sL").value=S.l; $("sSpeed").value=S.speed; $("sEmpty").value=S.empty;
+  $("sVmax").value=S.vmax; $("sStorm").value=S.storm; $("sClear").value=S.clearH; $("sRmph").value=S.rmph; $("sRh").value=S.rh; $("sWork").value=S.work; $("sTraffic").value=S.traffic; $("sHos").value=S.hos;
+  $("settings").style.display="block";
+}
+$("btnSettings").onclick = openSettings;
+$("btnClose").onclick = () => $("settings").style.display="none";
+$("btnSave").onclick = () => {
+  S = {key:$("sKey").value.trim(), hft:+$("sHft").value||13, hin:+$("sHin").value||0, w:+$("sW").value||36, l:+$("sL").value||22, speed:+$("sSpeed").value||1, empty:+$("sEmpty").value,
+    vmax:+$("sVmax").value||65, storm:$("sStorm").value, clearH:Math.max(0,+$("sClear").value||0), rmph:+$("sRmph").value||45, rh:Math.max(0,+$("sRh").value||0),
+    work:Math.max(0,+$("sWork").value||0), traffic:+$("sTraffic").value, hos:+$("sHos").value};
+  LS.set("settings", S); $("settings").style.display="none";
+  if(STATE) run();
+};
+$("btnGo").onclick = run;
+$("btnGeo").onclick = () => {
+  if(!navigator.geolocation){ status("Геолокация недоступна"); return; }
+  status("Определяю местоположение…");
+  navigator.geolocation.getCurrentPosition(p => { $("from").value = p.coords.latitude.toFixed(4)+", "+p.coords.longitude.toFixed(4); status("Местоположение получено"); },
+    e => status("Не удалось получить местоположение: "+e.message), {enableHighAccuracy:false, timeout:15000});
+};
+$("presets").innerHTML = PRESETS.map(p => `<option value="${esc(p[0])}">`).join("");
+const last = LS.get("last", null);
+if(last){ $("from").value = last.from; $("to").value = last.to; }
+initMap();
+// автообновление каждые 30 минут, пока приложение открыто
+setInterval(() => { if(STATE && document.visibilityState==="visible") run(); }, 30*60*1000);
+</script>
+</body>
+</html>
