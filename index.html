@@ -83,8 +83,56 @@ details summary{cursor:pointer;color:var(--accent);font-size:13px;margin-top:4px
   .card{margin-bottom:12px}
 }
 @media (min-width: 1300px){ main{grid-template-columns:minmax(0,1fr) 520px} }
+.stormhead{display:flex;align-items:center;gap:10px}
+.switch{display:flex;align-items:center;gap:6px;margin:0;color:var(--text);font-size:14px;white-space:nowrap}
+.switch input{width:20px;height:20px}
+.playbtn{flex:0 0 auto !important;color:var(--accent) !important;border-color:var(--line) !important;min-width:48px;font-size:18px}
+input[type=range]{padding:0;border:0;background:transparent;accent-color:var(--accent);height:32px}
+.stormtime{margin-top:4px;font-size:15px}
+.sq{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.stormlbl{background:rgba(15,23,42,.85);color:#fff;border-radius:6px;padding:1px 5px;font-size:11px;white-space:nowrap}
+.truckico{font-size:24px;line-height:24px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+#map{touch-action:manipulation}
+.mapbtns{position:absolute;right:10px;top:10px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+.mapbtns button{width:44px;height:44px;border-radius:10px;border:1px solid rgba(0,0,0,.2);background:#fff;color:#0f172a;font-size:20px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.mapbtns button.on{background:#0284c7;color:#fff}
+.maphint{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:1000;background:rgba(15,23,42,.9);color:#fff;border-radius:10px;padding:8px 12px;font-size:14px;display:none;max-width:70%;text-align:center}
+body.mapfull #map{position:fixed !important;inset:0;z-index:1900;height:100vh !important;height:100dvh !important;width:100vw;border-radius:0;margin:0;top:0 !important}
+body.mapfull{overflow:hidden}
+body.mapfull .mapbtns{top:calc(env(safe-area-inset-top) + 10px)}
+.pl{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.pl:last-child{border-bottom:0}
+.pl .ic{font-size:22px;width:28px;text-align:center}
+.pl .tx{flex:1;min-width:0;font-size:14px;color:var(--text)}
+.pl .tx small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl button{border:1px solid var(--line);background:var(--bg);color:var(--accent);border-radius:8px;padding:7px 8px;font-size:13px}
+.plico{font-size:22px;line-height:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.ppbtns{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ppbtns button{border:1px solid #cbd5e1;background:#f1f5f9;border-radius:8px;padding:6px 8px;font-size:13px}
+.depseg{display:flex;gap:8px}
+.depseg button{flex:1;min-width:0;border:2px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:10px 6px;text-align:center;font-size:12px}
+.depseg button b{display:block;font-size:15px;margin-bottom:3px}
+.depseg button span{display:block;color:var(--muted);line-height:1.35}
+.depseg button.on{border-color:var(--accent);background:var(--card)}
+.depseg button.on b{color:var(--accent)}
+input[type=datetime-local]{min-height:46px}
+.apok{color:#15803d;font-weight:600}.aplate{color:#b91c1c;font-weight:600}
+@media (prefers-color-scheme: dark){ .apok{color:#4ade80}.aplate{color:#f87171} }
+.tag.late{background:#fee2e2;color:#7f1d1d}
+@media (prefers-color-scheme: dark){ .tag.late{background:#7f1d1d;color:#fee2e2} }
+.acwrap input{padding-right:44px}
+.clr{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:17px;display:none}
+.acwrap.has .clr{display:block}
+.revlinks{display:none;gap:8px;flex-wrap:wrap;margin-top:6px}
+.revlinks.show{display:flex}
+.revlinks a{font-size:13px;color:var(--accent);text-decoration:none;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 10px}
+.ppbtns a{border:1px solid #cbd5e1;background:#f1f5f9;border-radius:8px;padding:6px 8px;font-size:13px;text-decoration:none;color:#0369a1}
+.pl a.lnk{border:1px solid var(--line);background:var(--bg);color:var(--accent);border-radius:8px;padding:7px 8px;font-size:13px;text-decoration:none}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2500;display:none;padding:0 16px}
-body.metric .imp-only{display:none} body:not(.metric) .met-only{display:none}
+body.lenmet .len-imp{display:none !important} body:not(.lenmet) .len-met{display:none}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;padding:11px 6px;border:0;background:var(--bg);color:var(--text);font-size:14px}
+.seg button.on{background:var(--accent);color:var(--accent-text);font-weight:600}
 #settings{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:none;overflow:auto;padding:calc(env(safe-area-inset-top) + 16px) 12px 40px}
 #settings .card{max-width:560px;margin:0 auto}
 .hidden{display:none}
@@ -119,17 +167,56 @@ tr.ev td{background:var(--bg);font-size:12px}
   <div class="card">
     <label for="from" data-i18n="from"></label>
     <div class="row">
-      <div class="acwrap"><input id="from" data-i18n-ph="ph.addr" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next"><div class="ac" id="acFrom"></div></div>
+      <div class="acwrap"><input id="from" data-i18n-ph="ph.addr" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next"><button type="button" class="clr" data-for="from" aria-label="clear">✕</button><div class="ac" id="acFrom"></div></div>
       <button class="iconbtn geobtn" id="btnGeo" data-i18n="geo.btn"></button>
     </div>
     <label for="to" data-i18n="to"></label>
-    <div class="acwrap"><input id="to" data-i18n-ph="ph.addr" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><div class="ac" id="acTo"></div></div>
+    <div class="acwrap"><input id="to" data-i18n-ph="ph.addr" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button type="button" class="clr" data-for="to" aria-label="clear">✕</button><div class="ac" id="acTo"></div></div>
+    <div class="revlinks" id="toLinks">
+      <a id="toReviews" target="_blank" rel="noopener"></a>
+      <a id="toStreet" target="_blank" rel="noopener"></a>
+    </div>
+    <label for="appt" data-i18n="ap.label"></label>
+    <div class="row" style="align-items:stretch">
+      <input type="datetime-local" id="appt" step="600" style="flex:1">
+      <button class="iconbtn geobtn" id="apptClr" style="min-width:48px">✕</button>
+    </div>
     <button class="btn" id="btnGo" data-i18n="go"></button>
     <div id="status"></div>
     <div id="routeWarn" class="warnbox hidden"></div>
   </div>
 
   <div id="map"></div>
+
+  <div class="card hidden" id="cardDeps">
+    <h2 data-i18n="deps.h"></h2>
+    <div class="depseg">
+      <button type="button" data-m="now"><b data-i18n="dm.now"></b><span id="dmNow"></span></button>
+      <button type="button" data-m="opt"><b data-i18n="dm.opt"></b><span id="dmOpt"></span></button>
+      <button type="button" data-m="custom"><b data-i18n="dm.custom"></b><span id="dmCustom"></span></button>
+    </div>
+    <div id="customBox" class="hidden" style="margin-top:8px">
+      <label data-i18n="dm.pick"></label>
+      <input type="datetime-local" id="customDep" step="600">
+    </div>
+    <div id="depTip" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card" id="cardRuns">
+    <div class="stormhead">
+      <h2 data-i18n="rn.h" style="margin:0;flex:1"></h2>
+      <button class="iconbtn geobtn" id="rnSaveBtn" data-i18n="rn.save"></button>
+    </div>
+    <div id="rnList" class="small" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card" id="cardPlaces">
+    <div class="stormhead">
+      <h2 data-i18n="pl.h" style="margin:0;flex:1"></h2>
+      <button class="iconbtn geobtn" id="plAdd" data-i18n="pl.add"></button>
+    </div>
+    <div id="plList" class="small" style="margin-top:6px"></div>
+  </div>
 
   <div class="card hidden" id="cardAlts">
     <h2 data-i18n="alts.h"></h2>
@@ -138,16 +225,29 @@ tr.ev td{background:var(--bg);font-size:12px}
     <div id="altsRec" class="small" style="margin-top:6px"></div>
   </div>
 
-  <div class="card hidden" id="cardDeps">
-    <h2 data-i18n="deps.h"></h2>
-    <div class="strip" id="strip"></div>
-    <div class="legend">
-      <span><span class="dot lv0"></span><span data-i18n="lv0"></span></span>
-      <span><span class="dot lv1"></span><span data-i18n="lv1"></span></span>
-      <span><span class="dot lv2"></span><span data-i18n="lv2"></span></span>
-      <span><span class="dot lv3"></span><span data-i18n="lv3"></span></span>
-      <span data-i18n="legend.pct"></span>
+  <div class="card hidden" id="cardStorm">
+    <div class="stormhead">
+      <h2 data-i18n="storm.h" style="margin:0;flex:1"></h2>
+      <label class="switch"><input type="checkbox" id="stormOn" checked> <span data-i18n="storm.show"></span></label>
     </div>
+    <div id="stormBody">
+      <div class="row" style="align-items:center;margin-top:10px">
+        <button class="iconbtn playbtn" id="stormPlay">▶</button>
+        <input type="range" id="stormT" min="0" max="72" step="1" value="0" style="flex:1">
+      </div>
+      <div class="stormtime"><b id="stormTime">—</b> <span id="stormRel" class="small"></span></div>
+      <div class="legend" style="margin-top:4px">
+        <span><span class="sq" style="background:#93c5fd"></span><span data-i18n="storm.light"></span></span>
+        <span><span class="sq" style="background:#3b82f6"></span><span data-i18n="storm.mod"></span></span>
+        <span><span class="sq" style="background:#a21caf"></span><span data-i18n="storm.core"></span></span>
+        <span><span class="sq" style="background:#ec4899"></span><span data-i18n="storm.ice"></span></span>
+        <span><span class="sq" style="background:#86efac"></span><span data-i18n="storm.rain"></span></span>
+        <span>🚚 <span data-i18n="storm.truckL"></span></span>
+      </div>
+      <div id="stormInfo" class="small" style="margin-top:8px"></div>
+    </div>
+  </div>
+
     <div id="bestTip" class="small" style="margin-top:6px"></div>
   </div>
 
@@ -192,6 +292,30 @@ tr.ev td{background:var(--bg);font-size:12px}
   <p class="small"><span data-i18n="footer"></span> <span data-i18n="updated"></span> <span id="updated">—</span></p>
 </main>
 
+<div id="rnDlg" class="modal">
+  <div class="card" style="max-width:420px;margin:12vh auto 0">
+    <h2 data-i18n="rn.new"></h2>
+    <div class="small" id="rnWhat"></div>
+    <label data-i18n="rn.name"></label><input id="rnName" autocomplete="off">
+    <label data-i18n="rn.day"></label>
+    <select id="rnDow"></select>
+    <div class="small" data-i18n="rn.keeps" style="margin-top:6px"></div>
+    <button class="btn" id="rnOk" data-i18n="save"></button>
+    <button class="btn sec" id="rnCancel" data-i18n="pl.cancel"></button>
+  </div>
+</div>
+<div id="plDlg" class="modal">
+  <div class="card" style="max-width:420px;margin:12vh auto 0">
+    <h2 data-i18n="pl.new"></h2>
+    <div class="small" id="plCoords"></div>
+    <label data-i18n="pl.name"></label><input id="plName" autocomplete="off">
+    <label data-i18n="pl.type"></label>
+    <select id="plType"></select>
+    <label data-i18n="pl.note"></label><input id="plNote" autocomplete="off">
+    <button class="btn" id="plSave" data-i18n="save"></button>
+    <button class="btn sec" id="plCancel" data-i18n="pl.cancel"></button>
+  </div>
+</div>
 <div id="unitsPick" class="modal">
   <div class="card" style="max-width:420px;margin:10vh auto 0">
     <h2>Язык · Мова · Language</h2>
@@ -211,37 +335,37 @@ tr.ev td{background:var(--bg);font-size:12px}
     <h2 data-i18n="set.h"></h2>
     <label data-i18n="set.lang"></label>
     <select id="sLang"><option value="ru">Русский</option><option value="uk">Українська</option><option value="en">English</option></select>
-    <label data-i18n="set.units"></label>
-    <select id="sUnits"><option value="imperial" data-i18n="u.imp"></option><option value="metric" data-i18n="u.met"></option></select>
+    <h2 style="margin-top:14px" data-i18n="set.units"></h2>
+    <label data-i18n="set.uLen"></label>
+    <div class="seg" data-k="len"><button type="button" data-v="imp" data-i18n="u.lenImp"></button><button type="button" data-v="met" data-i18n="u.lenMet"></button></div>
+    <label data-i18n="set.uWt"></label>
+    <div class="seg" data-k="wt"><button type="button" data-v="lb" data-i18n="u.lb"></button><button type="button" data-v="kg" data-i18n="u.kg"></button></div>
+    <label data-i18n="set.uTemp"></label>
+    <div class="seg" data-k="temp"><button type="button" data-v="F">°F</button><button type="button" data-v="C">°C</button></div>
+    <h2 style="margin-top:14px" data-i18n="set.truck"></h2>
     <label data-i18n="set.key"></label>
     <input id="sKey" data-i18n-ph="set.keyph" autocomplete="off">
     <div class="small" data-i18n="set.keyhelp"></div>
-    <div class="imp-only">
-      <div class="row">
-        <div><label data-i18n="set.hft"></label><input id="sHft" type="number" inputmode="numeric"></div>
-        <div><label data-i18n="set.hin"></label><input id="sHin" type="number" inputmode="numeric"></div>
-      </div>
-      <div class="row">
-        <div><label data-i18n="set.wlb"></label><input id="sWlb" type="number" inputmode="numeric"></div>
-        <div><label data-i18n="set.lft"></label><input id="sLft" type="number" inputmode="numeric"></div>
-      </div>
+    <div class="len-imp row">
+      <div><label data-i18n="set.hft"></label><input id="sHft" type="number" inputmode="numeric"></div>
+      <div><label data-i18n="set.hin"></label><input id="sHin" type="number" inputmode="numeric"></div>
     </div>
-    <div class="met-only">
-      <div class="row">
-        <div><label data-i18n="set.hm"></label><input id="sHm" type="number" step="0.01" inputmode="decimal"></div>
-        <div><label data-i18n="set.wt"></label><input id="sW" type="number" inputmode="decimal"></div>
-      </div>
-      <label data-i18n="set.lm"></label><input id="sL" type="number" inputmode="decimal">
+    <div class="len-met"><label data-i18n="set.hm"></label><input id="sHm" type="number" step="0.01" inputmode="decimal"></div>
+    <div class="row">
+      <div><label><span data-i18n="set.tare"></span>, <span class="uWt">lb</span></label><input id="sTare" type="number" inputmode="numeric" step="100"></div>
+      <div><label><span data-i18n="set.cargo"></span>, <span class="uWt">lb</span></label><input id="sCargo" type="number" inputmode="numeric" step="100"></div>
     </div>
+    <label><span data-i18n="set.len"></span>, <span class="uLen">ft</span></label><input id="sLen" type="number" inputmode="decimal">
+    <div class="small" id="wTotal" style="margin-top:6px"></div>
     <label data-i18n="set.tolls"></label>
     <select id="sTolls"><option value="allow" data-i18n="set.tollsAllow"></option><option value="avoid" data-i18n="set.tollsAvoid"></option></select>
-    <label data-i18n="set.speed"></label>
-    <input id="sSpeed" type="number" step="0.05" inputmode="decimal" value="1.1">
-    <label data-i18n="set.empty"></label>
-    <select id="sEmpty"><option value="0" data-i18n="set.loaded"></option><option value="1" data-i18n="set.emptyY"></option></select>
+    <div class="row">
+      <div><label><span data-i18n="set.avgUS"></span>, <span class="uSpd">mph</span></label><input id="sAvgUS" type="number" inputmode="numeric"></div>
+      <div><label><span data-i18n="set.avgCA"></span>, <span class="uSpd">mph</span></label><input id="sAvgCA" type="number" inputmode="numeric"></div>
+    </div>
+    <div class="small" data-i18n="set.avgHelp"></div>
     <h2 style="margin-top:18px" data-i18n="set.eta"></h2>
     <div class="row">
-      <div><label><span data-i18n="set.vmax"></span> <span class="uSpd">mph</span></label><input id="sVmax" type="number" inputmode="numeric" value="65"></div>
       <div><label data-i18n="set.storm"></label><select id="sStorm"><option value="wait" data-i18n="set.wait"></option><option value="slow" id="optSlow"></option></select></div>
     </div>
     <div class="row">
@@ -249,8 +373,13 @@ tr.ev td{background:var(--bg);font-size:12px}
       <div><label><span data-i18n="set.rmph"></span> <span class="uSpd">mph</span></label><input id="sRmph" type="number" inputmode="numeric" value="45"></div>
     </div>
     <div class="row">
-      <div><label data-i18n="set.rh"></label><input id="sRh" type="number" step="0.5" inputmode="decimal" value="6"></div>
+      <div><label data-i18n="set.rh"></label><input id="sRh" type="number" step="0.5" inputmode="decimal" value="1"></div>
+      <div><label data-i18n="set.ramp"></label><input id="sRamp" type="number" step="0.5" inputmode="decimal" value="2"></div>
+    </div>
+    <div class="small" data-i18n="set.rampHelp"></div>
+    <div class="row">
       <div><label data-i18n="set.work"></label><input id="sWork" type="number" inputmode="numeric" value="20"></div>
+      <div><label data-i18n="set.apBuf"></label><input id="sApBuf" type="number" inputmode="numeric" value="30"></div>
     </div>
     <div class="row">
       <div><label data-i18n="set.traffic"></label><select id="sTraffic"><option value="1" data-i18n="set.consider"></option><option value="0" data-i18n="set.no"></option></select></div>
@@ -265,8 +394,8 @@ tr.ev td{background:var(--bg);font-size:12px}
 "use strict";
 /* ============ языки ============ */
 const I18N = {
-ru:{"alts.h":"Варианты маршрута","alts.for":"Время в пути с учётом погоды, пробок и отдыха — при выезде {dep}. Нажмите, чтобы выбрать.","route.fast":"Быстрее всего","route.safe":"Спокойнее по погоде","route.toll":"Платные участки","route.wait":"⏸ шторм {d}","route.delay":"задержки +{d}","route.noname":"маршрут","eta.short":"прибытие","rec.one":"Других разумных вариантов не найдено.","rec.detour":"Объезд {r} быстрее основного {m} на {d} с учётом погоды и пробок.","rec.main":"Основной маршрут {r} — лучший при этом выезде.","st.alts":"Ищу объездные маршруты…","st.nalts":" · вариантов: {n}","set.tolls":"Платные дороги","set.tollsAllow":"Разрешить","set.tollsAvoid":"Избегать","title":"TruckWX — погода на маршруте","sub":"шторм · мосты · перекрытия","from":"Откуда","to":"Куда","ph.addr":"Начните вводить город или адрес","geo.btn":"📍 Я здесь","go":"Проверить маршрут",
-"deps.h":"Когда выезжать? Риск на ближайшие 72 ч","lv0":"спокойно","lv1":"осторожно","lv2":"опасно","lv3":"шторм / лёд","legend.pct":"% — вероятность сильного снега (ансамбль GFS)",
+ru:{"w.recover":"поток разбивает снег — скорость возвращается к обычной","set.ramp":"Потом скорость восстанавливается, ч","set.rampHelp":"После шторма: расчистка → ограничение (обычно ~1 ч) → поток машин разбивает снег, и скорость плавно возвращается к обычной для участка (с учётом знаков, времени суток и пробок).","rv.reviews":"⭐ Отзывы, часы работы, где въезд","rv.reviewsShort":"⭐ Отзывы","rv.street":"👁 Street View","ap.label":"Appointment — к какому времени доставить (необязательно)","ap.ok":"к appointment {appt} успеваете, запас {d}","ap.late":"к appointment {appt} опоздание {d}","ap.leaveBy":"Чтобы успеть к {appt} с запасом {buf}, выезжайте не позже {dep}.","ap.optIs":"Оптимально: выезд {dep}, прибытие ~{eta}.","ap.cant":"К {appt} не успеть: самое раннее прибытие ~{eta}. Предупредите получателя.","set.apBuf":"Запас до appointment, мин","rn.h":"Мои рейсы","rn.save":"💾 Сохранить","rn.new":"Сохранить рейс","rn.name":"Название рейса","rn.day":"День appointment","rn.anyDay":"Ближайший день","rn.keeps":"Сохранятся: откуда, куда, время appointment, вес груза и все настройки трака и расчёта.","rn.withAppt":"Appointment в {t}","rn.noAppt":"Без appointment","rn.saved":"Рейс сохранён","rn.use":"Выбрать","rn.appt":"приём {t}","rn.cargo":"груз {w}","rn.empty":"Сохраните постоянный рейс — заполните «Откуда», «Куда», appointment и нажмите «💾 Сохранить». В следующий раз выберите его одним нажатием.","dowFull":["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"],"deps.h":"Когда выезжать?","dm.now":"Сейчас","dm.opt":"Оптимально","dm.custom":"Своё время","dm.pick":"Время выезда (до 3 суток вперёд)","dm.pickShort":"выбрать дату и время","dm.nowBest":"Выезжать сейчас — оптимально.","dm.optEarlier":"Оптимально выехать {dep}: приедете на {d} раньше, чем при выезде сейчас (~{eta}).","dm.optCalmer":"Оптимально выехать {dep}: приедете примерно так же (~{eta}), но в дороге проведёте на {d} меньше — без ожидания и пробок.","pl.h":"Мои точки","pl.add":"★ Добавить","pl.new":"Новая точка","pl.name":"Название","pl.type":"Тип","pl.note":"Заметка (ворота, часы приёма, телефон…)","pl.cancel":"Отмена","pl.empty":"Пока пусто. Чтобы запомнить место: долгое нажатие на карту, или кнопка ★ на карте и касание нужного места, или «★ Добавить» — сохранит, где вы сейчас.","pl.addHint":"Коснитесь карты там, где поставить точку","pl.saved":"Точка сохранена","pl.here":"Моё место","pl.from":"Отсюда","pl.to":"Сюда","pl.delq":"Удалить точку «{n}»?","pl.set":"«{n}» → {f}","pl.t.client":"Клиент / склад","pl.t.park":"Стоянка","pl.t.fuel":"Заправка","pl.t.food":"Еда","pl.t.scale":"Весы","pl.t.home":"Дом / база","pl.t.star":"Другое","fs.exit":"Двойное касание или ✕ — выйти из полноэкранного режима","set.uLen":"Расстояние, высота, скорость","set.uWt":"Вес","set.uTemp":"Температура","u.lenImp":"мили · футы · mph","u.lenMet":"км · метры · км/ч","u.lb":"фунты (lb)","u.kg":"килограммы (кг)","set.truck":"Трак","set.len":"Длина","kg":"кг","set.tare":"Трак + пустой прицеп","set.cargo":"Вес груза (0 — пустой)","set.t":"т","set.total":"Общий вес: {w}","set.light":"лёгкий, строже по ветру","set.avgUS":"Ваша средняя скорость в США","set.avgCA":"Ваша средняя скорость в Канаде","set.avgHelp":"Укажите, с какой скоростью вы обычно едете по трассе. В городах и на медленных дорогах берётся меньшая скорость по карте. Погода, пробки и отдых добавляются отдельно.","storm.h":"Шторм на карте","storm.show":"Показать","storm.light":"слабый снег","storm.mod":"снег","storm.core":"ядро: сильный снег / метель","storm.ice":"ледяной дождь","storm.rain":"дождь","storm.truckL":"где будет трак","storm.loading":"Загружаю карту осадков…","storm.fail":"Не удалось загрузить карту осадков.","storm.now":"сейчас","storm.none":"В ближайшие 3 суток значимого снега в районе маршрута не ожидается.","storm.moving":"Снегопад смещается на {dir}, ~{spd}.","storm.starts":"Начнётся ~{t}.","storm.until":"Снег в районе маршрута закончится ~{t}.","storm.longer":"Снег в районе продолжится дольше 3 суток.","storm.truck":"🚚 — ваш трак при выезде {dep}","storm.notyet":"ещё не выехал","storm.arrived":"уже на месте","alts.h":"Варианты маршрута","alts.for":"Время в пути с учётом погоды, пробок и отдыха — при выезде {dep}. Нажмите, чтобы выбрать.","route.fast":"Быстрее всего","route.safe":"Спокойнее по погоде","route.toll":"Платные участки","route.wait":"⏸ шторм {d}","route.delay":"задержки +{d}","route.noname":"маршрут","eta.short":"прибытие","rec.one":"Других разумных вариантов не найдено.","rec.detour":"Объезд {r} быстрее основного {m} на {d} с учётом погоды и пробок.","rec.main":"Основной маршрут {r} — лучший при этом выезде.","st.alts":"Ищу объездные маршруты…","st.nalts":" · вариантов: {n}","set.tolls":"Платные дороги","set.tollsAllow":"Разрешить","set.tollsAvoid":"Избегать","title":"TruckWX — погода на маршруте","sub":"шторм · мосты · перекрытия","from":"Откуда","to":"Куда","ph.addr":"Начните вводить город или адрес","geo.btn":"📍 Я здесь","go":"Проверить маршрут",
+"lv0":"спокойно","lv1":"осторожно","lv2":"опасно","lv3":"шторм / лёд","legend.pct":"% — вероятность сильного снега (ансамбль GFS)",
 "trip.dep":"Выезд:","th.time":"Время","th.where":"Где","th.snow":"Снег","th.gust":"Порывы","th.prob":"Вер.","alerts.h":"Официальные предупреждения на маршруте","bridges.h":"Низкие мосты и ограничения по высоте",
 "roads.h":"Ремонты и перекрытия (511)","roads.txt":"Актуальные работы, аварии и закрытия — на официальных картах 511 штатов/провинций по маршруту:","border":"Граница:","cbp":"Очереди CBP (в США)","cbsa":"Очереди CBSA (в Канаду)",
 "footer":"Данные: Open-Meteo (прогноз и ансамбль GFS), NWS/NOAA (США), Environment Canada, OpenStreetMap/Overpass, openrouteservice. Приложение — помощник, а не замена официальным источникам и знакам на дороге.","updated":"Обновлено:",
@@ -275,7 +404,7 @@ ru:{"alts.h":"Варианты маршрута","alts.for":"Время в пу�
 "set.keyhelp":"Без ключа строится обычный автомобильный маршрут (OSRM), и мосты проверяются только по списку ниже. Ключ: openrouteservice.org → Sign up → Dashboard → Tokens.",
 "set.hft":"Высота, футы","set.hin":"дюймы","set.wlb":"Вес, lb","set.lft":"Длина, футы","set.hm":"Высота, м","set.wt":"Вес, т","set.lm":"Длина, м","set.speed":"Поправка скорости трака (1.0 = как навигатор, 1.15 = на 15% медленнее)",
 "set.empty":"Пустой прицеп / лёгкий груз (строже по ветру)","set.loaded":"Нет — гружёный","set.emptyY":"Да — пустой/лёгкий","set.eta":"Расчёт времени прибытия","set.vmax":"Макс. скорость трака,","set.storm":"При шторме","set.wait":"Пережидать","set.slow":"Ехать {spd}",
-"set.clear":"Расчистка после шторма, ч","set.rmph":"Потом ограничение,","set.rh":"Ограничение действует, ч","set.work":"Запас на ремонты, мин","set.traffic":"Пробки в часы пик","set.consider":"Учитывать","set.no":"Нет","set.hos":"Отдых водителя (HOS)",
+"set.clear":"Расчистка после шторма, ч","set.rmph":"Потом ограничение,","set.rh":"Ограничение держится, ч","set.work":"Запас на ремонты, мин","set.traffic":"Пробки в часы пик","set.consider":"Учитывать","set.no":"Нет","set.hos":"Отдых водителя (HOS)",
 "set.hosY":"Учитывать (8 ч → 30 мин, 11 ч → 10 ч)","set.hosN":"Нет / 2 водителя","save":"Сохранить","close":"Закрыть",
 "km":"км","kmh":"км/ч","m":"м","cm":"см","ft1":"1 фут","min":"мин","h":"ч","mile.n":"миля {n}","km.n":"км {n}","in3h":"за 3 ч","perh":"/ч",
 "dow":["вс","пн","вт","ср","чт","пт","сб"],"map.fail":"Карта не загрузилась (нет сети?)","err.addr":"Не найден адрес:",
@@ -299,8 +428,8 @@ ru:{"alts.h":"Варианты маршрута","alts.for":"Время в пу�
 "geo.denied":"Нет доступа к геолокации. Разрешите: Настройки iPhone → Конфиденциальность → Службы геолокации → Safari (или Chrome) → «При использовании».","geo.fail":"Не удалось определить местоположение:","geo.hint":"Нажмите «📍 Я здесь», чтобы взять текущее местоположение",
 "ac.searching":"Поиск…","ac.none":"Ничего не найдено — попробуйте иначе","ac.offline":"Нет связи с поиском адресов"},
 
-uk:{"alts.h":"Варіанти маршруту","alts.for":"Час у дорозі з урахуванням погоди, заторів і відпочинку — при виїзді {dep}. Натисніть, щоб обрати.","route.fast":"Найшвидший","route.safe":"Спокійніший за погодою","route.toll":"Платні ділянки","route.wait":"⏸ шторм {d}","route.delay":"затримки +{d}","route.noname":"маршрут","eta.short":"прибуття","rec.one":"Інших розумних варіантів не знайдено.","rec.detour":"Об'їзд {r} швидший за основний {m} на {d} з урахуванням погоди та заторів.","rec.main":"Основний маршрут {r} — найкращий при цьому виїзді.","st.alts":"Шукаю об'їзні маршрути…","st.nalts":" · варіантів: {n}","set.tolls":"Платні дороги","set.tollsAllow":"Дозволити","set.tollsAvoid":"Уникати","title":"TruckWX — погода на маршруті","sub":"шторм · мости · перекриття","from":"Звідки","to":"Куди","ph.addr":"Почніть вводити місто або адресу","geo.btn":"📍 Я тут","go":"Перевірити маршрут",
-"deps.h":"Коли виїжджати? Ризик на найближчі 72 год","lv0":"спокійно","lv1":"обережно","lv2":"небезпечно","lv3":"шторм / ожеледь","legend.pct":"% — ймовірність сильного снігу (ансамбль GFS)",
+uk:{"w.recover":"потік розбиває сніг — швидкість повертається до звичайної","set.ramp":"Потім швидкість відновлюється, год","set.rampHelp":"Після шторму: розчищення → обмеження (зазвичай ~1 год) → потік машин розбиває сніг, і швидкість плавно повертається до звичайної для ділянки (зі знаками, часом доби й заторами).","rv.reviews":"⭐ Відгуки, години роботи, де в'їзд","rv.reviewsShort":"⭐ Відгуки","rv.street":"👁 Street View","ap.label":"Appointment — до якого часу доставити (необов'язково)","ap.ok":"до appointment {appt} встигаєте, запас {d}","ap.late":"до appointment {appt} запізнення {d}","ap.leaveBy":"Щоб встигнути до {appt} із запасом {buf}, виїжджайте не пізніше {dep}.","ap.optIs":"Оптимально: виїзд {dep}, прибуття ~{eta}.","ap.cant":"До {appt} не встигнути: найраніше прибуття ~{eta}. Попередьте отримувача.","set.apBuf":"Запас до appointment, хв","rn.h":"Мої рейси","rn.save":"💾 Зберегти","rn.new":"Зберегти рейс","rn.name":"Назва рейсу","rn.day":"День appointment","rn.anyDay":"Найближчий день","rn.keeps":"Збережуться: звідки, куди, час appointment, вага вантажу та всі налаштування трака й розрахунку.","rn.withAppt":"Appointment о {t}","rn.noAppt":"Без appointment","rn.saved":"Рейс збережено","rn.use":"Обрати","rn.appt":"прийом {t}","rn.cargo":"вантаж {w}","rn.empty":"Збережіть постійний рейс — заповніть «Звідки», «Куди», appointment і натисніть «💾 Зберегти». Наступного разу оберіть його одним натисканням.","dowFull":["неділя", "понеділок", "вівторок", "середа", "четвер", "п'ятниця", "субота"],"deps.h":"Коли виїжджати?","dm.now":"Зараз","dm.opt":"Оптимально","dm.custom":"Свій час","dm.pick":"Час виїзду (до 3 діб наперед)","dm.pickShort":"обрати дату й час","dm.nowBest":"Виїжджати зараз — оптимально.","dm.optEarlier":"Оптимально виїхати {dep}: прибудете на {d} раніше, ніж якщо виїхати зараз (~{eta}).","dm.optCalmer":"Оптимально виїхати {dep}: прибудете приблизно так само (~{eta}), але в дорозі проведете на {d} менше — без очікування й заторів.","pl.h":"Мої точки","pl.add":"★ Додати","pl.new":"Нова точка","pl.name":"Назва","pl.type":"Тип","pl.note":"Нотатка (ворота, години прийому, телефон…)","pl.cancel":"Скасувати","pl.empty":"Поки порожньо. Щоб запам'ятати місце: довге натискання на мапу, або кнопка ★ на мапі й дотик до потрібного місця, або «★ Додати» — збереже, де ви зараз.","pl.addHint":"Торкніться мапи там, де поставити точку","pl.saved":"Точку збережено","pl.here":"Моє місце","pl.from":"Звідси","pl.to":"Сюди","pl.delq":"Видалити точку «{n}»?","pl.set":"«{n}» → {f}","pl.t.client":"Клієнт / склад","pl.t.park":"Стоянка","pl.t.fuel":"Заправка","pl.t.food":"Їжа","pl.t.scale":"Ваги","pl.t.home":"Дім / база","pl.t.star":"Інше","fs.exit":"Подвійний дотик або ✕ — вийти з повноекранного режиму","set.uLen":"Відстань, висота, швидкість","set.uWt":"Вага","set.uTemp":"Температура","u.lenImp":"милі · фути · mph","u.lenMet":"км · метри · км/год","u.lb":"фунти (lb)","u.kg":"кілограми (кг)","set.truck":"Трак","set.len":"Довжина","kg":"кг","set.tare":"Трак + порожній причіп","set.cargo":"Вага вантажу (0 — порожній)","set.t":"т","set.total":"Загальна вага: {w}","set.light":"легкий, суворіше щодо вітру","set.avgUS":"Ваша середня швидкість у США","set.avgCA":"Ваша середня швидкість у Канаді","set.avgHelp":"Вкажіть, з якою швидкістю ви зазвичай їдете трасою. У містах і на повільних дорогах береться менша швидкість за мапою. Погода, затори й відпочинок додаються окремо.","storm.h":"Шторм на мапі","storm.show":"Показати","storm.light":"слабкий сніг","storm.mod":"сніг","storm.core":"ядро: сильний сніг / хуртовина","storm.ice":"крижаний дощ","storm.rain":"дощ","storm.truckL":"де буде трак","storm.loading":"Завантажую мапу опадів…","storm.fail":"Не вдалося завантажити мапу опадів.","storm.now":"зараз","storm.none":"У найближчі 3 доби значного снігу в районі маршруту не очікується.","storm.moving":"Снігопад зміщується на {dir}, ~{spd}.","storm.starts":"Почнеться ~{t}.","storm.until":"Сніг у районі маршруту закінчиться ~{t}.","storm.longer":"Сніг у районі триватиме понад 3 доби.","storm.truck":"🚚 — ваш трак при виїзді {dep}","storm.notyet":"ще не виїхав","storm.arrived":"вже на місці","alts.h":"Варіанти маршруту","alts.for":"Час у дорозі з урахуванням погоди, заторів і відпочинку — при виїзді {dep}. Натисніть, щоб обрати.","route.fast":"Найшвидший","route.safe":"Спокійніший за погодою","route.toll":"Платні ділянки","route.wait":"⏸ шторм {d}","route.delay":"затримки +{d}","route.noname":"маршрут","eta.short":"прибуття","rec.one":"Інших розумних варіантів не знайдено.","rec.detour":"Об'їзд {r} швидший за основний {m} на {d} з урахуванням погоди та заторів.","rec.main":"Основний маршрут {r} — найкращий при цьому виїзді.","st.alts":"Шукаю об'їзні маршрути…","st.nalts":" · варіантів: {n}","set.tolls":"Платні дороги","set.tollsAllow":"Дозволити","set.tollsAvoid":"Уникати","title":"TruckWX — погода на маршруті","sub":"шторм · мости · перекриття","from":"Звідки","to":"Куди","ph.addr":"Почніть вводити місто або адресу","geo.btn":"📍 Я тут","go":"Перевірити маршрут",
+"lv0":"спокійно","lv1":"обережно","lv2":"небезпечно","lv3":"шторм / ожеледь","legend.pct":"% — ймовірність сильного снігу (ансамбль GFS)",
 "trip.dep":"Виїзд:","th.time":"Час","th.where":"Де","th.snow":"Сніг","th.gust":"Пориви","th.prob":"Ймов.","alerts.h":"Офіційні попередження на маршруті","bridges.h":"Низькі мости та обмеження висоти",
 "roads.h":"Ремонти та перекриття (511)","roads.txt":"Актуальні роботи, аварії та перекриття — на офіційних картах 511 штатів/провінцій за маршрутом:","border":"Кордон:","cbp":"Черги CBP (до США)","cbsa":"Черги CBSA (до Канади)",
 "footer":"Дані: Open-Meteo (прогноз і ансамбль GFS), NWS/NOAA (США), Environment Canada, OpenStreetMap/Overpass, openrouteservice. Застосунок — помічник, а не заміна офіційним джерелам і знакам на дорозі.","updated":"Оновлено:",
@@ -309,7 +438,7 @@ uk:{"alts.h":"Варіанти маршруту","alts.for":"Час у доро�
 "set.keyhelp":"Без ключа будується звичайний автомобільний маршрут (OSRM), а мости перевіряються лише за списком нижче. Ключ: openrouteservice.org → Sign up → Dashboard → Tokens.",
 "set.hft":"Висота, фути","set.hin":"дюйми","set.wlb":"Вага, lb","set.lft":"Довжина, фути","set.hm":"Висота, м","set.wt":"Вага, т","set.lm":"Довжина, м","set.speed":"Поправка швидкості трака (1.0 = як навігатор, 1.15 = на 15% повільніше)",
 "set.empty":"Порожній причіп / легкий вантаж (суворіше щодо вітру)","set.loaded":"Ні — завантажений","set.emptyY":"Так — порожній/легкий","set.eta":"Розрахунок часу прибуття","set.vmax":"Макс. швидкість трака,","set.storm":"Під час шторму","set.wait":"Перечікувати","set.slow":"Їхати {spd}",
-"set.clear":"Розчищення після шторму, год","set.rmph":"Потім обмеження,","set.rh":"Обмеження діє, год","set.work":"Запас на ремонти, хв","set.traffic":"Затори в години пік","set.consider":"Враховувати","set.no":"Ні","set.hos":"Відпочинок водія (HOS)",
+"set.clear":"Розчищення після шторму, год","set.rmph":"Потім обмеження,","set.rh":"Обмеження тримається, год","set.work":"Запас на ремонти, хв","set.traffic":"Затори в години пік","set.consider":"Враховувати","set.no":"Ні","set.hos":"Відпочинок водія (HOS)",
 "set.hosY":"Враховувати (8 год → 30 хв, 11 год → 10 год)","set.hosN":"Ні / 2 водії","save":"Зберегти","close":"Закрити",
 "km":"км","kmh":"км/год","m":"м","cm":"см","ft1":"1 фут","min":"хв","h":"год","mile.n":"миля {n}","km.n":"км {n}","in3h":"за 3 год","perh":"/год",
 "dow":["нд","пн","вт","ср","чт","пт","сб"],"map.fail":"Карта не завантажилась (немає мережі?)","err.addr":"Адресу не знайдено:",
@@ -333,8 +462,8 @@ uk:{"alts.h":"Варіанти маршруту","alts.for":"Час у доро�
 "geo.denied":"Немає доступу до геолокації. Дозвольте: Параметри iPhone → Приватність і безпека → Служби локації → Safari (або Chrome) → «Коли застосунок використовується».","geo.fail":"Не вдалося визначити місцезнаходження:","geo.hint":"Натисніть «📍 Я тут», щоб взяти поточне місцезнаходження",
 "ac.searching":"Пошук…","ac.none":"Нічого не знайдено — спробуйте інакше","ac.offline":"Немає зв'язку з пошуком адрес"},
 
-en:{"alts.h":"Route options","alts.for":"Travel time including weather, traffic and rest — leaving {dep}. Tap to choose.","route.fast":"Fastest","route.safe":"Calmer weather","route.toll":"Tolls","route.wait":"⏸ storm {d}","route.delay":"delays +{d}","route.noname":"route","eta.short":"arrive","rec.one":"No other reasonable routes found.","rec.detour":"Detour {r} beats main route {m} by {d} given weather and traffic.","rec.main":"Main route {r} is the best for this departure.","st.alts":"Looking for alternative routes…","st.nalts":" · options: {n}","set.tolls":"Toll roads","set.tollsAllow":"Allow","set.tollsAvoid":"Avoid","title":"TruckWX — route weather","sub":"storms · bridges · closures","from":"From","to":"To","ph.addr":"Start typing a city or address","geo.btn":"📍 I'm here","go":"Check route",
-"deps.h":"When to leave? Risk for the next 72 h","lv0":"calm","lv1":"caution","lv2":"dangerous","lv3":"storm / ice","legend.pct":"% — chance of heavy snow (GFS ensemble)",
+en:{"w.recover":"traffic breaks up the snow — speed returning to normal","set.ramp":"Then speed recovers over, h","set.rampHelp":"After a storm: plowing → speed limit (usually ~1 h) → traffic breaks up the snow and speed gradually returns to normal for that stretch (signs, time of day, traffic).","rv.reviews":"⭐ Reviews, hours, where to enter","rv.reviewsShort":"⭐ Reviews","rv.street":"👁 Street View","ap.label":"Appointment — deliver by (optional)","ap.ok":"on time for {appt} appointment, {d} to spare","ap.late":"late for {appt} appointment by {d}","ap.leaveBy":"To make {appt} with a {buf} buffer, leave no later than {dep}.","ap.optIs":"Optimal: leave {dep}, arrive ~{eta}.","ap.cant":"Can't make {appt}: earliest arrival ~{eta}. Let the receiver know.","set.apBuf":"Buffer before appointment, min","rn.h":"My runs","rn.save":"💾 Save","rn.new":"Save run","rn.name":"Run name","rn.day":"Appointment day","rn.anyDay":"Next available day","rn.keeps":"Saved: from, to, appointment time, cargo weight and all truck and ETA settings.","rn.withAppt":"Appointment at {t}","rn.noAppt":"No appointment","rn.saved":"Run saved","rn.use":"Use","rn.appt":"appt {t}","rn.cargo":"cargo {w}","rn.empty":"Save a regular run — fill in From, To, appointment and tap “💾 Save”. Next time pick it with one tap.","dowFull":["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],"deps.h":"When to leave?","dm.now":"Now","dm.opt":"Optimal","dm.custom":"My time","dm.pick":"Departure time (up to 3 days ahead)","dm.pickShort":"pick date & time","dm.nowBest":"Leaving now is optimal.","dm.optEarlier":"Best to leave {dep}: you'll arrive {d} earlier than leaving now (~{eta}).","dm.optCalmer":"Best to leave {dep}: about the same arrival (~{eta}), but {d} less time on the road — no waiting or traffic.","pl.h":"My places","pl.add":"★ Add","pl.new":"New place","pl.name":"Name","pl.type":"Type","pl.note":"Note (gate, receiving hours, phone…)","pl.cancel":"Cancel","pl.empty":"Nothing yet. To save a place: long-press the map, or tap ★ on the map and then the spot, or “★ Add” to save where you are now.","pl.addHint":"Tap the map where the place should go","pl.saved":"Place saved","pl.here":"My location","pl.from":"From here","pl.to":"Go here","pl.delq":"Delete “{n}”?","pl.set":"“{n}” → {f}","pl.t.client":"Customer / warehouse","pl.t.park":"Parking","pl.t.fuel":"Fuel","pl.t.food":"Food","pl.t.scale":"Scale","pl.t.home":"Home / yard","pl.t.star":"Other","fs.exit":"Double-tap or ✕ to exit full screen","set.uLen":"Distance, height, speed","set.uWt":"Weight","set.uTemp":"Temperature","u.lenImp":"miles · feet · mph","u.lenMet":"km · meters · km/h","u.lb":"pounds (lb)","u.kg":"kilograms (kg)","set.truck":"Truck","set.len":"Length","kg":"kg","set.tare":"Truck + empty trailer","set.cargo":"Cargo weight (0 = empty)","set.t":"t","set.total":"Gross weight: {w}","set.light":"light, stricter wind limits","set.avgUS":"Your average speed in the US","set.avgCA":"Your average speed in Canada","set.avgHelp":"Enter the speed you usually hold on the highway. In towns and on slower roads the lower map speed is used. Weather, traffic and rest are added separately.","storm.h":"Storm on the map","storm.show":"Show","storm.light":"light snow","storm.mod":"snow","storm.core":"core: heavy snow / blizzard","storm.ice":"freezing rain","storm.rain":"rain","storm.truckL":"where your truck will be","storm.loading":"Loading precipitation map…","storm.fail":"Couldn't load precipitation map.","storm.now":"now","storm.none":"No significant snow expected near the route in the next 3 days.","storm.moving":"Snow is moving {dir}, ~{spd}.","storm.starts":"Starts ~{t}.","storm.until":"Snow near the route ends ~{t}.","storm.longer":"Snow near the route continues beyond 3 days.","storm.truck":"🚚 — your truck leaving {dep}","storm.notyet":"not departed yet","storm.arrived":"already arrived","alts.h":"Route options","alts.for":"Travel time including weather, traffic and rest — leaving {dep}. Tap to choose.","route.fast":"Fastest","route.safe":"Calmer weather","route.toll":"Tolls","route.wait":"⏸ storm {d}","route.delay":"delays +{d}","route.noname":"route","eta.short":"arrive","rec.one":"No other reasonable routes found.","rec.detour":"Detour {r} beats main route {m} by {d} given weather and traffic.","rec.main":"Main route {r} is the best for this departure.","st.alts":"Looking for alternative routes…","st.nalts":" · options: {n}","set.tolls":"Toll roads","set.tollsAllow":"Allow","set.tollsAvoid":"Avoid","title":"TruckWX — route weather","sub":"storms · bridges · closures","from":"From","to":"To","ph.addr":"Start typing a city or address","geo.btn":"📍 I'm here","go":"Check route",
+"lv0":"calm","lv1":"caution","lv2":"dangerous","lv3":"storm / ice","legend.pct":"% — chance of heavy snow (GFS ensemble)",
 "trip.dep":"Departure:","th.time":"Time","th.where":"Where","th.snow":"Snow","th.gust":"Gusts","th.prob":"Prob.","alerts.h":"Official alerts along the route","bridges.h":"Low bridges and height limits",
 "roads.h":"Road work and closures (511)","roads.txt":"Current road work, crashes and closures — on the official 511 maps for the states/provinces on your route:","border":"Border:","cbp":"CBP wait times (into US)","cbsa":"CBSA wait times (into Canada)",
 "footer":"Data: Open-Meteo (forecast and GFS ensemble), NWS/NOAA (US), Environment Canada, OpenStreetMap/Overpass, openrouteservice. This app is a helper, not a replacement for official sources and road signs.","updated":"Updated:",
@@ -414,15 +543,21 @@ const LS = {
   get(k, d){ try{ const v = localStorage.getItem("twx_"+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem("twx_"+k, JSON.stringify(v)); }catch(e){} }
 };
-let S = Object.assign({lang:null, tolls:"allow", key:"", hft:13, hin:6, w:36.29, l:22, speed:1.1, empty:0,
-  vmax:65, storm:"wait", clearH:1.5, rmph:45, rh:6, work:20, traffic:1, hos:1}, LS.get("settings", {}));
+let S = Object.assign({lang:null, tolls:"allow", key:"", hft:13, hin:6, l:22,
+  avgUS:60, avgCA:59, storm:"wait", clearH:1.5, rmph:45, rh:1, ramp:2, work:20, apBuf:30, traffic:1, hos:1}, LS.get("settings", {}));
 const heightM = () => (Number(S.hft)||13)*0.3048 + (Number(S.hin)||0)*0.0254;
-const IMP = () => S.units !== "metric";
+if(S.tare == null){ S.tare = 15.4; S.cargo = Number(S.empty)===1 ? 0 : Math.max(0, (Number(S.w)||36.29) - 15.4); }
+S.w = (Number(S.tare)||0) + (Number(S.cargo)||0);
+const LIGHT_T = 25; // общий вес меньше ~55 000 lb — «лёгкий», строже по ветру
+const isLight = () => ((Number(S.tare)||0) + (Number(S.cargo)||0)) < LIGHT_T;
+if(!S.uLen){ const m = S.units==="metric"; S.uLen = m?"met":"imp"; S.uWt = m?"kg":"lb"; S.uTemp = m?"C":"F"; }
+if(S.rhv !== 2){ if(S.rh == null || +S.rh === 6) S.rh = 1; if(S.ramp == null) S.ramp = 2; S.rhv = 2; }
+const IMP = () => S.uLen !== "met";
 const KM2MI = 0.621371;
 const U = {
   dist: km => IMP() ? Math.round(km*KM2MI)+" mi" : Math.round(km)+" "+t("km"),
   mark: km => IMP() ? t("mile.n",{n:Math.round(km*KM2MI)}) : t("km.n",{n:Math.round(km)}),
-  temp: c => c==null ? "—" : IMP() ? Math.round(c*9/5+32)+"°F" : Math.round(c)+"°C",
+  temp: c => c==null ? "—" : S.uTemp!=="C" ? Math.round(c*9/5+32)+"°F" : Math.round(c)+"°C",
   snow: cm => cm==null ? "—" : cm<=0 ? "0" : IMP() ? (cm/2.54).toFixed(1)+"″" : cm.toFixed(1)+" "+t("cm"),
   wind: kmh => kmh==null ? "—" : IMP() ? String(Math.round(kmh*KM2MI)) : String(Math.round(kmh)),
   spd: mph => IMP() ? Math.round(mph)+" mph" : Math.round(mph*1.609344/5)*5+" "+t("kmh"),
@@ -464,10 +599,144 @@ const lvName = l => { const x = t("lv"+l); return x.charAt(0).toUpperCase()+x.sl
 let map, routeLayer, segLayer, bridgeLayer, endLayer;
 function initMap(){
   if(typeof L === "undefined"){ $("map").innerHTML = "<div class='card small'>"+t("map.fail")+"</div>"; return; }
-  map = L.map("map", {zoomControl:true}).setView([44.2, -68.5], 5);
+  map = L.map("map", {zoomControl:true, doubleClickZoom:false, tapHold:true}).setView([44.2, -68.5], 5);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:18, attribution:"© OpenStreetMap"}).addTo(map);
   segLayer = L.layerGroup().addTo(map); bridgeLayer = L.layerGroup().addTo(map); endLayer = L.layerGroup().addTo(map);
+  placesLayer = L.layerGroup().addTo(map);
+  // кнопки поверх карты
+  const box = document.createElement("div"); box.className = "mapbtns";
+  box.innerHTML = `<button id="mbFull">⛶</button><button id="mbAdd">★</button><button id="mbMe">◎</button>`;
+  const hint = document.createElement("div"); hint.className = "maphint"; hint.id = "mapHint";
+  $("map").appendChild(box); $("map").appendChild(hint);
+  ["click","dblclick","mousedown","touchstart","pointerdown","wheel","contextmenu"].forEach(ev => box.addEventListener(ev, e => e.stopPropagation()));
+  $("mbFull").onclick = () => toggleFull();
+  $("mbAdd").onclick = () => setAddMode(!addMode);
+  $("mbMe").onclick = () => { if(lastFix) map.setView([lastFix.lat, lastFix.lon], 12); else locate(); };
+  map.on("contextmenu", e => openPlaceDlg(e.latlng.lat, e.latlng.lng));   // долгое нажатие (в Safari — через tapHold)
+  // двойное касание: определяем сами по двум быстрым касаниям (надёжно и на iPhone, и на компьютере)
+  let lastTap = null;
+  map.on("click", e => {
+    if(addMode){ setAddMode(false); openPlaceDlg(e.latlng.lat, e.latlng.lng); lastTap = null; return; }
+    const now = Date.now(), pt = e.containerPoint;
+    if(lastTap && now - lastTap.t < 380 && Math.abs(pt.x-lastTap.x) < 40 && Math.abs(pt.y-lastTap.y) < 40){ lastTap = null; toggleFull(); }
+    else lastTap = {t:now, x:pt.x, y:pt.y};
+  });
+  map.on("popupopen", e => bindPopupButtons(e.popup && e.popup.getElement ? e.popup.getElement() : null));
+  renderPlaces();
 }
+/* ============ карта на весь экран ============ */
+let addMode = false, placesLayer = null;
+function toggleFull(force){
+  const on = force!=null ? force : !document.body.classList.contains("mapfull");
+  document.body.classList.toggle("mapfull", on);
+  const b = document.getElementById("mbFull"); if(b) b.textContent = on ? "✕" : "⛶";
+  if(map) setTimeout(() => map.invalidateSize(), 80);
+  if(on) flashHint(t("fs.exit"));
+}
+function flashHint(txt, ms){
+  const h = document.getElementById("mapHint"); if(!h) return;
+  h.textContent = txt; h.style.display = "block";
+  clearTimeout(flashHint.tm); if(ms!==0) flashHint.tm = setTimeout(() => h.style.display = "none", ms||2500);
+}
+function setAddMode(on){
+  addMode = on; const b = document.getElementById("mbAdd"); if(b) b.classList.toggle("on", on);
+  if(on) flashHint(t("pl.addHint"), 0); else { const h = document.getElementById("mapHint"); if(h) h.style.display = "none"; }
+}
+document.addEventListener("keydown", e => { if(e.key==="Escape" && document.body.classList.contains("mapfull")) toggleFull(false); });
+
+/* ============ отзывы и Street View (Google Maps) ============ */
+const plainAddr = v => (v||"").replace(/^[^\p{L}\p{N}]+/u, "").trim();
+const gReviews = (text, lat, lon) => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(text && text.length > 3 ? text : lat+","+lon);
+const gStreet = (lat, lon) => `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
+function updateToLinks(){
+  const el = $("to"), box = $("toLinks"); if(!box) return;
+  const txt = plainAddr(el.value), lat = el.dataset.lat, lon = el.dataset.lon;
+  const isMe = el.dataset.geo === "1";
+  if(!txt && !lat){ box.classList.remove("show"); return; }
+  $("toReviews").textContent = t("rv.reviews"); $("toReviews").href = gReviews(isMe ? "" : txt, lat, lon);
+  $("toStreet").textContent = t("rv.street");
+  if(lat){ $("toStreet").href = gStreet(lat, lon); $("toStreet").style.display = ""; } else $("toStreet").style.display = "none";
+  box.classList.add("show");
+}
+/* ============ мои точки ============ */
+const PL_TYPES = [["client","🏭"],["park","🅿️"],["fuel","⛽"],["food","🍽"],["scale","⚖️"],["home","🏠"],["star","⭐"]];
+const plIcon = ty => (PL_TYPES.find(x=>x[0]===ty)||PL_TYPES[6])[1];
+let PLACES = LS.get("places", []);
+function savePlaces(){ LS.set("places", PLACES); renderPlaces(); }
+let plDraft = null;
+function openPlaceDlg(lat, lon, name){
+  plDraft = {lat:+lat.toFixed(5), lon:+lon.toFixed(5)};
+  $("plType").innerHTML = PL_TYPES.map(x => `<option value="${x[0]}">${x[1]} ${esc(t("pl.t."+x[0]))}</option>`).join("");
+  $("plType").value = "star"; $("plName").value = name || ""; $("plNote").value = ""; $("plName").placeholder = "";
+  $("plCoords").textContent = plDraft.lat.toFixed(4)+", "+plDraft.lon.toFixed(4);
+  $("plDlg").style.display = "block";
+  setTimeout(() => $("plName").focus(), 50);
+  if(!name) revName(lat, lon).then(r => { if(r && !$("plName").value) $("plName").placeholder = [r.place, r.state].filter(Boolean).join(", "); }).catch(()=>{});
+}
+$("plCancel").onclick = () => { $("plDlg").style.display = "none"; };
+$("plSave").onclick = () => {
+  if(!plDraft) return;
+  const name = $("plName").value.trim() || $("plName").placeholder || (plDraft.lat.toFixed(4)+", "+plDraft.lon.toFixed(4));
+  PLACES.push({id:Date.now().toString(36), name, type:$("plType").value, note:$("plNote").value.trim(), lat:plDraft.lat, lon:plDraft.lon});
+  $("plDlg").style.display = "none";
+  savePlaces(); flashHint(t("pl.saved"));
+};
+$("plAdd").onclick = () => {
+  if(lastFix) openPlaceDlg(lastFix.lat, lastFix.lon, t("pl.here"));
+  else { $("map").scrollIntoView({behavior:"smooth", block:"center"}); setAddMode(true); }
+};
+function usePlace(id, field){
+  const p = PLACES.find(x=>x.id===id); if(!p) return;
+  const el = $(field); el.value = plIcon(p.type)+" "+p.name; el.dataset.lat = p.lat; el.dataset.lon = p.lon; delete el.dataset.geo;
+  saveLast(); if(map && map.closePopup) map.closePopup();
+  if(document.body.classList.contains("mapfull")) toggleFull(false);
+  status(t("pl.set",{n:p.name, f: field==="from" ? t("from") : t("to")}));
+}
+function delPlace(id){
+  const p = PLACES.find(x=>x.id===id); if(!p) return;
+  if(!confirm(t("pl.delq",{n:p.name}))) return;
+  PLACES = PLACES.filter(x=>x.id!==id); savePlaces(); if(map && map.closePopup) map.closePopup();
+}
+function showPlace(id){
+  const p = PLACES.find(x=>x.id===id); if(!p || !map) return;
+  $("map").scrollIntoView({behavior:"smooth", block:"center"});
+  map.setView([p.lat, p.lon], 13);
+  const m = placesLayer && placesLayer._byId && placesLayer._byId[id]; if(m && m.openPopup) setTimeout(() => m.openPopup(), 300);
+}
+function placePopup(p){
+  return `<b>${plIcon(p.type)} ${esc(p.name)}</b>${p.note?`<br><span class="small">${esc(p.note)}</span>`:""}`+
+    `<div class="ppbtns"><button data-pa="from" data-id="${p.id}">${t("pl.from")}</button><button data-pa="to" data-id="${p.id}">${t("pl.to")}</button><button data-pa="del" data-id="${p.id}">🗑</button></div>`+
+    `<div class="ppbtns"><a href="${gReviews("", p.lat, p.lon)}" target="_blank" rel="noopener">${t("rv.reviewsShort")}</a><a href="${gStreet(p.lat, p.lon)}" target="_blank" rel="noopener">${t("rv.street")}</a></div>`;
+}
+function bindPopupButtons(el){
+  if(!el) return;
+  el.querySelectorAll("[data-pa]").forEach(b => b.onclick = () => {
+    const a = b.dataset.pa, id = b.dataset.id;
+    if(a==="from") usePlace(id, "from"); else if(a==="to") usePlace(id, "to"); else if(a==="del") delPlace(id);
+  });
+}
+function renderPlaces(){
+  if(map && placesLayer){
+    placesLayer.clearLayers(); placesLayer._byId = {};
+    PLACES.forEach(p => {
+      const m = L.marker([p.lat, p.lon], {icon:L.divIcon({className:"", html:`<div class="plico">${plIcon(p.type)}</div>`, iconSize:[24,24], iconAnchor:[12,12]}), zIndexOffset:500})
+        .bindPopup(placePopup(p)).addTo(placesLayer);
+      placesLayer._byId[p.id] = m;
+    });
+  }
+  const list = $("plList"); if(!list) return;
+  if(!PLACES.length){ list.textContent = t("pl.empty"); return; }
+  list.innerHTML = PLACES.slice().reverse().map(p => `<div class="pl"><span class="ic">${plIcon(p.type)}</span>`+
+    `<span class="tx">${esc(p.name)}<small>${esc(p.note || t("pl.t."+p.type))}</small></span>`+
+    `<button data-la="from" data-id="${p.id}">${t("pl.from")}</button><button data-la="to" data-id="${p.id}">${t("pl.to")}</button>`+
+    `<a class="lnk" href="${gReviews("", p.lat, p.lon)}" target="_blank" rel="noopener" title="Google">⭐</a>`+
+    `<button data-la="show" data-id="${p.id}">🗺</button><button data-la="del" data-id="${p.id}">🗑</button></div>`).join("");
+  list.querySelectorAll("[data-la]").forEach(b => b.onclick = () => {
+    const a = b.dataset.la, id = b.dataset.id;
+    if(a==="from") usePlace(id, "from"); else if(a==="to") usePlace(id, "to"); else if(a==="show") showPlace(id); else delPlace(id);
+  });
+}
+
 
 /* ============ геокодирование ============ */
 async function geocodeInput(el){
@@ -477,18 +746,64 @@ async function geocodeInput(el){
   el.dataset.lat = r.lat; el.dataset.lon = r.lon;
   return r;
 }
-async function geocode(q){
+/* штаты и провинции: «York PA», «York, pa», «Saint John NB» */
+const STATES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"District of Columbia",FL:"Florida",GA:"Georgia",
+  HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",
+  MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",
+  OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",
+  WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",
+  NB:"New Brunswick",NS:"Nova Scotia",PE:"Prince Edward Island",PEI:"Prince Edward Island",NL:"Newfoundland and Labrador",QC:"Quebec",PQ:"Quebec",ON:"Ontario",MB:"Manitoba",
+  SK:"Saskatchewan",AB:"Alberta",BC:"British Columbia"};
+const STATE_CODE = Object.fromEntries(Object.entries(STATES).map(([k,v]) => [v.toLowerCase(), k]));
+function splitState(q){ // "York pa" -> {base:"York", st:"Pennsylvania"}
+  const m = q.trim().match(/^(.+?)[\s,]+([A-Za-z]{2,3})\.?$/);
+  if(m){ const code = m[2].toUpperCase(); if(STATES[code] && m[1].trim().length >= 2) return {base:m[1].replace(/,\s*$/,"").trim(), st:STATES[code]}; }
+  const lo = q.toLowerCase();
+  for(const full in STATE_CODE){ if(lo.endsWith(" "+full) || lo.endsWith(","+full)){ const base = q.slice(0, q.length-full.length).replace(/[\s,]+$/,""); if(base.length>=2) return {base, st:STATES[STATE_CODE[full]]}; } }
+  return {base:q.trim(), st:null};
+}
+const PLACE_RANK = {city:0, town:0, village:1, hamlet:2, district:3, locality:3};
+async function photonSearch(q, opt={}){
+  const {base, st} = splitState(q), bias = opt.bias || {lat:44.5, lon:-68.5};
+  const go = async text => {
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&limit=${opt.limit||7}&lang=en&lat=${bias.lat}&lon=${bias.lon}&bbox=-100,24,-50,62`;
+    const r = await fetch(url, {signal:opt.signal}); const j = await r.json(); return j.features || [];
+  };
+  let feats = await go(st ? base+" "+st : q);
+  if(!feats.length){ const c = cleanAddr(q); if(c && c!==q){ const s2 = splitState(c); feats = await go(s2.st ? s2.base+" "+s2.st : c); } }
+  if(st){
+    const ok = f => (f.properties.state||"").toLowerCase() === st.toLowerCase();
+    if(!feats.some(ok)){ const more = await go(base).catch(()=>[]); feats = feats.concat(more); }
+    feats.sort((a,b) => (ok(b)?1:0)-(ok(a)?1:0) || (PLACE_RANK[a.properties.type] ?? 5)-(PLACE_RANK[b.properties.type] ?? 5));
+    const good = feats.filter(ok); if(good.length) feats = good.concat(feats.filter(f=>!ok(f)).slice(0,2));
+  }
+  return feats;
+}
+function cleanAddr(q){ // убираем индексы и страну — поиску так проще
+  return q.replace(/\b[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d\b/g, "").replace(/\b\d{5}(-\d{4})?\b/g, "")
+          .replace(/,?\s*(United States( of America)?|USA|Canada)\s*$/i, "").replace(/\s*,\s*,/g, ",").replace(/[\s,]+$/, "").trim();
+}
+async function geocode(q0){
+  const tries = [q0.trim()], c = cleanAddr(q0);
+  if(c && c !== tries[0]) tries.push(c);
+  const noNum = c.replace(/^\d+[A-Za-z]?\s+/, ""); if(noNum !== c) tries.push(noNum);
+  const parts = c.split(","); if(parts.length >= 3) tries.push(parts.slice(1).join(",").trim());
+  let err;
+  for(const q of tries){ try{ return await geocode1(q); }catch(e){ err = e; } }
+  throw err;
+}
+async function geocode1(q){
   q = q.trim();
   const m = q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/);
   if(m) return {name:q, lat:+m[1], lon:+m[2]};
   const p = PRESETS.find(x => x[0].toLowerCase() === q.toLowerCase());
   if(p) return {name:p[0], lat:p[1], lon:p[2]};
   try{
-    const j = await getJSON("https://photon.komoot.io/api/?limit=1&lang=en&bbox=-82,37,-52,50&q="+encodeURIComponent(q));
-    const f = j.features && j.features[0];
+    const f = (await photonSearch(q, {limit:5}))[0];
     if(f){ const pr=f.properties; return {name:[pr.name, pr.city, pr.state].filter(Boolean).join(", "), lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}; }
   }catch(e){}
-  const j2 = await getJSON("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca,us&q="+encodeURIComponent(q));
+  const sp = splitState(q);
+  const j2 = await getJSON("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca,us&q="+encodeURIComponent(sp.st ? sp.base+", "+sp.st : q));
   if(j2 && j2[0]) return {name:j2[0].display_name.split(",").slice(0,3).join(","), lat:+j2[0].lat, lon:+j2[0].lon};
   throw new Error(t("err.addr")+" "+q);
 }
@@ -578,7 +893,7 @@ function samplePoints(route, target){
   for(let i=0;i<c.length;i++){
     if(cum[i]>=next || i===c.length-1){ pts.push({lat:+c[i][0].toFixed(3), lon:+c[i][1].toFixed(3), km:cum[i], idx:i}); next = cum[i]+step; }
   }
-  const durH = route.dur/3600*(Number(S.speed)||1);
+  const durH = route.dur/3600;
   pts.forEach(p => p.offH = durH * (p.km/total));
   return {pts, totalKm:total, durH, cum};
 }
@@ -629,7 +944,7 @@ function assess(v, prob){
   if(!v) return {lvl:-1, why:["w.nofc"]};
   let lvl=0; const why=[];
   const up=(l,w)=>{ if(l>lvl) lvl=l; if(w && !why.includes(w)) why.push(w); };
-  const empty = Number(S.empty)===1;
+  const empty = isLight();
   if([56,57,66,67].includes(v.code)) up(3,"w.ice");
   if(v.snow>=3) up(3,"w.hsnow"); else if(v.snow>=1.5) up(2,"w.snowfall"); else if(v.snow>=0.3) up(1,"w.snow");
   if([75,86].includes(v.code)) up(2,"w.hsnow");
@@ -739,11 +1054,12 @@ async function run(){
     if(!$("from").value.trim()) throw new Error(t("err.from"));
     if(!$("to").value.trim()) throw new Error(t("err.to"));
     const [a, b] = await Promise.all([geocodeInput($("from")), geocodeInput($("to"))]);
-    saveLast();
+    saveLast(); updateToLinks();
     status(t("st.route"));
     const routes = await getRoutes(a, b);
     const n = routes.length, per = Math.max(24, Math.round(40/Math.sqrt(n)));
-    STATE = {a, b, startH: Math.ceil(Date.now()/3600000)*3600000, depK:0,
+    const prevMode = STATE && STATE.mode, prevCustom = STATE && STATE.customDep;
+    STATE = {a, b, startH: Math.floor(Date.now()/60000)*60000, depK:0, mode: readAppt() ? "opt" : (prevMode || "now"), customDep: prevCustom || null, appt: readAppt(),
       routes: routes.map((route, i) => ({route, sp: samplePoints(route, per), letter:"ABC"[i]}))};
     useRoute(0); drawRoute();
     const allPts = STATE.routes.flatMap(r => r.sp.pts);
@@ -752,11 +1068,11 @@ async function run(){
     let k = 0;
     STATE.routes.forEach(r => { const m = r.sp.pts.length; r.fc = fc.slice(k, k+m); r.ens = ens ? ens.slice(k, k+m) : null; k += m; });
     computeAll();
-    useRoute(0); renderStrip(); selectDep(0);
+    useRoute(0); renderStrip(); selectDep(depIndex());
     $("updated").textContent = new Date().toLocaleString();
     renderStatus();
     renderRoadLinks(); loadNames();
-    loadAlerts(); loadBridges();
+    loadAlerts(); loadBridges(); stopStorm(); $("stormT").value = 0; loadStorm();
   }catch(e){
     status(t("st.err")+" "+e.message);
   }finally{ $("btnGo").disabled = false; }
@@ -776,13 +1092,23 @@ function drawRoute(keepView){
     bounds = bounds ? bounds.extend(pl.getBounds()) : pl.getBounds();
   });
   L.marker([a.lat,a.lon], {title:t("start")}).addTo(endLayer).bindPopup(t("start")+": "+esc(a.name));
-  L.marker([b.lat,b.lon], {title:t("finish")}).addTo(endLayer).bindPopup(t("finish")+": "+esc(b.name));
+  L.marker([b.lat,b.lon], {title:t("finish")}).addTo(endLayer).bindPopup(t("finish")+": "+esc(b.name)+
+    `<div class="ppbtns"><a href="${gReviews(plainAddr(b.name), b.lat, b.lon)}" target="_blank" rel="noopener">${t("rv.reviewsShort")}</a><a href="${gStreet(b.lat, b.lon)}" target="_blank" rel="noopener">${t("rv.street")}</a></div>`);
   if(!keepView && bounds) map.fitBounds(bounds, {padding:[20,20]});
   if(STATE.deps && STATE.sel!=null) colorRoute(STATE.deps[STATE.sel]);
 }
 /* ============ расчётное время прибытия ============ */
 const MPH = 1.609344;
-function gusts(){ const e = Number(S.empty)===1; return {g2: e?60:70, g3: e?75:90}; }
+function gusts(){ const e = isLight(); return {g2: e?60:70, g3: e?75:90}; }
+// грубая граница США/Канады на востоке (для выбора средней скорости)
+const MAINE = [[-71.08,45.3],[-70.4,45.8],[-70.0,46.4],[-69.2,47.45],[-68.3,47.36],[-67.79,47.07],[-67.78,45.95],[-67.43,45.6],[-67.1,45.1],[-66.9,44.8],[-66.9,43.0],[-71.08,43.0]];
+function inCanada(lat, lon){
+  if(lat < 43) return false;
+  if(lon > -66.9) return true;                 // NB, NS, PEI
+  if(lon >= -71.08) return !pip([lon,lat], MAINE) && lat > 45.0; // Мэн / Квебек
+  if(lon > -79.8) return lat > 45.0;           // NH/VT/NY — Квебек/Онтарио
+  return lat > 43.6;                           // район Великих озёр (грубо)
+}
 function isStorm(v){
   if(!v) return false; const {g2,g3} = gusts();
   return [56,57,66,67].includes(v.code) || v.snow>=3 || (v.snow>=1.5 && (v.gust||0)>=g2) || (v.gust||0)>=g3;
@@ -793,18 +1119,24 @@ function stormEnd(loc, tSec){ // время (сек), когда шторм в �
   while(i<n && isStorm(valAt(loc, h.time[i]))) i++;
   return {end: i<n ? h.time[i] : h.time[n-1]+3600, open: i>=n};
 }
-function postStorm(loc, tSec){ // {cap км/ч, why} — расчистка и ограничение после сильного снега
-  const clr = Number(S.clearH)||0, rh = Number(S.rh)||0; if(clr+rh<=0) return null;
-  const h = loc.hourly, i1 = hIdx(loc, tSec), i0 = Math.max(0, i1 - Math.ceil(clr+rh) - 12);
+function postStorm(loc, tSec){
+  // после сильного снега/льда: расчистка (30 mph) → ограничение (напр. 45 mph, ~1 ч) → поток «разбивает» дорогу,
+  // скорость плавно возвращается к обычной за ramp часов
+  const clr = Number(S.clearH)||0, rh = Number(S.rh)||0, ramp = S.ramp==null ? 2 : Number(S.ramp)||0;
+  const span = clr + rh + ramp; if(span <= 0) return null;
+  const h = loc.hourly, i1 = hIdx(loc, tSec), i0 = Math.max(0, i1 - Math.ceil(span) - 12);
   let acc=0, last=-1, ice=false;
   for(let i=i0; i<=i1 && i<h.time.length; i++){
-    const s=h.snowfall[i]||0, isIce=[56,57,66,67].includes(h.weather_code[i]);
-    acc+=s; if(isIce) ice=true; if(s>=0.3 || isIce) last=i;
+    const sn=h.snowfall[i]||0, isIce=[56,57,66,67].includes(h.weather_code[i]);
+    acc+=sn; if(isIce) ice=true; if(sn>=0.3 || isIce) last=i;
   }
   if((acc<5 && !ice) || last<0) return null;
-  const since = i1 - last; // часов после окончания осадков
-  if(since>=1 && since<=clr) return {cap:30*MPH, why:"w.clear"};
-  if(since>clr && since<=clr+rh) return {cap:(Number(S.rmph)||45)*MPH, why:"w.restr"};
+  const since = (tSec - (h.time[last] + 3600))/3600; // часов после окончания осадков
+  if(since < 0) return null;
+  const rCap = (Number(S.rmph)||45)*MPH;
+  if(since < clr) return {cap:30*MPH, why:"w.clear"};
+  if(since < clr+rh) return {cap:rCap, why:"w.restr"};
+  if(since < span) return {ramp:true, from:rCap, f:(since-clr-rh)/ramp, why:"w.recover"};
   return null;
 }
 const ET = new Intl.DateTimeFormat("en-US", {timeZone:"America/New_York", hour:"numeric", hour12:false, weekday:"short"});
@@ -829,7 +1161,7 @@ function trafficFactor(p, tSec){
 }
 function simulate(dep){
   const {sp, fc, ens} = STATE, pts = sp.pts, n = pts.length;
-  const vmax = (Number(S.vmax)||65)*MPH, workPerKm = (Number(S.work)||0)/60/Math.max(1, sp.totalKm);
+  const workPerKm = (Number(S.work)||0)/60/Math.max(1, sp.totalKm);
   let t = dep/1000, drv=0, sinceBreak=0, normalH=0, prevRestr=null;
   const bd = {storm:0, wx:0, restr:0, traffic:0, work:0, hos:0}, events=[], rows=[];
   let maxL=-1, score=0, maxP=null;
@@ -850,13 +1182,15 @@ function simulate(dep){
     if(i===n-1) break;
     // скорость на участке i → i+1
     const segKm = pts[i+1].km - p.km; if(segKm<=0) continue;
-    const baseH = sp.durH*segKm/sp.totalKm, v0 = Math.min(segKm/baseH, vmax);
+    const baseH = sp.durH*segKm/sp.totalKm, vAvg = (inCanada(p.lat, p.lon) ? (Number(S.avgCA)||59) : (Number(S.avgUS)||60))*MPH;
+    const v0 = Math.min(segKm/baseH, vAvg);
     normalH += segKm/v0;
     const wx = assess(v, null);
     let cap = v0;
     if(isStorm(v)) cap = Math.min(cap, 25*MPH); else if(wx.lvl===2) cap = Math.min(cap, 40*MPH); else if(wx.lvl===1) cap = Math.min(cap, 50*MPH);
     const wxCap = cap;
-    const ps = postStorm(fc[i], t); if(ps) cap = Math.min(cap, ps.cap);
+    const ps = postStorm(fc[i], t);
+    if(ps) cap = Math.min(cap, ps.ramp ? Math.min(v0, ps.from + (v0 - ps.from)*ps.f) : ps.cap);
     const rCap = cap;
     const tf = trafficFactor(p, t), spd = cap*tf.f;
     const segH = segKm/spd + workPerKm*segKm;
@@ -887,7 +1221,7 @@ function computeAll(){
 function selectRoute(i){
   if(!STATE || i===STATE.ri) return;
   useRoute(i); STATE.warnedNow = 1;
-  renderStrip(); selectDep(STATE.sel||0); drawRoute(true); renderStatus(); renderRoadLinks();
+  renderStrip(); selectDep(depIndex()); drawRoute(true); renderStatus(); renderRoadLinks();
   if(!STATE.cur.named) loadNames();
   if(STATE.cur.alerts) renderAlerts(); else loadAlerts();
   if(STATE.cur.bridges) renderBridges(); else loadBridges();
@@ -904,6 +1238,7 @@ function renderAlts(){
     if(R.length>1 && i===fastest) tags.push(`<span class="tag good">${t("route.fast")}</span>`);
     if(R.length>1 && i===calmest && ds[calmest].maxL < Math.max(...ds.map(x=>x.maxL))) tags.push(`<span class="tag good">${t("route.safe")}</span>`);
     if(r.route.toll) tags.push(`<span class="tag toll">${t("route.toll")}</span>`);
+    if(STATE.appt){ const df = (STATE.appt - d.eta)/3600000; tags.unshift(df>=0 ? `<span class="tag good">✅ +${fmtDur(df)}</span>` : `<span class="tag late">❌ −${fmtDur(-df)}</span>`); }
     if(d.bd.storm >= 0.25) tags.push(`<span class="tag toll">${t("route.wait",{d:fmtDur(d.bd.storm)})}</span>`);
     if(d.delayH >= 0.25) tags.push(`<span class="tag">${t("route.delay",{d:fmtDur(d.delayH)})}</span>`);
     return `<button class="alt ${i===STATE.ri?"sel":""}" data-r="${i}"><span class="bar" style="background:${RCOL[i]}"></span><span class="body">`+
@@ -921,29 +1256,104 @@ function renderAlts(){
 }
 function computeDepartures(){
   const {startH} = STATE, deps=[];
-  for(let h=0; h<=72; h+=3) deps.push(simulate(startH + h*3600000));
+  for(let h=0; h<=72; h++) deps.push(simulate(startH + h*3600000));
+  if(STATE.customDep) deps.push(simulate(STATE.customDep));   // индекс 73 — «своё время»
   STATE.deps = deps;
 }
 const fmtDur = h => { const m = Math.round(h*60); return m<60 ? m+" "+t("min") : Math.floor(m/60)+" "+t("h")+(m%60?" "+(m%60)+" "+t("min"):""); };
 function lvClass(l){ return l<0 ? "lvna" : "lv"+l; }
+const CUSTOM_K = 73;
+/* ============ appointment ============ */
+const apBufMs = () => (S.apBuf==null ? 30 : Number(S.apBuf)||0)*60000;
+function apptTarget(){ return STATE && STATE.appt ? STATE.appt - apBufMs() : null; }
+function latestDeparture(){ // последний выезд, чтобы успеть к appointment (с запасом), точность 10 мин
+  const T = apptTarget(); if(!T) return null;
+  const D = STATE.deps; let k = -1;
+  for(let i=0; i<=72 && i<D.length; i++){ if(D[i].maxL>=0 && D[i].eta <= T) k = i; }
+  if(k < 0) return null;
+  let lo = D[k].dep, best = D[k];
+  for(let m=10; m<60; m+=10){ const d = simulate(lo + m*60000); if(d.eta <= T) best = d; else break; }
+  return best;
+}
+function apptLine(d){
+  if(!STATE.appt) return "";
+  const diff = (STATE.appt - d.eta)/3600000;
+  return diff >= 0 ? `<span class="apok">✅ ${t("ap.ok",{appt:fmtT(STATE.appt), d:fmtDur(diff)})}</span>`
+                   : `<span class="aplate">❌ ${t("ap.late",{appt:fmtT(STATE.appt), d:fmtDur(-diff)})}</span>`;
+}
+function readAppt(){
+  const v = $("appt").value; if(!v) return null;
+  const ms = new Date(v).getTime(); return isNaN(ms) ? null : ms;
+}
+function onApptChange(){
+  saveLast();
+  if(!STATE || !STATE.deps) return;
+  STATE.appt = readAppt();
+  if(STATE.appt) STATE.mode = "opt";
+  renderStrip(); selectDep(depIndex());
+}
+$("appt").addEventListener("change", onApptChange);
+$("apptClr").onclick = () => { $("appt").value = ""; onApptChange(); };
+function optIndex(){
+  // с appointment: успеть к сроку (с запасом) с минимальными задержками; при равенстве — выехать позже
+  const D = STATE.deps, N = Math.min(72, D.length-1), T = apptTarget();
+  if(T){
+    let bi = -1, best = Infinity;
+    for(let k=0; k<=N; k++){ const d = D[k]; if(d.maxL<0 || d.eta > T) continue; if(d.delayH <= best + 1/60){ if(d.delayH < best) best = d.delayH; bi = k; } }
+    if(bi >= 0) return bi;
+  }
+  // оптимально = приехать как можно раньше (допуск 1 ч), а среди таких — с минимальными задержками в пути
+  let minEta = Infinity; for(let k=0; k<=N; k++) if(D[k].maxL>=0) minEta = Math.min(minEta, D[k].eta);
+  let bi = 0, best = Infinity;
+  for(let k=0; k<=N; k++){ const d = D[k]; if(d.maxL<0 || d.eta > minEta + 3600000) continue; if(d.delayH < best - 1/60){ best = d.delayH; bi = k; } }
+  return bi;
+}
+function depIndex(){
+  if(STATE.mode==="custom" && STATE.customDep && STATE.deps[CUSTOM_K]) return CUSTOM_K;
+  if(STATE.mode==="opt") return optIndex();
+  return 0;
+}
+const toLocalInput = ms => { const d = new Date(ms - new Date(ms).getTimezoneOffset()*60000); return d.toISOString().slice(0,16); };
 function renderStrip(){
-  const {deps} = STATE, strip = $("strip"); strip.innerHTML="";
-  deps.forEach((d, k) => {
-    const el = document.createElement("button");
-    el.className = "dep "+lvClass(d.maxL); el.dataset.k = k;
-    el.innerHTML = `${DOWn(new Date(d.dep).getDay())}<b>${fmtHM(d.dep)}</b><span class="p">${d.maxP==null?"—":Math.round(d.maxP*100)+"%"}</span><span class="a">→ ${DOWn(new Date(d.eta).getDay())} ${fmtHM(d.eta)}</span>`;
-    el.onclick = () => selectDep(k);
-    strip.appendChild(el);
-  });
-  const valid = deps.filter(d=>d.maxL>=0);
-  const best = valid.slice(0,17).sort((x,y)=> x.maxL-y.maxL || x.score-y.score || x.dep-y.dep)[0]; // лучшее в ближайшие 48 ч
-  const soon = deps.slice(0,17), fastest = soon.slice().sort((x,y)=>x.eta-y.eta)[0];
-  $("bestTip").innerHTML = (best ? t("best",{dep:fmtT(best.dep), lv:t("lv"+best.maxL), eta:fmtT(best.eta)}) : "") +
-    (fastest ? "<br>"+t("fast",{dep:fmtT(fastest.dep), eta:fmtT(fastest.eta)}) : "") + "<br>"+t("under");
-  const worst = deps[0];
+  const D = STATE.deps, o = optIndex(), line = d => d ? `${fmtT(d.dep)}<br>→ ${fmtT(d.eta)}` : "—";
+  $("dmNow").innerHTML = line(D[0]);
+  $("dmOpt").innerHTML = line(D[o]);
+  $("dmCustom").innerHTML = STATE.customDep && D[CUSTOM_K] ? line(D[CUSTOM_K]) : t("dm.pickShort");
+  document.querySelectorAll(".depseg [data-m]").forEach(b => b.classList.toggle("on", b.dataset.m===STATE.mode));
+  $("customBox").classList.toggle("hidden", STATE.mode!=="custom");
+  const inp = $("customDep");
+  inp.min = toLocalInput(STATE.startH); inp.max = toLocalInput(STATE.startH + 72*3600000);
+  if(!inp.value) inp.value = toLocalInput(STATE.customDep || (STATE.startH + 3600000));
+  // подсказка
+  const gain = (D[0].eta - D[o].eta)/3600000;
+  let tip;
+  if(o===0) tip = t("dm.nowBest");
+  else if(gain >= 1/60) tip = t("dm.optEarlier",{dep:fmtT(D[o].dep), d:fmtDur(gain), eta:fmtT(D[o].eta)});
+  else tip = t("dm.optCalmer",{dep:fmtT(D[o].dep), eta:fmtT(D[o].eta), d:fmtDur(((D[0].eta-D[0].dep)-(D[o].eta-D[o].dep))/3600000)});
+  if(STATE.appt){
+    const L = latestDeparture();
+    if(L) tip = t("ap.leaveBy",{appt:fmtT(STATE.appt), dep:fmtT(L.dep), buf:fmtDur(apBufMs()/3600000)}) + " " + (o!==0 ? t("ap.optIs",{dep:fmtT(D[o].dep), eta:fmtT(D[o].eta)}) : "");
+    else tip = t("ap.cant",{appt:fmtT(STATE.appt), eta:fmtT(Math.min(...D.slice(0,73).filter(d=>d.maxL>=0).map(d=>d.eta)))});
+  }
+  $("depTip").textContent = tip;
+  const worst = D[0];
   if(worst && worst.maxL>=2) if(!STATE.warnedNow){ STATE.warnedNow=1; warn(t("w.now",{x:whyTxt([...new Set(worst.rows.flatMap(r=>r.a.why))])})); }
   $("cardDeps").classList.remove("hidden");
 }
+document.querySelectorAll(".depseg [data-m]").forEach(b => b.onclick = () => {
+  if(!STATE || !STATE.deps) return;
+  STATE.mode = b.dataset.m;
+  if(STATE.mode==="custom" && !STATE.customDep) applyCustom();
+  renderStrip(); selectDep(depIndex());
+});
+function applyCustom(){
+  const v = $("customDep").value; if(!v) return;
+  let ms = new Date(v).getTime();
+  ms = Math.max(STATE.startH, Math.min(STATE.startH + 72*3600000, ms));
+  STATE.customDep = ms; STATE.mode = "custom";
+  computeAll(); renderStrip(); selectDep(depIndex());
+}
+$("customDep").addEventListener("change", () => { if(STATE && STATE.deps) applyCustom(); });
 function evText(e){
   const place = i => { const p=STATE.sp.pts[i]; return U.mark(p.km)+(p.name?" ("+p.name+")":""); };
   const T = x => fmtT(x*1000);
@@ -957,6 +1367,7 @@ function evText(e){
 function selectDep(k){
   const d = STATE.deps[k]; STATE.sel = k;
   renderAlts();
+  if(STATE.storm) setTimeout(() => renderStorm(+$("stormT").value), 0);
   document.querySelectorAll(".dep").forEach(el => el.classList.toggle("sel", +el.dataset.k===k));
   $("tripDep").textContent = fmtT(d.dep);
   const b = $("tripBadge"); b.className = "badge "+lvClass(d.maxL); b.textContent = d.maxL<0 ? t("nodata") : lvName(d.maxL);
@@ -969,6 +1380,7 @@ function selectDep(k){
   const total = (d.eta - d.dep)/3600000;
   $("eta").innerHTML = `<span class="small">${t("eta.h")}</span><span class="big">${fmtT(d.eta)}</span>`+
     `<span class="small">${t("eta.line",{tot:fmtDur(total), norm:fmtDur(d.normalH)})}${d.delayH>=1/60?t("eta.delay",{d:fmtDur(d.delayH)}):""}</span>`+
+    (STATE.appt ? `<div style="margin-top:6px">${apptLine(d)}</div>` : "") +
     (items.length ? "<ul>"+items.map(x=>`<li>${x[0]}: +${fmtDur(x[1])}</li>`).join("")+"</ul>" : "");
   $("tripMeta").textContent = t("meta",{thr:U.snowThr(), p: d.maxP==null?t("na"):Math.round(d.maxP*100)+"%", s:U.dist(STATE.sp.totalKm/STATE.sp.pts.length)});
   const evRow = e => `<tr class="ev"><td colspan="6">${esc(evText(e))}</td></tr>`;
@@ -1069,53 +1481,263 @@ function renderBridges(){
   $("bridges").innerHTML = html + "<p class='small'>"+t("br.note")+"</p>";
 }
 
+
+/* ============ шторм на карте ============ */
+let stormLayer=null, trackLayer=null, truckMarker=null, stormRenderer=null, stormTimer=null;
+async function loadStorm(){
+  if(!STATE || !STATE.routes) return;
+  const my = STATE;
+  $("cardStorm").classList.remove("hidden"); $("stormInfo").textContent = t("storm.loading");
+  const all = STATE.routes.flatMap(r => r.route.coords);
+  let la0=90, la1=-90, lo0=180, lo1=-180;
+  all.forEach(p => { la0=Math.min(la0,p[0]); la1=Math.max(la1,p[0]); lo0=Math.min(lo0,p[1]); lo1=Math.max(lo1,p[1]); });
+  const mLa = 1.5, mLo = 2.0; la0-=mLa; la1+=mLa; lo0-=mLo; lo1+=mLo;
+  const k = Math.cos((la0+la1)/2*Math.PI/180);
+  const w = (lo1-lo0)*k, h = (la1-la0);
+  let nx = 16, ny = Math.round(nx*h/w); ny = Math.max(8, Math.min(18, ny)); if(ny*nx > 220) nx = Math.floor(220/ny);
+  const dLat = h/ny, dLon = (lo1-lo0)/nx, cells=[];
+  for(let y=0;y<ny;y++) for(let x=0;x<nx;x++) cells.push({lat:+(la0+dLat*(y+.5)).toFixed(3), lon:+(lo0+dLon*(x+.5)).toFixed(3)});
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${cells.map(c=>c.lat).join(",")}&longitude=${cells.map(c=>c.lon).join(",")}`+
+    `&hourly=precipitation,snowfall,weather_code,wind_gusts_10m&forecast_days=4&timeformat=unixtime&timezone=GMT&wind_speed_unit=kmh`;
+  try{
+    let j = await getJSON(url, {}, 45000); j = Array.isArray(j) ? j : [j];
+    if(STATE !== my) return;
+    STATE.storm = {cells, dLat, dLon, data:j, t0:j[0].hourly.time[0]};
+    analyzeStorm(); renderStorm(+$("stormT").value);
+  }catch(e){ $("stormInfo").textContent = t("storm.fail"); }
+}
+function stormCat(h, i){ // категория клетки в час i
+  const s = h.snowfall[i]||0, p = h.precipitation[i]||0, c = h.weather_code[i], g = h.wind_gusts_10m[i]||0;
+  if([56,57,66,67].includes(c) && p>=0.1) return {col:"#ec4899", op:.55, w:3};
+  if(s>=2.5 || (s>=1 && g>=60)) return {col:"#a21caf", op:.6, w:3};
+  if(s>=1) return {col:"#3b82f6", op:.48, w:2};
+  if(s>=0.2) return {col:"#93c5fd", op:.4, w:1};
+  if(p>=1) return {col:"#86efac", op:.3, w:0};
+  return null;
+}
+function analyzeStorm(){
+  const st = STATE.storm, n = st.data[0].hourly.time.length, base = Math.round((STATE.startH/1000 - st.t0)/3600);
+  st.track = []; st.lastSnow = -1; st.anySnow = false;
+  for(let hh=0; hh<=72; hh++){
+    const i = base+hh; if(i<0 || i>=n) continue;
+    let W=0, la=0, lo=0;
+    st.data.forEach((loc, ci) => { const s = loc.hourly.snowfall[i]||0; if(s>=0.3){ W+=s; la+=s*st.cells[ci].lat; lo+=s*st.cells[ci].lon; } });
+    if(W>=1.5){ st.track.push({h:hh, lat:la/W, lon:lo/W, W}); st.lastSnow = hh; st.anySnow = true; }
+  }
+  st.base = base;
+  // трек на карте
+  if(!map) return;
+  if(!trackLayer) trackLayer = L.layerGroup().addTo(map);
+  trackLayer.clearLayers();
+  if(!$("stormOn").checked) return;
+  // разбиваем трек на куски, если был перерыв
+  let seg=[];
+  const flush = () => { if(seg.length>1) L.polyline(seg.map(p=>[p.lat,p.lon]), {color:"#0f172a", weight:3, dashArray:"6 6", opacity:.8}).addTo(trackLayer); seg=[]; };
+  st.track.forEach((p, idx) => {
+    if(idx && p.h - st.track[idx-1].h > 2) flush();
+    seg.push(p);
+    if(p.h % 6 === 0) L.marker([p.lat,p.lon], {interactive:false, icon:L.divIcon({className:"", html:`<div class="stormlbl">${fmtT(STATE.startH+p.h*3600000)}</div>`, iconSize:[70,16], iconAnchor:[-6,8]})}).addTo(trackLayer);
+    if(p.h % 6 === 0) L.circleMarker([p.lat,p.lon], {radius:4, color:"#0f172a", weight:2, fillColor:"#fff", fillOpacity:1, interactive:false}).addTo(trackLayer);
+  });
+  flush();
+}
+const DIRS = {ru:["север","северо-восток","восток","юго-восток","юг","юго-запад","запад","северо-запад"],
+  uk:["північ","північний схід","схід","південний схід","південь","південний захід","захід","північний захід"],
+  en:["north","northeast","east","southeast","south","southwest","west","northwest"]};
+function motionAt(hh){
+  const tr = STATE.storm.track, a = tr.find(p=>p.h>=hh-1 && p.h<=hh+1) , b = a && tr.find(p=>p.h>=a.h+3 && p.h<=a.h+4);
+  if(!a || !b) return null;
+  const km = hav([a.lat,a.lon],[b.lat,b.lon]), hrs = b.h-a.h;
+  const brg = (Math.atan2((b.lon-a.lon)*Math.cos(a.lat*Math.PI/180), b.lat-a.lat)*180/Math.PI + 360) % 360;
+  const dir = (DIRS[S.lang||detectLang()]||DIRS.en)[Math.round(brg/45)%8];
+  return {dir, kmh: km/hrs};
+}
+function truckPos(tMs){
+  const d = STATE.deps && STATE.deps[STATE.sel||0]; if(!d) return null;
+  const R = d.rows; if(tMs < d.dep || tMs > d.eta + 1800000) return null;
+  for(let i=0;i<R.length-1;i++){
+    if(tMs <= R[i].t) return [R[i].p.lat, R[i].p.lon];
+    if(tMs < R[i+1].t){ const f = (tMs-R[i].t)/(R[i+1].t-R[i].t);
+      const c = STATE.route.coords, i0 = R[i].p.idx, i1 = R[i+1].p.idx, ci = Math.round(i0 + (i1-i0)*f); return c[ci] || [R[i].p.lat,R[i].p.lon]; }
+  }
+  return [R[R.length-1].p.lat, R[R.length-1].p.lon];
+}
+function renderStorm(hh){
+  if(!STATE || !STATE.storm) return;
+  const st = STATE.storm, i = st.base + hh, tMs = STATE.startH + hh*3600000;
+  $("stormTime").textContent = fmtT(tMs);
+  $("stormRel").textContent = hh===0 ? t("storm.now") : "+"+fmtDur(hh);
+  if(map){
+    if(!stormRenderer) stormRenderer = L.canvas ? L.canvas({padding:.3}) : undefined;
+    if(!stormLayer) stormLayer = L.layerGroup().addTo(map);
+    stormLayer.clearLayers();
+    if($("stormOn").checked){
+      st.data.forEach((loc, ci) => {
+        const cat = stormCat(loc.hourly, i); if(!cat) return;
+        const c = st.cells[ci];
+        L.rectangle([[c.lat-st.dLat/2, c.lon-st.dLon/2],[c.lat+st.dLat/2, c.lon+st.dLon/2]], {stroke:false, fillColor:cat.col, fillOpacity:cat.op, renderer:stormRenderer, interactive:false}).addTo(stormLayer);
+      });
+      const cur = st.track.find(p=>p.h===hh);
+      if(cur) L.circleMarker([cur.lat,cur.lon], {radius:9, color:"#fff", weight:3, fillColor:"#a21caf", fillOpacity:1, interactive:false}).addTo(stormLayer);
+    }
+    const tp = truckPos(tMs);
+    if(truckMarker){ truckMarker.remove(); truckMarker=null; }
+    if(tp) truckMarker = L.marker(tp, {interactive:false, zIndexOffset:1000, icon:L.divIcon({className:"", html:`<div class="truckico">🚚</div>`, iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map);
+  }
+  // пояснение
+  const info = [];
+  if(!st.anySnow) info.push(t("storm.none"));
+  else {
+    const mv = motionAt(hh) || motionAt(st.track[0].h);
+    if(mv) info.push(t("storm.moving",{dir:mv.dir, spd: IMP() ? Math.round(mv.kmh/1.609)+" mph" : Math.round(mv.kmh)+" "+t("kmh")}));
+    const first = st.track[0].h;
+    if(first > hh) info.push(t("storm.starts",{t:fmtT(STATE.startH+first*3600000)}));
+    info.push(st.lastSnow >= 72 ? t("storm.longer") : t("storm.until",{t:fmtT(STATE.startH+(st.lastSnow+1)*3600000)}));
+  }
+  const d = STATE.deps && STATE.deps[STATE.sel||0];
+  if(d) info.push(t("storm.truck",{dep:fmtT(d.dep)}) + (truckPos(tMs) ? "" : " — "+(tMs < d.dep ? t("storm.notyet") : t("storm.arrived"))));
+  $("stormInfo").innerHTML = info.map(x=>"<div>"+esc(x)+"</div>").join("");
+}
+$("stormT").oninput = () => { stopStorm(); renderStorm(+$("stormT").value); };
+function stopStorm(){ if(stormTimer){ clearInterval(stormTimer); stormTimer=null; $("stormPlay").textContent = "▶"; } }
+$("stormPlay").onclick = () => {
+  if(stormTimer){ stopStorm(); return; }
+  if(+$("stormT").value >= 72) $("stormT").value = 0;
+  $("stormPlay").textContent = "⏸";
+  stormTimer = setInterval(() => { const v = +$("stormT").value + 1; if(v>72){ stopStorm(); return; } $("stormT").value = v; renderStorm(v); }, 450);
+};
+$("stormOn").onchange = () => { $("stormBody").style.opacity = $("stormOn").checked ? 1 : .5; if(STATE && STATE.storm){ analyzeStorm(); renderStorm(+$("stormT").value); } };
+
+
+/* ============ мои рейсы (постоянные маршруты) ============ */
+let RUNS = LS.get("runs", []);
+const RUN_KEYS = ["hft","hin","l","tare","cargo","tolls","avgUS","avgCA","storm","clearH","rmph","rh","work","traffic","hos","apBuf"];
+function saveRuns(){ LS.set("runs", RUNS); renderRuns(); }
+function nextOccurrence(hhmm, dow){
+  const [h, m] = hhmm.split(":").map(Number), now = new Date();
+  for(let add=0; add<15; add++){
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()+add, h, m);
+    if(d.getTime() <= Date.now() + 30*60000) continue;
+    if(dow >= 0 && d.getDay() !== dow) continue;
+    return d.getTime();
+  }
+  return null;
+}
+$("rnSaveBtn").onclick = () => {
+  const f = $("from"), to = $("to");
+  if(!to.value.trim()){ status(t("err.to")); return; }
+  const ap = readAppt();
+  const short = v => v.replace(/^[^\p{L}\p{N}]+/u, "").split(",")[0].trim() || "…";
+  $("rnName").value = short(f.value) + " → " + short(to.value);
+  const days = t("dowFull");
+  $("rnDow").innerHTML = `<option value="-1">${esc(t("rn.anyDay"))}</option>` + days.map((d,i)=>`<option value="${i}">${esc(d)}</option>`).join("");
+  $("rnDow").value = ap ? String(new Date(ap).getDay()) : "-1";
+  $("rnDow").disabled = !ap;
+  $("rnWhat").textContent = ap ? t("rn.withAppt",{t:fmtHM(ap)}) : t("rn.noAppt");
+  $("rnDlg").style.display = "block";
+};
+$("rnCancel").onclick = () => { $("rnDlg").style.display = "none"; };
+$("rnOk").onclick = () => {
+  const f = $("from"), to = $("to"), ap = readAppt();
+  const settings = {}; RUN_KEYS.forEach(k => { if(S[k] !== undefined) settings[k] = S[k]; });
+  RUNS.push({id:Date.now().toString(36), name:$("rnName").value.trim() || (f.value+" → "+to.value),
+    from:{v:f.value, lat:f.dataset.lat||null, lon:f.dataset.lon||null, geo:f.dataset.geo||null},
+    to:{v:to.value, lat:to.dataset.lat||null, lon:to.dataset.lon||null},
+    apptTime: ap ? fmtHM(ap) : null, apptDow: ap ? +$("rnDow").value : -1, settings});
+  $("rnDlg").style.display = "none"; saveRuns(); status(t("rn.saved"));
+};
+function useRun(id){
+  const r = RUNS.find(x=>x.id===id); if(!r) return;
+  const f = $("from"), to = $("to");
+  if(r.from.geo && lastFix){ f.value = t("geo.me"); f.dataset.lat = lastFix.lat; f.dataset.lon = lastFix.lon; f.dataset.geo = "1"; }
+  else { f.value = r.from.v; if(r.from.lat){ f.dataset.lat = r.from.lat; f.dataset.lon = r.from.lon; } else { delete f.dataset.lat; delete f.dataset.lon; } delete f.dataset.geo; }
+  to.value = r.to.v; if(r.to.lat){ to.dataset.lat = r.to.lat; to.dataset.lon = r.to.lon; } else { delete to.dataset.lat; delete to.dataset.lon; }
+  Object.assign(S, r.settings); S.w = (Number(S.tare)||0)+(Number(S.cargo)||0); LS.set("settings", S);
+  const ap = r.apptTime ? nextOccurrence(r.apptTime, r.apptDow) : null;
+  $("appt").value = ap ? toLocalInput(ap) : "";
+  saveLast(); window.scrollTo({top:0, behavior:"smooth"});
+  run();
+}
+function delRun(id){
+  const r = RUNS.find(x=>x.id===id); if(!r) return;
+  if(!confirm(t("pl.delq",{n:r.name}))) return;
+  RUNS = RUNS.filter(x=>x.id!==id); saveRuns();
+}
+function renderRuns(){
+  const list = $("rnList"); if(!list) return;
+  if(!RUNS.length){ list.textContent = t("rn.empty"); return; }
+  const days = t("dowFull");
+  list.innerHTML = RUNS.slice().reverse().map(r => {
+    const sub = [r.apptTime ? t("rn.appt",{t:r.apptTime + (r.apptDow>=0 ? ", "+days[r.apptDow] : "")}) : null,
+      r.settings && r.settings.cargo != null ? t("rn.cargo",{w: S.uWt==="kg" ? Math.round(r.settings.cargo*1000).toLocaleString("en-US").replace(/,/g," ")+" "+t("kg") : (Math.round(r.settings.cargo*2204.62/100)*100).toLocaleString("en-US")+" lb"}) : null].filter(Boolean).join(" · ");
+    return `<div class="pl"><span class="ic">🚛</span><span class="tx">${esc(r.name)}<small>${esc(sub)}</small></span>`+
+      `<button data-ra="use" data-id="${r.id}">▶ ${t("rn.use")}</button><button data-ra="del" data-id="${r.id}">🗑</button></div>`;
+  }).join("");
+  list.querySelectorAll("[data-ra]").forEach(b => b.onclick = () => b.dataset.ra==="use" ? useRun(b.dataset.id) : delRun(b.dataset.id));
+}
+renderRuns();
+
 /* ============ интерфейс ============ */
-function fillVehicle(v, units){
-  const hM = (v.hft||0)*0.3048 + (v.hin||0)*0.0254;
-  if(units==="metric"){
-    $("sHm").value = hM.toFixed(2); $("sW").value = +(+v.w).toFixed(1); $("sL").value = +(+v.l).toFixed(1);
-    $("sVmax").value = Math.round(v.vmax*1.609344); $("sRmph").value = Math.round(v.rmph*1.609344);
-  } else {
-    const tin = Math.round(hM/0.0254); $("sHft").value = Math.floor(tin/12); $("sHin").value = tin%12;
-    $("sWlb").value = Math.round(v.w*2204.62/100)*100; $("sLft").value = Math.round(v.l*3.28084);
-    $("sVmax").value = Math.round(v.vmax); $("sRmph").value = Math.round(v.rmph);
-  }
-  document.querySelectorAll(".uSpd").forEach(e => e.textContent = units==="metric" ? t("kmh") : "mph");
-  $("optSlow").textContent = t("set.slow",{spd: units==="metric" ? "40 "+t("kmh") : "25 mph"});
+const LB = 2204.62;
+let SU = {len:"imp", wt:"lb", temp:"F"}; // единицы в открытом окне настроек
+function showTotal(){
+  const v = readVehicle(SU), tot = v.tare + v.cargo;
+  const txt = SU.wt==="kg" ? (Math.round(tot*1000/100)*100).toLocaleString("en-US").replace(/,/g," ")+" "+t("kg") : (Math.round(tot*LB/100)*100).toLocaleString("en-US")+" lb";
+  $("wTotal").textContent = t("set.total",{w:txt}) + (tot < LIGHT_T ? " — "+t("set.light") : "");
 }
-function readVehicle(units){
-  if(units==="metric"){
-    const hM = +$("sHm").value || 4.11, tin = hM/0.0254;
-    return {hft:Math.floor(tin/12), hin:+(tin%12).toFixed(1), w:+$("sW").value||36, l:+$("sL").value||22,
-            vmax:(+$("sVmax").value||105)/1.609344, rmph:(+$("sRmph").value||70)/1.609344};
-  }
-  return {hft:+$("sHft").value||13, hin:+$("sHin").value||0, w:(+$("sWlb").value||80000)/2204.62, l:(+$("sLft").value||72)/3.28084,
-          vmax:+$("sVmax").value||65, rmph:+$("sRmph").value||45};
+["sTare","sCargo"].forEach(id => $(id).addEventListener("input", () => showTotal()));
+function paintSeg(){
+  document.querySelectorAll("#settings .seg").forEach(g => g.querySelectorAll("button").forEach(b => b.classList.toggle("on", SU[g.dataset.k]===b.dataset.v)));
+  document.body.classList.toggle("lenmet", SU.len==="met");
 }
-let settingsUnits = "imperial";
+function fillVehicle(v, u){
+  v = Object.assign({avgUS:60, avgCA:59, rmph:45, tare:15.4, cargo:20.9, l:22}, v);
+  const hM = (v.hft||0)*0.3048 + (v.hin||0)*0.0254, met = u.len==="met", kg = u.wt==="kg";
+  $("sHm").dataset.orig = hM;
+  if(met){ $("sHm").value = hM.toFixed(2); $("sLen").value = +(+v.l).toFixed(1); }
+  else { const tin = Math.round(hM/0.0254); $("sHft").value = Math.floor(tin/12); $("sHin").value = tin%12; $("sLen").value = Math.round(v.l*3.28084); }
+  const wconv = x => kg ? Math.round(x*1000/100)*100 : Math.round(x*LB/100)*100;
+  $("sTare").value = wconv(v.tare); $("sCargo").value = wconv(v.cargo);
+  const sp = x => met ? Math.round(x*1.609344) : Math.round(x);
+  $("sAvgUS").value = sp(v.avgUS); $("sAvgCA").value = sp(v.avgCA); $("sRmph").value = sp(v.rmph);
+  document.querySelectorAll(".uSpd").forEach(e => e.textContent = met ? t("kmh") : "mph");
+  document.querySelectorAll(".uWt").forEach(e => e.textContent = kg ? t("kg") : "lb");
+  document.querySelectorAll(".uLen").forEach(e => e.textContent = met ? t("m") : "ft");
+  $("optSlow").textContent = t("set.slow",{spd: met ? "40 "+t("kmh") : "25 mph"});
+  setTimeout(showTotal, 0);
+}
+function readVehicle(u){
+  const met = u.len==="met", kg = u.wt==="kg", out = {};
+  if(met){ const o = +$("sHm").dataset.orig, hM = (o && (+$("sHm").value).toFixed(2)===o.toFixed(2)) ? o : (+$("sHm").value || 4.11), tin = hM/0.0254; out.hft = Math.floor(tin/12); out.hin = +(tin%12).toFixed(2); out.l = +$("sLen").value || 22; }
+  else { out.hft = +$("sHft").value || 13; out.hin = +$("sHin").value || 0; out.l = (+$("sLen").value || 72)/3.28084; }
+  const wr = (id, d) => { const x = $(id).value==="" ? d : Math.max(0, +$(id).value); return kg ? x/1000 : x/LB; };
+  out.tare = wr("sTare", kg ? 15400 : 34000) || 15.4; out.cargo = wr("sCargo", 0);
+  const sp = (id, d) => { const x = +$(id).value || d; return met ? x/1.609344 : x; };
+  out.avgUS = sp("sAvgUS", met?97:60); out.avgCA = sp("sAvgCA", met?95:59); out.rmph = sp("sRmph", met?70:45);
+  return out;
+}
+document.querySelectorAll("#settings .seg").forEach(g => g.querySelectorAll("button").forEach(b => b.onclick = () => {
+  const v = readVehicle(SU); SU[g.dataset.k] = b.dataset.v; paintSeg(); fillVehicle(v, SU);
+}));
 function openSettings(){
-  settingsUnits = S.units==="metric" ? "metric" : "imperial";
-  $("sUnits").value = settingsUnits; $("sLang").value = S.lang || detectLang();
-  document.body.classList.toggle("metric", settingsUnits==="metric");
-  $("sKey").value=S.key||""; $("sTolls").value=S.tolls||"allow"; $("sSpeed").value=S.speed; $("sEmpty").value=S.empty;
-  fillVehicle(S, settingsUnits);
-  $("sStorm").value=S.storm; $("sClear").value=S.clearH; $("sRh").value=S.rh; $("sWork").value=S.work; $("sTraffic").value=S.traffic; $("sHos").value=S.hos;
+  SU = {len:S.uLen||"imp", wt:S.uWt||"lb", temp:S.uTemp||"F"};
+  $("sLang").value = S.lang || detectLang();
+  paintSeg();
+  $("sKey").value=S.key||""; $("sTolls").value=S.tolls||"allow";
+  fillVehicle(S, SU);
+  $("sStorm").value=S.storm; $("sClear").value=S.clearH; $("sRh").value=S.rh; $("sRamp").value=S.ramp==null?2:S.ramp; $("sWork").value=S.work; $("sApBuf").value=S.apBuf==null?30:S.apBuf; $("sTraffic").value=S.traffic; $("sHos").value=S.hos;
   $("settings").style.display="block";
 }
-$("sUnits").onchange = () => { // пересчитываем уже введённые значения в новые единицы
-  const v = readVehicle(settingsUnits); settingsUnits = $("sUnits").value;
-  document.body.classList.toggle("metric", settingsUnits==="metric");
-  fillVehicle(v, settingsUnits);
-};
 $("btnSettings").onclick = openSettings;
-$("btnClose").onclick = () => { $("settings").style.display="none"; if(S.lang!==$("sLang").dataset.orig){} applyUnits(); };
+$("btnClose").onclick = () => { $("settings").style.display="none"; applyUnits(); };
 $("sLang").onchange = () => { // язык меняем сразу, чтобы было видно
-  const v = readVehicle(settingsUnits); S.lang = $("sLang").value; LS.set("settings", S); applyStatic(); fillVehicle(v, settingsUnits);
+  const v = readVehicle(SU); S.lang = $("sLang").value; LS.set("settings", S); applyStatic(); fillVehicle(v, SU);
 };
 $("btnSave").onclick = () => {
-  S = Object.assign({lang:$("sLang").value, units:settingsUnits, tolls:$("sTolls").value, key:$("sKey").value.trim(), speed:+$("sSpeed").value||1, empty:+$("sEmpty").value,
-    storm:$("sStorm").value, clearH:Math.max(0,+$("sClear").value||0), rh:Math.max(0,+$("sRh").value||0),
-    work:Math.max(0,+$("sWork").value||0), traffic:+$("sTraffic").value, hos:+$("sHos").value}, readVehicle(settingsUnits));
+  S = Object.assign({lang:$("sLang").value, uLen:SU.len, uWt:SU.wt, uTemp:SU.temp, units: SU.len==="met" ? "metric" : "imperial", tolls:$("sTolls").value, key:$("sKey").value.trim(),
+    storm:$("sStorm").value, clearH:Math.max(0,+$("sClear").value||0), rh:Math.max(0,+$("sRh").value||0), ramp:Math.max(0,+$("sRamp").value||0), rhv:2,
+    work:Math.max(0,+$("sWork").value||0), apBuf:Math.max(0,+$("sApBuf").value||0), traffic:+$("sTraffic").value, hos:+$("sHos").value}, readVehicle(SU));
+  S.w = S.tare + S.cargo;
   LS.set("settings", S); $("settings").style.display="none";
   applyUnits();
   if(STATE) run();
@@ -1123,29 +1745,30 @@ $("btnSave").onclick = () => {
 /* ============ единицы: применить ко всему экрану ============ */
 function applyUnits(){
   const imp = IMP();
-  document.body.classList.toggle("metric", !imp);
+  document.body.classList.toggle("lenmet", !imp);
   $("btnUnits").textContent = imp ? "mi" : "km";
   applyStatic();
-  $("thT").textContent = imp ? "°F" : "°C";
+  $("thT").textContent = S.uTemp!=="C" ? "°F" : "°C";
   $("thS").textContent = t("th.snow")+", "+(imp ? "in" : t("cm"))+t("perh");
   $("thW").textContent = t("th.gust")+", "+(imp ? "mph" : t("kmh"));
   if(!$("from").value && !STATE) status(t("geo.hint"));
   if(STATE && STATE.deps){
     renderStatus();
-    computeAll(); renderStrip(); selectDep(STATE.sel||0); renderBridges(); renderAlerts(); renderRoadLinks(); drawRoute(true);
+    computeAll(); renderStrip(); selectDep(depIndex()); renderBridges(); renderAlerts(); renderRoadLinks(); drawRoute(true);
+    if(STATE.storm){ analyzeStorm(); renderStorm(+$("stormT").value); }
   }
 }
 function renderStatus(){
   const sp = STATE.sp;
-  status((STATE.routes.length>1 ? STATE.cur.letter+": " : "") + t("st.done",{d:U.dist(sp.totalKm), h:sp.durH.toFixed(1)}) + (STATE.route.truck ? t("st.truck") : "") + (STATE.ens ? "" : t("st.noens")) + (STATE.routes.length>1 ? t("st.nalts",{n:STATE.routes.length}) : ""));
+  status((STATE.routes.length>1 ? STATE.cur.letter+": " : "") + t("st.done",{d:U.dist(sp.totalKm), h:(STATE.deps && STATE.deps[0] ? STATE.deps[0].normalH : sp.durH).toFixed(1)}) + (STATE.route.truck ? t("st.truck") : "") + (STATE.ens ? "" : t("st.noens")) + (STATE.routes.length>1 ? t("st.nalts",{n:STATE.routes.length}) : ""));
 }
-function setLang(l){ S.lang = l; LS.set("settings", S); applyUnits(); }
+function setLang(l){ S.lang = l; LS.set("settings", S); applyUnits(); renderPlaces(); renderRuns(); updateToLinks(); }
 $("btnLang").onclick = () => { const cur = S.lang || detectLang(), i = LANGS.findIndex(x=>x[0]===cur); setLang(LANGS[(i+1)%LANGS.length][0]); };
 document.querySelectorAll("#unitsPick [data-l]").forEach(b => b.onclick = () => {
   setLang(b.dataset.l);
   document.querySelectorAll("#unitsPick [data-l]").forEach(x => x.classList.toggle("sec", x!==b));
 });
-function setUnits(u){ S.units = u; LS.set("settings", S); applyUnits(); }
+function setUnits(u){ const m = u==="metric"; S.units = u; S.uLen = m?"met":"imp"; S.uWt = m?"kg":"lb"; S.uTemp = m?"C":"F"; LS.set("settings", S); applyUnits(); }
 $("btnUnits").onclick = () => setUnits(IMP() ? "metric" : "imperial");
 document.querySelectorAll("#unitsPick [data-u]").forEach(b => b.onclick = () => { $("unitsPick").style.display="none"; setUnits(b.dataset.u); });
 $("btnGo").onclick = run;
@@ -1183,12 +1806,14 @@ $("btnGeo").onclick = () => locate();
 
 /* ============ подсказки при вводе ============ */
 function saveLast(){
-  const f=$("from"), t=$("to");
-  LS.set("last", {from:f.value, to:t.value, fLat:f.dataset.lat||null, fLon:f.dataset.lon||null, fGeo:f.dataset.geo||null, tLat:t.dataset.lat||null, tLon:t.dataset.lon||null});
+  const f=$("from"), to=$("to");
+  syncClr(); updateToLinks();
+  LS.set("last", {from:f.value, to:to.value, fLat:f.dataset.lat||null, fLon:f.dataset.lon||null, fGeo:f.dataset.geo||null, tLat:to.dataset.lat||null, tLon:to.dataset.lon||null, appt:$("appt").value||""});
 }
 function fmtPlace(pr){
   const main = pr.name || [pr.housenumber, pr.street].filter(Boolean).join(" ") || pr.city || "";
-  const sub = [pr.street && pr.name ? pr.street : null, pr.city && pr.city!==main ? pr.city : null, pr.state, pr.countrycode ? pr.countrycode.toUpperCase() : null].filter(Boolean).join(", ");
+  const stc = pr.state && STATE_CODE[pr.state.toLowerCase()];
+  const sub = [pr.street && pr.name ? pr.street : null, pr.city && pr.city!==main ? pr.city : null, stc ? stc : pr.state, pr.countrycode ? pr.countrycode.toUpperCase() : null].filter(Boolean).join(", ");
   return {main, sub};
 }
 function setupAC(input, box, isFrom){
@@ -1217,14 +1842,15 @@ function setupAC(input, box, isFrom){
   });
   const search = async q => {
     const ql = q.toLowerCase();
-    const local = PRESETS.filter(p => p[0].toLowerCase().includes(ql)).slice(0,3).map(p => ({main:p[0], sub:"", lat:p[1], lon:p[2]}));
+    const mine = PLACES.filter(p => !ql || (p.name+" "+(p.note||"")).toLowerCase().includes(ql)).slice(-6).reverse()
+      .map(p => ({main: plIcon(p.type)+" "+p.name, sub: p.note||"", lat:p.lat, lon:p.lon, mine:true}));
+    const local = mine.concat(PRESETS.filter(p => p[0].toLowerCase().includes(ql)).slice(0, ql ? 3 : 0).map(p => ({main:p[0], sub:"", lat:p[1], lon:p[2]})));
     render(local, q.length>=2 ? t("ac.searching") : "");
     if(q.length < 2) return;
     if(ctl) ctl.abort(); ctl = new AbortController();
     const bias = lastFix || {lat:44.5, lon:-68.5};
-    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=7&lang=en&lat=${bias.lat}&lon=${bias.lon}&bbox=-100,24,-50,62`;
     try{
-      const r = await fetch(url, {signal:ctl.signal}); const j = await r.json();
+      const j = {features: await photonSearch(q, {bias, signal:ctl.signal})};
       const seen = new Set(local.map(x=>x.main.toLowerCase()));
       const remote = (j.features||[]).map(f => Object.assign(fmtPlace(f.properties), {lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}))
         .filter(x => x.main && !seen.has((x.main+", "+x.sub).toLowerCase()) && (seen.add((x.main+", "+x.sub).toLowerCase()), true));
@@ -1246,15 +1872,26 @@ function setupAC(input, box, isFrom){
     if(e.key==="Enter"){ e.preventDefault(); if(items[0] && !input.dataset.lat) choose(items[0]); else { close(); if(!isFrom) run(); else $("to").focus(); } }
   });
 }
+function syncClr(){ ["from","to"].forEach(id => $(id).parentElement.classList.toggle("has", !!$(id).value)); }
+document.querySelectorAll(".clr").forEach(b => {
+  b.addEventListener("pointerdown", e => e.preventDefault());
+  b.onclick = () => { const el = $(b.dataset.for); el.value = ""; delete el.dataset.lat; delete el.dataset.lon; delete el.dataset.geo; syncClr(); saveLast(); el.focus(); el.dispatchEvent(new Event("input")); };
+});
+["from","to"].forEach(id => $(id).addEventListener("input", () => { syncClr(); updateToLinks(); }));
 setupAC($("from"), $("acFrom"), true);
 setupAC($("to"), $("acTo"), false);
 
-const last = LS.get("last", null);
+// адреса по умолчанию для теста (ставятся один раз)
+const DEF_FROM = "910 Frenette Ave, Moncton, NB E1H 2P8", DEF_TO = "900 Fairmount Ave, Elizabeth, NJ 07201, United States";
+if(!LS.get("defaults_v1", false)){ LS.set("defaults_v1", true); LS.set("last", {from:DEF_FROM, to:DEF_TO}); }
+const last = LS.get("last", null) || {from:DEF_FROM, to:DEF_TO};
 if(last){
   $("from").value = last.from||""; $("to").value = last.to||"";
   if(last.fLat){ $("from").dataset.lat = last.fLat; $("from").dataset.lon = last.fLon; if(last.fGeo) $("from").dataset.geo = "1"; }
   if(last.tLat){ $("to").dataset.lat = last.tLat; $("to").dataset.lon = last.tLon; }
+  if(last.appt && new Date(last.appt).getTime() > Date.now()) $("appt").value = last.appt;
 }
+syncClr(); updateToLinks();
 initMap();
 window.addEventListener("resize", () => { if(map) setTimeout(() => map.invalidateSize(), 200); });
 applyUnits();
