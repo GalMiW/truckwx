@@ -201,7 +201,7 @@ body.hasroute .paneEmpty{display:none}
 <body>
 <header>
   <button class="iconbtn backbtn" id="btnBack" data-i18n="back"></button>
-  <h1>TruckWX <small data-i18n="sub"></small> <small class="ver">v4.8</small></h1>
+  <h1>TruckWX <small data-i18n="sub"></small> <small class="ver">v4.9</small></h1>
   <button class="iconbtn" id="btnLang" aria-label="Language">RU</button>
   <button class="iconbtn" id="btnUnits" aria-label="Units">mi</button>
   <button class="iconbtn" id="btnSettings" data-i18n-title="set.h">&#9881;</button>
@@ -1110,17 +1110,33 @@ async function routeORS(a, b, via){
   // доля пути по автомагистралям (waycategory: бит 1 = highway)
   const gc = f.geometry.coordinates, wc = pr.extras && pr.extras.waycategory ? pr.extras.waycategory.values : null;
   let hw = null;
-  if(wc){ let tot = 0, on = 0; wc.forEach(([i0, i1, v]) => { let d = 0; for(let i=i0;i<i1 && i+1<gc.length;i++) d += hav([gc[i][1],gc[i][0]],[gc[i+1][1],gc[i+1][0]]); tot += d; if(v & 1) on += d; }); hw = tot ? on/tot : null; }
-  return {coords:gc.map(c=>[c[1],c[0]]), dist:pr.summary.distance, dur:pr.summary.duration, truck:true, orsLvl:usedLvl, via:!!(via&&via.length), snapKm, hw,
+  const LS_ = localStretches();
+  if(wc){ let tot = 0, on = 0; wc.forEach(([i0, i1, v]) => { let d = 0; for(let i=i0;i<i1 && i+1<gc.length;i++) d += hav([gc[i][1],gc[i][0]],[gc[i+1][1],gc[i+1][0]]); tot += d; if(v & 1) on += d; LS_.add(d, !!(v & 1)); }); hw = tot ? on/tot : null; }
+  const loc = wc ? LS_.done() : {maxLocalKm:null, longLocalKm:null};
+  return {coords:gc.map(c=>[c[1],c[0]]), dist:pr.summary.distance, dur:pr.summary.duration, truck:true, orsLvl:usedLvl, via:!!(via&&via.length), snapKm, hw, maxLocalKm:loc.maxLocalKm, longLocalKm:loc.longLocalKm,
     roads: roadSummary(steps.map(st=>[st.name, st.distance])), toll: tollV.some(v => v[2]>0)};
+}
+// участки НЕ по автомагистралям: короткие связки (US-222, NJ-17…) — нормально; длинные «националки» (ME-9, US-1 в Мэне) — нет
+const LOCAL_OK_KM = 20, LOCAL_MAX_KM = 100;
+function localStretches(){
+  let run = 0, maxL = 0, longL = 0;
+  const flush = () => { if(run > LOCAL_OK_KM) longL += run; if(run > maxL) maxL = run; run = 0; };
+  return { add(km, hwy){ if(hwy) flush(); else run += km; }, done(){ flush(); return {maxLocalKm:maxL, longLocalKm:longL}; } };
+}
+// «цена» маршрута для выбора: время + штраф за длинные участки по местным дорогам
+function routeCost(r){
+  const km = Math.max(1, (r.dist||0)/1000);
+  const pen = r.longLocalKm != null ? 1.5 * r.longLocalKm / km : 2.5 * (1 - (r.hw == null ? 0.8 : r.hw));
+  return r.dur * (1 + pen) * (r.xing && !r.xing.std ? 1.15 : 1);
 }
 function osrmParse(r){
   const steps = (r.legs||[]).flatMap(l => l.steps||[]);
   const toll = steps.some(st => (st.intersections||[]).some(x => (x.classes||[]).includes("toll")));
   const roads = steps.length ? roadSummary(steps.map(st=>[st.ref || st.name, st.distance])) : (r.legs||[]).map(l=>l.summary).filter(Boolean).join(" · ");
-  let tot = 0, on = 0;
-  steps.forEach(st => { const d = st.distance||0; tot += d; if((st.intersections||[]).some(x => (x.classes||[]).includes("motorway")) || /^(I|A|TCH)[ -]?\d/.test(st.ref||"")) on += d; });
-  return {coords:r.geometry.coordinates.map(c=>[c[1],c[0]]), dist:r.distance, dur:r.duration, truck:false, roads, toll, hw: tot ? on/tot : null};
+  let tot = 0, on = 0; const LS_ = localStretches();
+  steps.forEach(st => { const d = st.distance||0; tot += d; const hwy = (st.intersections||[]).some(x => (x.classes||[]).includes("motorway")) || /^(I|A|TCH)[ -]?\d/.test(st.ref||""); if(hwy) on += d; LS_.add(d/1000, hwy); });
+  const loc = steps.length ? LS_.done() : {maxLocalKm:null, longLocalKm:null};
+  return {coords:r.geometry.coordinates.map(c=>[c[1],c[0]]), dist:r.distance, dur:r.duration, truck:false, roads, toll, hw: tot ? on/tot : null, maxLocalKm:loc.maxLocalKm, longLocalKm:loc.longLocalKm};
 }
 /* ============ запрещённые места (объезжать) ============ */
 let avoidLayer = null;
@@ -1192,7 +1208,9 @@ const HUBS = [
   ["Portsmouth I-95",43.07,-70.79],["Concord I-93/I-89",43.21,-71.54],["White River Jct I-91/I-89",43.65,-72.32],
   ["Worcester I-290/I-495",42.30,-71.73],["Sturbridge I-84/I-90",42.10,-72.08],["Springfield I-91/I-90",42.11,-72.59],
   ["Hartford I-84/I-91",41.77,-72.68],["Providence I-95",41.82,-71.41],["New Haven I-95/I-91",41.31,-72.92],
-  ["Danbury I-84",41.40,-73.46],["Newburgh I-84/I-87",41.52,-74.07],["Albany I-87/I-90",42.70,-73.80],["Scranton I-81/I-84",41.40,-75.66],
+  ["Danbury I-84",41.40,-73.46],["Harrisburg I-81/I-76/I-83",40.27,-76.83],["Reading US-222",40.34,-75.93],["Allentown I-78/US-22",40.60,-75.50],
+  ["Somerville I-78/I-287",40.60,-74.63],["Mahwah I-287/NJ-17",41.09,-74.15],["Tarrytown I-287/I-87",41.07,-73.87],["Brewster I-84/I-684",41.41,-73.60],
+  ["King of Prussia I-76/I-276",40.09,-75.38],["NJ Turnpike Exit 6",40.12,-74.72],["Wilkes-Barre I-81/I-80",41.10,-75.95],["Newburgh I-84/I-87",41.52,-74.07],["Albany I-87/I-90",42.70,-73.80],["Scranton I-81/I-84",41.40,-75.66],
   ["Montreal A-20/A-10",45.50,-73.60],["Rivière-du-Loup A-20/A-85",47.83,-69.53],["Edmundston TCH-2",47.37,-68.33],
   ["Fredericton TCH-2",45.95,-66.64],["Saint John NB-1",45.29,-66.06],["Truro NS-102/104",45.37,-63.27],["Amherst TCH-104",45.83,-64.20]
 ];
@@ -1201,7 +1219,20 @@ function hubVias(a, b){
   // gate = пограничный переход на интерстейт (Houlton, I-95) — пробуем всегда, если он не слишком в стороне
   return HUBS.map(h => { const d1 = hav([a.lat,a.lon],[h[1],h[2]]), d2 = hav([h[1],h[2]],[b.lat,b.lon]); return {name:h[0], lat:h[1], lon:h[2], r:(d1+d2)/D, d1, d2, gate:!!h[3]}; })
     .filter(h => h.d1 > 60 && h.d2 > 60 && (h.r <= 1.25 || (h.gate && h.r <= 1.4)))
-    .sort((x,y) => (y.gate?1:0)-(x.gate?1:0) || x.r - y.r).slice(0, 8);
+    .sort((x,y) => (y.gate?1:0)-(x.gate?1:0) || x.r - y.r).slice(0, 14);
+}
+// пары опорных точек (напр. Reading → Mahwah = US-222 → I-78 → I-287), чтобы найти коридоры, которые одна точка не задаёт
+function nearRouteKm(r, p){ let m = 1e9; const c = r.coords, st = Math.max(1, Math.floor(c.length/600)); for(let i=0;i<c.length;i+=st){ const d = hav(c[i], [p.lat,p.lon]); if(d < m) m = d; } return m; }
+function hubPairs(a, b, off){
+  const D = hav([a.lat,a.lon],[b.lat,b.lon]); if(D < 200) return [];
+  const H = hubVias(a, b).filter(h => !h.gate), out = [];
+  for(const h1 of H) for(const h2 of H){
+    if(h1 === h2 || h1.d1 >= h2.d1) continue;
+    if(off && !off(h1) && !off(h2)) continue;
+    const mid = hav([h1.lat,h1.lon],[h2.lat,h2.lon]); if(mid < 50) continue;
+    const r = (h1.d1 + mid + h2.d2) / D; if(r <= 1.2) out.push({r, v:[h1, h2]});
+  }
+  return out.sort((x,y) => x.r - y.r).slice(0, 3).map(o => o.v);
 }
 async function getRoutes(a, b){
   const cands = [], X = xingById($("xing").value);
@@ -1218,7 +1249,7 @@ async function getRoutes(a, b){
     { const clean = cands.filter(r => !hitsAvoid(r)); if(clean.length) cands.splice(0, cands.length, ...clean); }
     cands.forEach(r => r.xing = detectXing(r));
     const ok = cands.filter(r => !hasSpur(r)), pool = (ok.length ? ok : cands);
-    const cost = r => r.dur * (1 + 2.5*(1 - (r.hw == null ? 0.8 : r.hw)));
+    const cost = routeCost;
     const byCost = pool.slice().sort((x,y) => cost(x) - cost(y)), main = byCost[0], out = [main];
     byCost.slice(1).forEach(r => { if(out.length<3 && r.dur <= main.dur*1.3 && !out.some(o => overlap(r,o) > 0.8)) out.push(r); });
     return out;
@@ -1230,8 +1261,11 @@ async function getRoutes(a, b){
   status(t("st.alts"));
   const jobs = [];
   if(!cands.length || !S.key) jobs.push(routeOSRM(a, b, null, true).catch(()=>[]));
-  let vias = hubVias(a, b); if(vias.length < 2) vias = vias.concat(viaPoints(a, b));
+  // опорные точки, лежащие на основном маршруте, дают тот же маршрут — берём точки в стороне от него
+  const main0 = cands[0], off = h => !main0 || nearRouteKm(main0, h) > 12;
+  let vias = hubVias(a, b).filter(off).slice(0, 6); if(vias.length < 2) vias = vias.concat(viaPoints(a, b));
   vias.forEach(v => jobs.push(R1([v])));
+  hubPairs(a, b, off).forEach(pv => jobs.push(R1(pv)));
   // через границу: пробуем разные стандартные переходы — зимой погода на них очень разная (озёрный снег у Buffalo, Tug Hill и т.д.)
   if(inCanada(a.lat,a.lon) !== inCanada(b.lat,b.lon)){
     const D = hav([a.lat,a.lon],[b.lat,b.lon]);
@@ -1247,13 +1281,13 @@ async function getRoutes(a, b){
   let pool0 = cands.filter(r => !(r.via && (r.snapKm > 15 || hasSpur(r))));
   if(!pool0.length) pool0 = cands;
   // только по автомагистралям: доля трасс не меньше 70% (если данных нет — не отбрасываем)
-  const HW = 0.7, hwOK = r => r.hw == null || r.hw >= HW;
+  const hwOK = r => r.maxLocalKm != null ? r.maxLocalKm <= LOCAL_MAX_KM : (r.hw == null || r.hw >= 0.6);
   const hwPool = pool0.filter(hwOK);
-  const pool = hwPool.length ? hwPool : pool0.slice().sort((x,y)=>(y.hw||0)-(x.hw||0)).slice(0,1);
+  const pool = hwPool.length ? hwPool : pool0.slice().sort((x,y)=>(x.maxLocalKm||0)-(y.maxLocalKm||0)).slice(0,1);
   // «цена» маршрута: время × штраф за километры НЕ по трассам (двухполосные «националки» вроде ME-9, US-1)
   pool.forEach(r => r.xing = detectXing(r));
   // авто: стандартные грузовые переходы (Houlton, Lacolle/Champlain, Thousand Islands…) в приоритете, остальные — только если заметно выгоднее
-  const cost = r => r.dur * (1 + 2.5*(1 - (r.hw == null ? 0.8 : r.hw))) * (r.xing && !r.xing.std ? 1.15 : 1);
+  const cost = routeCost;
   const byCost = pool.slice().sort((x,y) => cost(x) - cost(y));
   const main = byCost[0];
   const out = [main];
