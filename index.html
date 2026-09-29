@@ -201,7 +201,7 @@ body.hasroute .paneEmpty{display:none}
 <body>
 <header>
   <button class="iconbtn backbtn" id="btnBack" data-i18n="back"></button>
-  <h1>TruckWX <small data-i18n="sub"></small> <small class="ver">v5.1</small></h1>
+  <h1>TruckWX <small data-i18n="sub"></small> <small class="ver">v5.2</small></h1>
   <button class="iconbtn" id="btnLang" aria-label="Language">RU</button>
   <button class="iconbtn" id="btnUnits" aria-label="Units">mi</button>
   <button class="iconbtn" id="btnSettings" data-i18n-title="set.h">&#9881;</button>
@@ -1245,7 +1245,8 @@ function hubPairs(a, b, off){
 }
 async function getRoutes(a, b){
   const cands = [], X = xingById($("xing").value);
-  const R1 = v => S.key ? routeORS(a, b, v).then(r=>[r]).catch(()=>routeOSRM(a, b, v).catch(()=>[])) : routeOSRM(a, b, v).catch(()=>[]);
+  const R0 = v => S.key ? routeORS(a, b, v).then(r=>[r]).catch(()=>routeOSRM(a, b, v).catch(()=>[])) : routeOSRM(a, b, v).catch(()=>[]);
+  const R1 = v => ttOn() ? routeTT(a, b, v).catch(() => R0(v)) : R0(v);
   if(X && inCanada(a.lat,a.lon) !== inCanada(b.lat,b.lon)){
     // выбран погранпереход: все варианты — через него
     if(!S.key) warn(t("w.nokey"));
@@ -1263,16 +1264,21 @@ async function getRoutes(a, b){
     byCost.slice(1).forEach(r => { if(out.length<3 && r.dur <= main.dur*1.3 && !out.some(o => overlap(r,o) > 0.8)) out.push(r); });
     return out;
   }
-  if(S.key){
+  let ttMain = false;
+  if(ttOn()){
+    try{ const L3 = await routeTT(a, b, null, 2); L3.forEach(r => cands.push(r)); ttMain = L3.length > 0; }
+    catch(e){ warn(t("tt.fail") + " (" + e.message + ")"); }
+  }
+  if(!ttMain && S.key){
     try{ cands.push(await routeORS(a, b)); }
     catch(e){ warn(t("w.orsfail",{e: e.status ? e.message : t("w.orsNet")})); }
-  } else warn(t("w.nokey"));
+  } else if(!ttMain) warn(t("w.nokey"));
   status(t("st.alts"));
   const jobs = [];
-  if(!cands.length || !S.key) jobs.push(routeOSRM(a, b, null, true).catch(()=>[]));
+  if(!cands.length || (!S.key && !ttMain)) jobs.push(routeOSRM(a, b, null, true).catch(()=>[]));
   // опорные точки, лежащие на основном маршруте, дают тот же маршрут — берём точки в стороне от него
   const main0 = cands[0], off = h => !main0 || nearRouteKm(main0, h) > 12;
-  let vias = hubVias(a, b).filter(off).slice(0, 6); if(vias.length < 2) vias = vias.concat(viaPoints(a, b));
+  let vias = hubVias(a, b).filter(off).slice(0, ttMain ? 5 : 6); if(vias.length < 2) vias = vias.concat(viaPoints(a, b));
   vias.forEach(v => jobs.push(R1([v])));
   hubPairs(a, b, off).forEach(pv => jobs.push(R1(pv)));
   // через границу: пробуем разные стандартные переходы — зимой погода на них очень разная (озёрный снег у Buffalo, Tug Hill и т.д.)
@@ -2517,7 +2523,7 @@ async function ttTest(){
 const ttOn = () => !!(S.tt && S.tt.length > 10);
 function ttTruckParams(){
   const h = heightM(), w = Math.round(((Number(S.tare)||15.4)+(Number(S.cargo)||0))*1000), l = Number(S.l)||22;
-  return `travelMode=truck&vehicleCommercial=true&vehicleHeight=${h.toFixed(2)}&vehicleWeight=${w}&vehicleLength=${l.toFixed(1)}&traffic=true&routeType=fastest&sectionType=traffic` + (S.tolls==="avoid" ? "&avoid=tollRoads" : "");
+  return `travelMode=truck&vehicleCommercial=true&vehicleHeight=${h.toFixed(2)}&vehicleWidth=2.6&vehicleWeight=${w}&vehicleLength=${l.toFixed(1)}&traffic=true&routeType=fastest&sectionType=traffic&sectionType=motorway&sectionType=tollRoad&instructionsType=text&language=en-US&computeTravelTimeFor=all` + (S.tolls==="avoid" ? "&avoid=tollRoads" : "");
 }
 function ttAvoidBody(){
   const Z = activeAvoid(); if(!Z.length) return {};
@@ -2526,9 +2532,43 @@ function ttAvoidBody(){
 }
 function ttParse(r){
   const coords = r.legs.flatMap(l => l.points.map(p => [p.latitude, p.longitude]));
-  const sm = r.summary;
-  return {coords, dist:sm.lengthInMeters, dur:sm.travelTimeInSeconds, truck:true, roads:"", toll:false, hw:null, tt:true,
-    trafficDelay: sm.trafficDelayInSeconds||0, sections:(r.sections||[]).filter(x => x.sectionType==="TRAFFIC")};
+  const sm = r.summary, secs = r.sections||[];
+  // км по точкам
+  const cum = [0]; for(let i=1;i<coords.length;i++) cum.push(cum[i-1] + hav(coords[i-1], coords[i]));
+  const totKm = cum[cum.length-1] || 1;
+  // автомагистрали → доля и длинные «местные» участки
+  const mw = secs.filter(x => x.sectionType==="MOTORWAY").map(x => [x.startPointIndex, x.endPointIndex]).sort((p,q)=>p[0]-q[0]);
+  let hw = null, loc = {maxLocalKm:null, longLocalKm:null};
+  if(secs.length){
+    const LS_ = localStretches(); let pos = 0, on = 0;
+    mw.forEach(([i0,i1]) => { if(i0 > pos) LS_.add(cum[i0]-cum[pos], false); LS_.add(cum[i1]-cum[i0], true); on += cum[i1]-cum[i0]; pos = Math.max(pos, i1); });
+    if(pos < coords.length-1) LS_.add(totKm - cum[pos], false);
+    loc = LS_.done(); hw = on/totKm;
+  }
+  // названия дорог из подсказок
+  const ins = (r.guidance && r.guidance.instructions) || [], pairs = [];
+  ins.forEach((x, k) => { const nx = ins[k+1]; const d = nx ? (nx.routeOffsetInMeters - x.routeOffsetInMeters) : 0; const n = (x.roadNumbers && x.roadNumbers[0]) || ""; if(n && d > 0) pairs.push([n, d]); });
+  const free = sm.noTrafficTravelTimeInSeconds || (sm.travelTimeInSeconds - (sm.trafficDelayInSeconds||0));
+  return {coords, dist:sm.lengthInMeters, dur:sm.travelTimeInSeconds, durFree:free, truck:true, roads: pairs.length ? roadSummary(pairs) : "", toll: secs.some(x => x.sectionType==="TOLL_ROAD"),
+    hw, maxLocalKm:loc.maxLocalKm, longLocalKm:loc.longLocalKm, tt:true, ttAt:Date.now(),
+    trafficDelay: sm.trafficDelayInSeconds||0, sections:secs.filter(x => x.sectionType==="TRAFFIC")};
+}
+// маршрут для трака через TomTom (высота/вес/длина, живые пробки); via — промежуточные точки
+const TT_Q = {busy:0, wait:[]};
+async function ttQueue(fn){
+  while(TT_Q.busy >= 2) await new Promise(r => TT_Q.wait.push(r));
+  TT_Q.busy++;
+  try{ for(let k=0;;k++){ try{ return await fn(); }catch(e){ if(k>=1 || (e.status && e.status!==429 && e.status<500)) throw e; await sleep(1500); } } }
+  finally{ TT_Q.busy--; const n = TT_Q.wait.shift(); if(n) n(); }
+}
+async function routeTT(a, b, via, alts){
+  const locs = [a].concat(via||[], [b]).map(p => (+p.lat).toFixed(5)+","+(+p.lon).toFixed(5)).join(":");
+  const url = `${TT}/routing/1/calculateRoute/${locs}/json?key=${encodeURIComponent(S.tt)}&${ttTruckParams()}` + (!(via&&via.length) && alts ? `&maxAlternatives=${alts}&alternativeType=anyRoute` : "");
+  const body = ttAvoidBody();
+  const j = await ttQueue(() => ttJSON(url, Object.keys(body).length ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {}, 30000));
+  return (j.routes||[]).map(r => { const o = ttParse(r); o.durLive = o.dur; o.dur = o.durFree; o.via = !!(via&&via.length);
+    if(o.via){ let m = 1e9; for(let i=0;i<o.coords.length;i+=3){ const d = hav(o.coords[i], [via[0].lat, via[0].lon]); if(d < m) m = d; } o.snapKm = m; }
+    return o; });
 }
 // маршрут TomTom от a до b (с живыми пробками и вариантами)
 async function ttRoute(a, b, alts){
@@ -2562,7 +2602,8 @@ async function ttLiveForRoutes(){
   if(!ttOn() || !STATE || !STATE.routes) return;
   try{
     TT_ERR = "";
-    const res = await Promise.all(STATE.routes.map(R => ttReconstruct(R.route).catch(e => { TT_ERR = e.message; console.warn("TomTom:", e.message); return null; })));
+    const res = await Promise.all(STATE.routes.map(R => (R.route.tt && R.route.ttAt && Date.now() - R.route.ttAt < 10*60000) ? R.route
+      : ttReconstruct(R.route).catch(e => { TT_ERR = e.message; console.warn("TomTom:", e.message); return null; })));
     let any = false;
     STATE.routes.forEach((R, i) => { if(res[i]){ R.live = mapJams(R, res[i]); R.liveAt = Date.now(); any = true; } });
     if(!any){ warn(t("tt.fail") + (TT_ERR ? " ("+TT_ERR+")" : "")); return; }
@@ -2600,7 +2641,11 @@ async function ttIncidents(){
     const g = f.geometry || {}, pts = g.type==="Point" ? [g.coordinates] : (g.coordinates||[]);
     const q = pts[Math.floor(pts.length/2)] || pts[0]; if(!q) return;
     let bd = 1e9, bi = 0; for(let i=0;i<c.length;i+=2){ const d = hav(c[i],[q[1],q[0]]); if(d < bd){ bd = d; bi = i; } }
-    if(bd > 1.2 || ![1,3,5,6,7,8,9,11,14].includes(pr.iconCategory)) return;
+    if(bd > 1.2 || ![1,3,5,7,8,9,11,14].includes(pr.iconCategory)) return;
+    const mag = pr.magnitudeOfDelay||0, dl = pr.delay||0;
+    // только то, что реально мешает: аварии, перекрытия, гололёд, подтопления — всегда; ремонты, закрытые полосы, прочее — если есть задержка
+    if(![1,8,5,11].includes(pr.iconCategory) && mag < 2 && dl < 300) return;
+    if(near.some(n => n.cat===pr.iconCategory && Math.abs(n.km - R.sp.cum[bi]) < 3)) return;
     near.push({lat:q[1], lon:q[0], km:R.sp.cum[bi], cat:pr.iconCategory, delay:pr.delay||0, desc:(pr.events||[]).map(e=>e.description).join("; "),
       road:(pr.roadNumbers||[]).join(", "), from:pr.from, to:pr.to, end:pr.endTime});
   });
